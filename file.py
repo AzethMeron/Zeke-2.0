@@ -36,3 +36,9 @@ def Exist(filepath):
 
 def ListOfFiles(path):
     return [ f for f in os.listdir(path) if os.path.isfile( os.path.join(path, f) ) ]
+
+def HashName(name):
+    return str(hash(str(name)))
+    
+def HashId(id):
+    return hash(str(id))

@@ -18,6 +18,12 @@ def NewUserEnvAdd(key, data):
 def NewGuildEnvAdd(key, data):
     NewGuild[key] = data
 
+def OnSaveTrigger(local_env): # Called BEFORE saving
+    return None
+
+def OnLoadTrigger(local_env): # Called AFTER loading
+    return None
+
 #####################################################################################################
 
 def NewUserEnvironment():
@@ -40,17 +46,20 @@ def RecursiveDictUpdate(dict_data, dict_temp):
 
 def LoadGuildEnvironment(guild):
     file.EnsureDir(guilddir)
-    filepath = guilddir + "/" + str(hash(str(guild.id))) + ".bse"
+    filepath = guilddir + "/" + file.HashName(guild.id) + ".bse"
     if not file.Exist(filepath):
         guild_envs[guild.id] = NewGuildEnvironment()
     else:
         guild_envs[guild.id] = file.Load(filepath)
         RecursiveDictUpdate(guild_envs[guild.id], NewGuildEnvironment())
+    OnLoadTrigger(guild_envs[guild.id])
         
 def SaveGuildEnvironment(guild):
     file.EnsureDir(guilddir)
-    filepath = guilddir + "/" + str(hash(str(guild.id))) + ".bse"
-    file.Save(filepath,guild_envs[guild.id])
+    filepath = guilddir + "/" + file.HashName(guild.id) + ".bse"
+    local_env = GetGuildEnvironment(guild)
+    OnSaveTrigger(local_env)
+    file.Save(filepath,local_env)
 
 #####################################################################################################
 
@@ -62,13 +71,13 @@ def GetGuildEnvironment(guild):
         return guild_envs[guild.id]
 
 def GetUserEnvironment(local_env, user):
-    if hash(str(user.id)) in local_env['users']:
-        user_env = local_env['users'][hash(str(user.id))]
+    if file.HashId(user.id) in local_env['users']:
+        user_env = local_env['users'][file.HashId(user.id)]
         RecursiveDictUpdate(user_env, NewUserEnvironment())
         return user_env
     else:
-        local_env['users'][hash(str(user.id))] = NewUserEnvironment()
-        return local_env['users'][hash(str(user.id))]
+        local_env['users'][file.HashId(user.id)] = NewUserEnvironment()
+        return local_env['users'][file.HashId(user.id)]
 
 def GuildInfo(guild):
     local_env = GetGuildEnvironment(guild)
