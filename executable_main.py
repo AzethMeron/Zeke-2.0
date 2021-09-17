@@ -12,8 +12,8 @@ import traceback
 import file
 import temp
 import data
-import timers
 import cmd
+import main_triggers
 
 # FEATURES
 import music
@@ -33,14 +33,12 @@ async def each_minute():
     if abs(minute) % 1440 == 0:
         print("Purging temporary directory")
         temp.PurgeTempDir()
-    await timers.Tick(minute, DiscordClient)
+    await main_triggers.TimerTick(minute, DiscordClient)
     minute = (minute + 1) % 100000
 
 ################################################################################
 
-#################################### INIT ######################################
-
-OnInitTrigger = [] # func(bot)
+################################### ERROR ######################################
 
 @DiscordClient.event
 async def on_error(event, *args, **kwargs):
@@ -60,22 +58,26 @@ async def on_message(message):
         return
     # enforce execution of commands
     await DiscordClient.process_commands(message)
-    data.SaveGuildEnvironment(message.guild)
+    for func in main_triggers.on_message: func(message)
+    
 
 @DiscordClient.event
 async def on_reaction_add(reaction, user):
     if user.bot:
         return 
+    for func in main_triggers.on_reaction_add: func(reaction, user)
 
 @DiscordClient.event        
 async def on_reaction_remove(reaction, user):
     if user.bot:
         return 
+    for func in main_triggers.on_reaction_remove: func(reaction, user)
 
 ################################################################################
 
 @DiscordClient.event
 async def on_ready():
+    for func in main_triggers.OnInitTrigger: func(DiscordClient)
     each_minute.start()
     print("Initialisation finished")
     print(f'{DiscordClient.user} has connected to Discord!')
