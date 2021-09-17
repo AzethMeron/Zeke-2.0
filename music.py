@@ -21,20 +21,17 @@ data.NewGuildEnvAdd("music_queue", [])
 
 vessel = None
 
-old_presave = data.PreSaveTrigger
-def PreSaveHook(local_env):
-    global old_presave
+def PreSave(local_env):
     vessel = local_env["music_queue"]
     local_env["music_queue"] = []
-    return old_presave(local_env)
-data.PreSaveTrigger = PreSaveHook
+data.PreSaveTrigger.append(PreSave)
 
-old_postsave = data.PostSaveTrigger
-def PostSaveHook(local_env):
-    global old_postsave
+def PostSave(local_env):
     local_env["music_queue"] = vessel
-    return old_postsave(local_env)
-data.PostSaveTrigger = PostSaveHook
+data.PostSaveTrigger.append(PostSave)
+
+def OnInit(bot):
+    return None
 
 ################################################################################
 

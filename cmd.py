@@ -2,15 +2,21 @@
 def Parser():
     return dict()
 
+# func return (bool, err_message)
 def Add(parser, key, func):
     if key in parser:
         raise KeyError(f'{key} already present in parser')
     parser[key] = func
 
-def Parse(parser, ctx, args):
-    if len(args) < 1:
-        raise ValueError("Not enough arguments")
-    key = args.pop(0)
-    if key not in parser:
-        raise KeyError(f'{key} isn\'t a command')
-    parser[key](ctx,args)
+async def Parse(parser, ctx, args):
+    try:
+        key = args.pop(0)
+        if key not in parser:
+            raise KeyError(f'{key} - command not found')
+        results = parser[key](ctx,args)
+        if results[0]:
+            await ctx.message.add_reaction('👍')
+        else:
+            await ctx.message.reply("Command failed: " + str(results[1]))
+    except Exception as e:
+        await ctx.message.reply("Wrong command: " + str(e))

@@ -22,14 +22,11 @@ def NewGuildEnvAdd(key, data):
         raise KeyError(f'{key} already present in New Guild Env') 
     NewGuild[key] = data
 
-def PreSaveTrigger(local_env): # Called BEFORE saving
-    return None
+PreSaveTrigger = [] # func(local_env): # Called BEFORE saving
+PostSaveTrigger = [] # func(local_env): # Called AFTER saving
+PostLoadTrigger = [] # func(local_env): # Called AFTER loading
 
-def PostSaveTrigger(local_env): # Called AFTER saving
-    return None
-
-def PostLoadTrigger(local_env): # Called AFTER loading
-    return None
+PostSaveTrigger.append(lambda x: print("Hewwo"))
 
 #####################################################################################################
 
@@ -59,15 +56,18 @@ def LoadGuildEnvironment(guild):
     else:
         guild_envs[guild.id] = file.Load(filepath)
         RecursiveDictUpdate(guild_envs[guild.id], NewGuildEnvironment())
-    OnLoadTrigger(guild_envs[guild.id])
+    for func in PostLoadTrigger:
+        func(guild_envs[guild.id])
         
 def SaveGuildEnvironment(guild):
     file.EnsureDir(guilddir)
     filepath = guilddir + "/" + file.HashName(guild.id) + ".bse"
     local_env = GetGuildEnvironment(guild)
-    OnSaveTrigger(local_env)
+    for func in PreSaveTrigger:
+        func(local_env)
     file.Save(filepath,local_env)
-    PostSaveTrigger(local_env)
+    for func in PostSaveTrigger:
+        func(local_env)
 
 #####################################################################################################
 
