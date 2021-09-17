@@ -5,6 +5,12 @@ import data
 import random
 import pytube
 
+import os
+import os.path
+
+from multiprocessing import Process
+from multiprocessing import Queue
+
 ################################################################################
 
 music_dir = "music"
@@ -27,11 +33,11 @@ def GetMusicDir():
 def DownloadAudio(obj, dir): # obj - YouTube object
     filename = file.HashName(' ' + obj.title)
     if filename in file.ListOfFiles(dir):
-        return filename
+        return os.path.join(dir, filename)
     streams = obj.streams
     stream = streams.filter(type='audio').get_audio_only()
     stream.download(output_path=dir, filename=filename, max_retries=10)
-    return filename
+    return os.path.join(dir, filename)
 
 def Shuffle(local_env):
     random.shuffle(local_env["music_queue"])

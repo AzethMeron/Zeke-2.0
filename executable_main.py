@@ -32,12 +32,21 @@ async def each_minute():
 
 ################################################################################
 
+#################################### INIT ######################################
+
+def OnInitTrigger(bot):
+    return None
+
+################################################################################
+
 @DiscordClient.event
 async def on_ready():
+    OnInitTrigger(DiscordClient)
     each_minute.start()
     print("Initialisation finished")
     print(f'{DiscordClient.user} has connected to Discord!')
     print("Number of servers (guilds) bot is connected to: "+str(len(DiscordClient.guilds)))
+
 
 if __name__ == '__main__':
     print("Startup finished. Connecting...")
