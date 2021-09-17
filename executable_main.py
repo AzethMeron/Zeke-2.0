@@ -52,6 +52,8 @@ async def on_command_error(ctx, error):
 
 ################################################################################
 
+############################## DISCORD TRIGGERS ################################
+
 @DiscordClient.event
 async def on_message(message):
     if message.author.bot:
@@ -59,7 +61,6 @@ async def on_message(message):
     # enforce execution of commands
     await DiscordClient.process_commands(message)
     for func in main_triggers.on_message: func(message)
-    
 
 @DiscordClient.event
 async def on_reaction_add(reaction, user):
@@ -74,6 +75,17 @@ async def on_reaction_remove(reaction, user):
     for func in main_triggers.on_reaction_remove: func(reaction, user)
 
 ################################################################################
+
+################################## COMMANDS ####################################
+
+@DiscordClient.command(help="Dummy")
+#@has_permissions(administrator=True)
+async def play(ctx, *args):
+    print(args)
+
+################################################################################
+
+#################################### MAIN ######################################
 
 @DiscordClient.event
 async def on_ready():

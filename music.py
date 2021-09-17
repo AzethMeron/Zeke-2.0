@@ -4,6 +4,7 @@ import temp
 import data
 import random
 import pytube
+import main_triggers
 
 import os
 import os.path
@@ -32,6 +33,7 @@ data.PostSaveTrigger.append(PostSave)
 
 def OnInit(bot):
     return None
+main_triggers.OnInitTrigger.append(OnInit)
 
 ################################################################################
 
