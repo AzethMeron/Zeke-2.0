@@ -7,10 +7,15 @@ from discord.ext import commands
 from dotenv import load_dotenv # ENV vars
 from discord.ext.commands import has_permissions, MissingPermissions, CommandNotFound
 
+# TOOLS
 import file
 import temp
 import data
 import timers
+import cmd
+
+# FEATURES
+import music
 
 PREFIX = "alexa"
 load_dotenv() # load environmental variables from file .env

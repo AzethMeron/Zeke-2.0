@@ -13,15 +13,22 @@ NewUser = dict()
 NewGuild = dict()
 
 def NewUserEnvAdd(key, data):
+    if key in NewUser:
+        raise KeyError(f'{key} already present in New User Env')
     NewUser[key] = data
 
 def NewGuildEnvAdd(key, data):
+    if key in NewGuild:
+        raise KeyError(f'{key} already present in New Guild Env') 
     NewGuild[key] = data
 
-def OnSaveTrigger(local_env): # Called BEFORE saving
+def PreSaveTrigger(local_env): # Called BEFORE saving
     return None
 
-def OnLoadTrigger(local_env): # Called AFTER loading
+def PostSaveTrigger(local_env): # Called AFTER saving
+    return None
+
+def PostLoadTrigger(local_env): # Called AFTER loading
     return None
 
 #####################################################################################################
@@ -60,6 +67,7 @@ def SaveGuildEnvironment(guild):
     local_env = GetGuildEnvironment(guild)
     OnSaveTrigger(local_env)
     file.Save(filepath,local_env)
+    PostSaveTrigger(local_env)
 
 #####################################################################################################
 

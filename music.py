@@ -15,13 +15,26 @@ from multiprocessing import Queue
 
 music_dir = "music"
 data.NewGuildEnvAdd("music_queue", [])
-    
-old_save = data.OnSaveTrigger
-def SaveHook(local_env):
-    global old_save
+
+################################ SAVE SUPPORT ##################################
+## Youtube music queue shouldn't be stored in database
+
+vessel = None
+
+old_presave = data.PreSaveTrigger
+def PreSaveHook(local_env):
+    global old_presave
+    vessel = local_env["music_queue"]
     local_env["music_queue"] = []
-    return old_save(local_env)
-data.OnSaveTrigger = SaveHook
+    return old_presave(local_env)
+data.PreSaveTrigger = PreSaveHook
+
+old_postsave = data.PostSaveTrigger
+def PostSaveHook(local_env):
+    global old_postsave
+    local_env["music_queue"] = vessel
+    return old_postsave(local_env)
+data.PostSaveTrigger = PostSaveHook
 
 ################################################################################
 
@@ -29,6 +42,9 @@ def GetMusicDir():
     out = temp.GetTempDir() + music_dir
     file.EnsureDir(out)
     return out + "/"
+
+def GetMusicQueue(local_env):
+    return local_env["music_queue"]
 
 def DownloadAudio(obj, dir): # obj - YouTube object
     filename = file.HashName(' ' + obj.title)
@@ -40,10 +56,10 @@ def DownloadAudio(obj, dir): # obj - YouTube object
     return os.path.join(dir, filename)
 
 def Shuffle(local_env):
-    random.shuffle(local_env["music_queue"])
+    random.shuffle(GetMusicQueue(local_env))
 
 def Fetch(local_env):
-    local_queue = local_env["music_queue"]
+    local_queue = GetMusicQueue(local_env)
     if len(local_queue) > 0:
         return local_queue.pop(0)
     return None
