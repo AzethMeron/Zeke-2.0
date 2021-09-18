@@ -1,17 +1,17 @@
 
+import random
+import pytube
+import os
+import os.path
+from multiprocessing import Process
+from multiprocessing import Queue
+import discord
+
 import file
 import temp
 import data
-import random
-import pytube
 import triggers
 import cmd
-
-import os
-import os.path
-
-from multiprocessing import Process
-from multiprocessing import Queue
 
 ################################################################################
 
@@ -55,7 +55,7 @@ def GetMusicQueue(local_env):
     return local_env["music_queue"]
 
 def GetAudio(obj, dir): # obj - YouTube object
-    filename = file.HashName(' ' + obj.title)
+    filename = file.HashName(obj.title)
     if filename in file.ListOfFiles(dir):
         return os.path.join(dir, filename)
     streams = obj.streams
@@ -96,6 +96,17 @@ def ProcessFunction(queue):
 
 ################################################################################
 
+class Player:
+    def play(self, err):
+        obj = Fetch(self.env)
+        if obj:
+            filepath = GetAudio(obj, GetMusicDir())
+            self.voice.play(discord.FFmpegPCMAudio(filepath), after=self.play)
+    def __init__(self, voice, local_env):
+        self.voice = voice
+        self.env = local_env
+        self.play(None)
+
 async def connect(ctx):
     voice = ctx.author.voice
     channel = voice.channel
@@ -106,7 +117,7 @@ async def play(ctx, args):
     url = args.pop(0)
     AddSong(local_env, url)
     voice = await connect(ctx)
-    
+    player = Player(voice, local_env)
     return (True, None)
 
 ################################################################################
