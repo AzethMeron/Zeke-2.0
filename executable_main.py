@@ -71,14 +71,14 @@ async def on_message(message):
     for func in triggers.on_message: func(local_env, message)
 
 @DiscordClient.event
-async def on_reaction_add(reaction, user):
+async def on_raw_reaction_add(reaction, user):
     if user.bot:
         return 
     local_env = data.GetGuildEnvironment(reaction.message.guild)
     for func in triggers.on_reaction_add: func(local_env, reaction, user)
 
 @DiscordClient.event        
-async def on_reaction_remove(reaction, user):
+async def on_raw_reaction_remove(reaction, user):
     if user.bot:
         return
     local_env = data.GetGuildEnvironment(reaction.message.guild)

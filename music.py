@@ -61,7 +61,11 @@ def GetAudio(obj, dir): # obj - YouTube object
     streams = obj.streams
     stream = streams.filter(type='audio').get_audio_only()
     stream.download(output_path=dir, filename=filename, max_retries=10)
+    PreprocessAudio(dir, filename)
     return os.path.join(dir, filename)
+
+def PreprocessAudio(dir, filename):
+    return None
 
 def Shuffle(local_env):
     random.shuffle(GetMusicQueue(local_env))
@@ -84,7 +88,7 @@ def AddSong(local_env, url):
 
 ################################################################################
 
-## Function that is called by subprocesses
+## Function that is called by subprocesses (downloading audio streams)
 def ProcessFunction(queue):
     while True:
         obj = queue.get()
