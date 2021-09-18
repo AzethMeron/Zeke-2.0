@@ -8,7 +8,7 @@ import file
 
 tempdir = ".tmp"
 
-def GetTempDirPath():
+def GetTempDir():
     file.EnsureDir(tempdir)
     return tempdir + '/'
 

@@ -13,7 +13,7 @@ async def Parse(parser, ctx, args):
         key = args.pop(0)
         if key not in parser:
             raise KeyError(f'{key} - command not found')
-        results = parser[key](ctx,args)
+        results = await parser[key](ctx,args)
         if results[0]:
             await ctx.message.add_reaction('👍')
         else:

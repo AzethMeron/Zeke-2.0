@@ -88,10 +88,10 @@ async def on_reaction_remove(reaction, user):
 
 ################################## COMMANDS ####################################
 
-@DiscordClient.command(help="Dummy")
+@DiscordClient.command(name="music", help="Dummy")
 #@has_permissions(administrator=True)
-async def play(ctx, *args):
-    print(args)
+async def cmd_music(ctx, *args):
+    await music.command(ctx, list(args))
 
 ################################################################################
 
@@ -99,12 +99,12 @@ async def play(ctx, *args):
 
 @DiscordClient.event
 async def on_ready():
-    for func in triggers.OnInitTrigger: func(DiscordClient)
     each_minute.start()
     print("Initialisation finished")
     print(f'{DiscordClient.user} has connected to Discord!')
     print("Number of servers (guilds) bot is connected to: "+str(len(DiscordClient.guilds)))
 
 if __name__ == '__main__':
+    for func in triggers.OnInitTrigger: func(DiscordClient)
     print("Startup finished. Connecting...")
     DiscordClient.run(os.getenv('DISCORD_TOKEN'))

@@ -5,6 +5,7 @@ import data
 import random
 import pytube
 import triggers
+import cmd
 
 import os
 import os.path
@@ -21,18 +22,26 @@ data.NewGuildEnvAdd("music_queue", [])
 ## Youtube music queue shouldn't be stored in database
 
 vessel = None
+VidQueue = Queue()
+VidProcesses = []
+ProcNum = 4
 
 def PreSave(local_env):
+    global vessel
     vessel = local_env["music_queue"]
     local_env["music_queue"] = []
 triggers.PreSaveTrigger.append(PreSave)
 
 def PostSave(local_env):
+    global vessel
     local_env["music_queue"] = vessel
 triggers.PostSaveTrigger.append(PostSave)
 
 def OnInit(bot):
-    return None
+    global VidQueue, VidProcesses, ProcNum
+    for i in range(0,ProcNum): 
+        VidProcesses.append( Process(target=ProcessFunction, args=(VidQueue,)) )
+        VidProcesses[-1].start()
 triggers.OnInitTrigger.append(OnInit)
 
 ################################################################################
@@ -62,5 +71,36 @@ def Fetch(local_env):
     if len(local_queue) > 0:
         return local_queue.pop(0)
     return None
+
+################################################################################
+
+## Function that is called by subprocesses
+def ProcessFunction(queue):
+    while True:
+        obj = queue.get()
+        DownloadAudio(obj, GetMusicDir())
+
+################################################################################
+
+async def connect(ctx):
+    voice = ctx.author.voice
+    channel = voice.channel
+    await channel.connect()
+
+async def play(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    url = args.pop(0)
+    obj = pytube.YouTube(url)
+    local_env["music_queue"].append(obj)
+    VidQueue.put(obj)
+    return (True, None)
+
+################################################################################
+
+parser = cmd.Parser()
+cmd.Add(parser, "play", play)
+
+async def command(ctx, args):
+    await cmd.Parse(parser, ctx, args)
 
 ################################################################################
