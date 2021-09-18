@@ -55,7 +55,8 @@ def GetMusicQueue(local_env):
     return local_env["music_queue"]
 
 def GetAudio(obj, dir): # obj - YouTube object
-    filename = file.HashName(obj.title)
+    filename = file.Hash(obj.title)
+    print(obj.title + " -> " + file.Hash(obj.title))
     if filename in file.ListOfFiles(dir):
         return os.path.join(dir, filename)
     streams = obj.streams
