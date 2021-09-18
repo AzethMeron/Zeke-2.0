@@ -54,7 +54,7 @@ def GetMusicDir():
 def GetMusicQueue(local_env):
     return local_env["music_queue"]
 
-def DownloadAudio(obj, dir): # obj - YouTube object
+def GetAudio(obj, dir): # obj - YouTube object
     filename = file.HashName(' ' + obj.title)
     if filename in file.ListOfFiles(dir):
         return os.path.join(dir, filename)
@@ -72,27 +72,37 @@ def Fetch(local_env):
         return local_queue.pop(0)
     return None
 
+def AddSong(local_env, url):
+    obj_list = []
+    if "playlist" in url:
+        obj_list = [ vid for vid in pytube.Playlist(url).videos ]
+    else:
+        obj_list = [ pytube.YouTube(url) ]
+    for obj in obj_list:
+        local_env["music_queue"].append(obj)
+        VidQueue.put(obj)
+
 ################################################################################
 
 ## Function that is called by subprocesses
 def ProcessFunction(queue):
     while True:
         obj = queue.get()
-        DownloadAudio(obj, GetMusicDir())
+        GetAudio(obj, GetMusicDir())
 
 ################################################################################
 
 async def connect(ctx):
     voice = ctx.author.voice
     channel = voice.channel
-    await channel.connect()
+    return await channel.connect()
 
 async def play(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     url = args.pop(0)
-    obj = pytube.YouTube(url)
-    local_env["music_queue"].append(obj)
-    VidQueue.put(obj)
+    AddSong(local_env, url)
+    voice = await connect(ctx)
+    
     return (True, None)
 
 ################################################################################
