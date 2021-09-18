@@ -4,7 +4,7 @@ import temp
 import data
 import random
 import pytube
-import main_triggers
+import triggers
 
 import os
 import os.path
@@ -25,15 +25,15 @@ vessel = None
 def PreSave(local_env):
     vessel = local_env["music_queue"]
     local_env["music_queue"] = []
-data.PreSaveTrigger.append(PreSave)
+triggers.PreSaveTrigger.append(PreSave)
 
 def PostSave(local_env):
     local_env["music_queue"] = vessel
-data.PostSaveTrigger.append(PostSave)
+triggers.PostSaveTrigger.append(PostSave)
 
 def OnInit(bot):
     return None
-main_triggers.OnInitTrigger.append(OnInit)
+triggers.OnInitTrigger.append(OnInit)
 
 ################################################################################
 

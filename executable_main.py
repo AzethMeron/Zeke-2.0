@@ -13,7 +13,7 @@ import file
 import temp
 import data
 import cmd
-import main_triggers
+import triggers
 
 # FEATURES
 import music
@@ -33,8 +33,15 @@ async def each_minute():
     if abs(minute) % 1440 == 0:
         print("Purging temporary directory")
         temp.PurgeTempDir()
-    await main_triggers.TimerTick(minute, DiscordClient)
+    await TimerTick(minute, DiscordClient)
     minute = (minute + 1) % 100000
+
+async def TimerTick(minute, DiscordClient):
+    for (m,func) in triggers.Timers:            
+        if abs(minute) % m == 0:
+            for guild in DiscordClient.guilds:
+                local_env = data.GetGuildEnvironment(guild)
+                await func(DiscordClient, local_env, guild, minute)
 
 ################################################################################
 
@@ -60,19 +67,22 @@ async def on_message(message):
         return
     # enforce execution of commands
     await DiscordClient.process_commands(message)
-    for func in main_triggers.on_message: func(message)
+    local_env = data.GetGuildEnvironment(message.guild)
+    for func in triggers.on_message: func(local_env, message)
 
 @DiscordClient.event
 async def on_reaction_add(reaction, user):
     if user.bot:
         return 
-    for func in main_triggers.on_reaction_add: func(reaction, user)
+    local_env = data.GetGuildEnvironment(reaction.message.guild)
+    for func in triggers.on_reaction_add: func(local_env, reaction, user)
 
 @DiscordClient.event        
 async def on_reaction_remove(reaction, user):
     if user.bot:
-        return 
-    for func in main_triggers.on_reaction_remove: func(reaction, user)
+        return
+    local_env = data.GetGuildEnvironment(reaction.message.guild)
+    for func in triggers.on_reaction_remove: func(local_env, reaction, user)
 
 ################################################################################
 
@@ -89,7 +99,7 @@ async def play(ctx, *args):
 
 @DiscordClient.event
 async def on_ready():
-    for func in main_triggers.OnInitTrigger: func(DiscordClient)
+    for func in triggers.OnInitTrigger: func(DiscordClient)
     each_minute.start()
     print("Initialisation finished")
     print(f'{DiscordClient.user} has connected to Discord!')

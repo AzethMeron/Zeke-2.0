@@ -1,6 +1,7 @@
 
 import file
 import copy
+import triggers
 
 # by Jakub Grzana
 guilddir = ".database"
@@ -21,10 +22,6 @@ def NewGuildEnvAdd(key, data):
     if key in NewGuild:
         raise KeyError(f'{key} already present in New Guild Env') 
     NewGuild[key] = data
-
-PreSaveTrigger = [] # func(local_env): # Called BEFORE saving
-PostSaveTrigger = [] # func(local_env): # Called AFTER saving
-PostLoadTrigger = [] # func(local_env): # Called AFTER loading
 
 #####################################################################################################
 
@@ -54,15 +51,15 @@ def LoadGuildEnvironment(guild):
     else:
         guild_envs[guild.id] = file.Load(filepath)
         RecursiveDictUpdate(guild_envs[guild.id], NewGuildEnvironment())
-    for func in PostLoadTrigger: func(guild_envs[guild.id])
+    for func in triggers.PostLoadTrigger: func(guild_envs[guild.id])
         
 def SaveGuildEnvironment(guild):
     file.EnsureDir(guilddir)
     filepath = guilddir + "/" + file.HashName(guild.id) + ".bse"
     local_env = GetGuildEnvironment(guild)
-    for func in PreSaveTrigger: func(local_env)
+    for func in triggers.PreSaveTrigger: func(local_env)
     file.Save(filepath,local_env)
-    for func in PostSaveTrigger: func(local_env)
+    for func in triggers.PostSaveTrigger: func(local_env)
 
 #####################################################################################################
 
