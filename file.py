@@ -2,7 +2,6 @@ from pickle import load
 from pickle import dump
 import os
 import os.path
-import hashlib
 
 # by Jakub Grzana
 
@@ -37,7 +36,3 @@ def Exist(filepath):
 
 def ListOfFiles(path):
     return [ f for f in os.listdir(path) if os.path.isfile( os.path.join(path, f) ) ]
-
-def Hash(name):
-    encoded = str(name).encode()
-    return hashlib.md5(encoded).hexdigest()

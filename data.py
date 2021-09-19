@@ -1,4 +1,5 @@
 
+import tools
 import file
 import copy
 import triggers
@@ -45,7 +46,7 @@ def RecursiveDictUpdate(dict_data, dict_temp):
 
 def LoadGuildEnvironment(guild):
     file.EnsureDir(guilddir)
-    filepath = guilddir + "/" + file.Hash(guild.id) + ".bse"
+    filepath = guilddir + "/" + tools.Hash(guild.id) + ".bse"
     if not file.Exist(filepath):
         guild_envs[guild.id] = NewGuildEnvironment()
     else:
@@ -55,7 +56,7 @@ def LoadGuildEnvironment(guild):
         
 def SaveGuildEnvironment(guild):
     file.EnsureDir(guilddir)
-    filepath = guilddir + "/" + file.Hash(guild.id) + ".bse"
+    filepath = guilddir + "/" + tools.Hash(guild.id) + ".bse"
     local_env = GetGuildEnvironment(guild)
     for func in triggers.PreSaveTrigger: func(local_env)
     file.Save(filepath,local_env)
@@ -71,13 +72,13 @@ def GetGuildEnvironment(guild):
         return guild_envs[guild.id]
 
 def GetUserEnvironment(local_env, user):
-    if file.Hash(user.id) in local_env['users']:
-        user_env = local_env['users'][file.Hash(user.id)]
+    if tools.Hash(user.id) in local_env['users']:
+        user_env = local_env['users'][tools.Hash(user.id)]
         RecursiveDictUpdate(user_env, NewUserEnvironment())
         return user_env
     else:
-        local_env['users'][file.Hash(user.id)] = NewUserEnvironment()
-        return local_env['users'][file.Hash(user.id)]
+        local_env['users'][tools.Hash(user.id)] = NewUserEnvironment()
+        return local_env['users'][tools.Hash(user.id)]
 
 def GuildInfo(guild):
     local_env = GetGuildEnvironment(guild)
