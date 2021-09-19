@@ -66,6 +66,8 @@ async def on_command_error(ctx, error):
 async def on_message(message):
     if message.author.bot:
         return
+    if not message.guild:
+        return
     # enforce execution of commands
     await DiscordClient.process_commands(message)
     local_env = data.GetGuildEnvironment(message.guild)
@@ -75,12 +77,16 @@ async def on_message(message):
 async def on_reaction_add(reaction, user):
     if user.bot:
         return 
+    if not reaction.message.guild:
+        return
     local_env = data.GetGuildEnvironment(reaction.message.guild)
     for func in triggers.on_reaction_add: func(local_env, reaction, user)
 
 @DiscordClient.event        
 async def on_reaction_remove(reaction, user):
     if user.bot:
+        return
+    if not reaction.message.guild:
         return
     local_env = data.GetGuildEnvironment(reaction.message.guild)
     for func in triggers.on_reaction_remove: func(local_env, reaction, user)

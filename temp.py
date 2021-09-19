@@ -32,9 +32,7 @@ def NewTempEnvironment():
     return copy.deepcopy(NewTemp)
 def GetTempEnvironment(local_env):
     return local_env["temp"]
-def OnInit(bot):
-    data.NewGuildEnvAdd("temp", NewTempEnvironment())
-triggers.OnInitTrigger.append(OnInit)
+data.NewGuildEnvAdd("temp", NewTemp) # it is reference, not deepcopy - feature, not bug
 
 vessel = None
 def PreSave(local_env):
