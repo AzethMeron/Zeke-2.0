@@ -1,4 +1,6 @@
 
+import traceback
+
 def Parser():
     return dict()
 
@@ -19,4 +21,4 @@ async def Parse(parser, ctx, args):
         else:
             await ctx.message.reply("Command failed: " + str(results[1]))
     except Exception as e:
-        await ctx.message.reply("Command error: " + str(e))
+        await ctx.message.reply("Command error: " + str(e) + str(traceback.format_exc()))

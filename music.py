@@ -16,26 +16,13 @@ import cmd
 ################################################################################
 
 music_dir = "music"
-data.NewGuildEnvAdd("music_queue", [])
+temp.NewTempEnvAdd("music_queue", [])
 
-################################ SAVE SUPPORT ##################################
-## Youtube music queue shouldn't be stored in database
+################################################################################
 
-vessel = None
 VidQueue = Queue()
 VidProcesses = []
 ProcNum = 4
-
-def PreSave(local_env):
-    global vessel
-    vessel = local_env["music_queue"]
-    local_env["music_queue"] = []
-triggers.PreSaveTrigger.append(PreSave)
-
-def PostSave(local_env):
-    global vessel
-    local_env["music_queue"] = vessel
-triggers.PostSaveTrigger.append(PostSave)
 
 def OnInit(bot):
     global VidQueue, VidProcesses, ProcNum
@@ -52,11 +39,10 @@ def GetMusicDir():
     return out + "/"
 
 def GetMusicQueue(local_env):
-    return local_env["music_queue"]
+    return temp.GetTempEnvironment(local_env)["music_queue"]
 
 def GetAudio(obj, dir): # obj - YouTube object
     filename = file.Hash(obj.title)
-    print(obj.title + " -> " + file.Hash(obj.title))
     if filename in file.ListOfFiles(dir):
         return os.path.join(dir, filename)
     streams = obj.streams
@@ -84,7 +70,7 @@ def AddSong(local_env, url):
     else:
         obj_list = [ pytube.YouTube(url) ]
     for obj in obj_list:
-        local_env["music_queue"].append(obj)
+        GetMusicQueue(local_env).append(obj)
         VidQueue.put(obj)
 
 ################################################################################
