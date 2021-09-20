@@ -164,6 +164,7 @@ def ProcessInput(args): # len(args) >= 1, guaranteed
 
 class Player:
     def play(self, err):
+        self.currently = None
         obj = Fetch(self.env)
         if obj:
             filepath = GetAudio(obj, GetMusicDir())
@@ -181,13 +182,23 @@ class Player:
         self.voice.pause()
     def resume(self):
         self.voice.resume()
+    def stop(selt):
+        lock = GetMusicLock(self.env)
+        lock.acquire()
+        backup_queue = [ obj for obj in GetMusicQueue(self.env) ]
+        GetMusicQueue(self.env).clear()
+        self.skip()
+        for obj in backup_queue: GetMusicQueue(self.env).append(obj)
+        lock.release()
     def skip(self):
+        self.voice.stop()
+    def vote_skip(self):
         self.skip_voting = self.skip_voting + 1
         num = len(self.voice.channel.members)
         val = int(num/2) + 1 - self.skip_voting
-        print(val)
+        print(val) # temporary
         if val <= 0:
-            self.voice.stop()
+            self.skip()
             return None
         return val
     def currently_playing(self):
@@ -222,7 +233,7 @@ async def skip(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     player = temp_env["music_player"]
-    result = player.skip()
+    result = player.vote_skip()
     if result != None:
         raise RuntimeWarning("Need more people to skip: " + str(result))
 
