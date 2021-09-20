@@ -31,4 +31,4 @@ async def Parse(parser, ctx, args):
         await parser[cmd][0](ctx, args)
         await ctx.message.add_reaction('👍')
     except Exception as e:
-        await ctx.message.reply("Command error: " + str(e))
+        await ctx.message.reply("Command error: " + str(traceback.format_exc())) # temporary

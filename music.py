@@ -121,13 +121,20 @@ def GetAudio(obj, dir): # obj - YouTube object
     except:
         return None
 
-def CheckIfVideoIsValid(obj):
+def CheckVideo(obj):
     try:
-    
-        if obj.length > (60*60 + 5): raise RuntimeError("Too long to be played")
-        return True
-    except:
-        return False
+        obj.check_availability()
+        if obj.length > (60*60+5): raise RuntimeError("Cannot play video longer than 1 hour")
+    except Exception as e:
+        return e
+    return None
+
+def ValidateVideo(obj, successful, failed):
+    # Validating is too slow for playlists with current code
+    result = CheckVideo(obj)
+    if result: 
+        failed.append( (obj, str(result)) )
+    successful.append(obj)
 
 def ProcessInput(args): # len(args) >= 1, guaranteed
     # function to convert list of arguments into list of pytube.YouTube objects
@@ -137,23 +144,15 @@ def ProcessInput(args): # len(args) >= 1, guaranteed
         url = args.pop(0)
         if "playlist" in url: # playlist
             for obj in pytube.Playlist(url).videos:
-                if CheckIfVideoIsValid(obj):
-                    objs.append(obj)
-                else:
-                    failed.append(obj)
+                #ValidateVideo(obj, objs, failed)
+                objs.append(obj)
         else: # single video
             obj = pytube.YouTube(url)
-            if CheckIfVideoIsValid(obj): 
-                objs.append(obj)
-            else:
-                failed.append(obj)
+            ValidateVideo(obj, objs, failed)
     else:
         title = ' '.join(args)
         obj = pytube.Search(title).results[0]
-        if CheckIfVideoIsValid(obj): 
-            objs.append(obj)
-        else:
-            failed.append(obj)
+        ValidateVideo(obj, objs, failed)
     return (objs, failed)
 
 class Player:
@@ -162,6 +161,7 @@ class Player:
         if obj:
             filepath = GetAudio(obj, GetMusicDir())
             if filepath:
+                self.currently = obj
                 self.voice.play(AudioSource(filepath), after=self.play)
             else:
                 self.play(None)
@@ -175,9 +175,12 @@ class Player:
         self.voice.resume()
     def skip(self):
         self.voice.stop()
+    def currently_playing(self):
+        return self.currently
     def __init__(self, voice, temp_env):
         self.voice = voice
         self.env = temp_env
+        self.currently = None
         self.play(None)
 
 ################################################################################
@@ -195,6 +198,7 @@ async def play(ctx, args):
     if len(args) < 1: raise RuntimeError("You forgot to mention anything to be played")
     voice = await connect(temp_env, ctx)
     (objs, failed) = ProcessInput(args)
+    print(failed)
     AddSongs(temp_env, objs)
     temp_env["music_player"] = Player(voice, temp_env)
     #await ctx.message.reply(str(objs))
