@@ -111,7 +111,7 @@ async def play(ctx, args):
 ################################################################################
 
 parser = cmd.Parser()
-cmd.Add(parser, "play", play)
+cmd.Add(parser, "play", play, "play music by name, url or playlist url")
 
 async def command(ctx, args):
     await cmd.Parse(parser, ctx, args)

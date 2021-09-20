@@ -1,24 +1,37 @@
 
 import traceback
+import copy
+
+default_parser = dict()
 
 def Parser():
-    return dict()
+    return copy.deepcopy(default_parser)
 
-# func return (bool, err_message)
-def Add(parser, key, func):
-    if key in parser:
-        raise KeyError(f'{key} already present in parser')
-    parser[key] = func
+def Help(parser):
+    output = str()
+    for cmd in parser:
+        (_, help) = parser[cmd]
+        output = output + f'{cmd}   ' + help + "\n"
+    return "```" + output + "```"
+
+# func(ctx, args)
+def Add(parser, cmd, func, help):
+    if cmd in parser:
+        raise KeyError(f'{cmd} already present in parser')
+    parser[cmd] = (func, help)
 
 async def Parse(parser, ctx, args):
     try:
-        key = args.pop(0)
-        if key not in parser:
-            raise KeyError(f'{key} - command not found')
-        results = await parser[key](ctx,args)
-        if results[0]:
+        cmd = args.pop(0)
+        if cmd == "help":
+            await ctx.message.reply(Help(parser))
+            return None
+        if cmd not in parser:
+            raise KeyError(f'{cmd} - command not found')
+        try:
+            await parser[cmd][0](ctx, args)
             await ctx.message.add_reaction('👍')
-        else:
-            await ctx.message.reply("Command failed: " + str(results[1]))
+        except Exception as e:
+            await ctx.message.reply("Command failed: " + str(e))
     except Exception as e:
-        await ctx.message.reply("Command error: " + str(e) + str(traceback.format_exc()))
+        await ctx.message.reply("Internal error: " + str(e))
