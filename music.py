@@ -195,7 +195,7 @@ class Player:
     def vote_skip(self):
         self.skip_voting = self.skip_voting + 1
         num = len(self.voice.channel.members)
-        val = int(num/2) + 1 - self.skip_voting
+        val = int(num/2) - self.skip_voting
         print(val) # temporary
         if val <= 0:
             self.skip()
