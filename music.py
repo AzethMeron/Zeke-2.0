@@ -134,6 +134,7 @@ def ValidateVideo(obj, successful, failed):
     result = CheckVideo(obj)
     if result: 
         failed.append( (obj, str(result)) )
+        return None
     successful.append(obj)
 
 def ProcessInput(args): # len(args) >= 1, guaranteed
@@ -198,7 +199,6 @@ async def play(ctx, args):
     if len(args) < 1: raise RuntimeError("You forgot to mention anything to be played")
     voice = await connect(temp_env, ctx)
     (objs, failed) = ProcessInput(args)
-    print(failed)
     AddSongs(temp_env, objs)
     temp_env["music_player"] = Player(voice, temp_env)
     #await ctx.message.reply(str(objs))
