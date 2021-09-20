@@ -1,12 +1,10 @@
 
 import random
-import pytube
 import os
 import os.path
 import threading
 from multiprocessing import Process
 from multiprocessing import Queue
-import discord
 
 import tools
 import file
@@ -15,11 +13,18 @@ import data
 import triggers
 import cmd
 
+# uses pytube to download audio from youtube videos
+# and ffmpeg to process/play it
+# "music_queue" stores pytube.YouTube objects, however it is abstracted so switching to smt else like url shouldn't be too problematic
+# Discord uses multi-threading to play audio, thus "music_queue" is protected by lock (mutex)
+# Don't edit "music_queue" manually, use only abstract tools!
+
 ################################################################################
 
 music_dir = "music"
 temp.NewTempEnvAdd("music_queue", [])
-temp.NewTempEnvAdd("queue_lock", None)
+temp.NewTempEnvAdd("music_lock", None)
+temp.NewTempEnvAdd("music_player", None)
 
 ################################################################################
 
@@ -40,7 +45,15 @@ def OnPurge(local_env):
         VidQueue.put(obj)
 triggers.PostTempPurge.append(OnPurge)
 
+## Function that is called by subprocesses (downloading audio streams)
+def ProcessFunction(queue):
+    while True:
+        obj = queue.get()
+        GetAudio(obj, GetMusicDir())
+
 ################################################################################
+
+# Abstract tools
 
 def GetMusicDir():
     out = temp.GetTempDir() + music_dir
@@ -50,13 +63,53 @@ def GetMusicDir():
         pass
     return out + "/"
 
-def GetMusicQueue(local_env):
-    return temp.GetTempEnvironment(local_env)["music_queue"]
+def GetMusicQueue(temp_env):
+    return temp_env["music_queue"]
 
-def GetMusicLock(local_env):
-    if not temp.GetTempEnvironment(local_env)["queue_lock"]:
-        temp.GetTempEnvironment(local_env)["queue_lock"] = threading.Lock()
-    return temp.GetTempEnvironment(local_env)["queue_lock"]
+def GetMusicLock(temp_env):
+    if not temp_env["music_lock"]:
+        temp_env["music_lock"] = threading.Lock()
+    return temp_env["music_lock"]
+
+def PreprocessAudio(dir, filename):
+    return None
+
+def Shuffle(temp_env):
+    lock = GetMusicLock(temp_env)
+    lock.acquire()
+    random.shuffle(GetMusicQueue(temp_env))
+    lock.release()
+
+def Fetch(temp_env):
+    local_queue = GetMusicQueue(temp_env)
+    lock = GetMusicLock(temp_env)
+    output = None
+    lock.acquire()
+    if len(local_queue) > 0:
+        output = local_queue.pop(0)
+    lock.release()
+    return output
+
+def AddSongs(temp_env, objs):
+    lock = GetMusicLock(temp_env)
+    lock.acquire()
+    try:
+        for obj in objs:
+            GetMusicQueue(temp_env).append(obj)
+            VidQueue.put(obj)
+    except Exception as e:
+        print(e)
+    lock.release()
+
+################################################################################
+
+# Here goes pytube 
+
+import pytube
+import discord
+
+def AudioSource(filepath):
+    return discord.FFmpegPCMAudio(filepath)
 
 def GetAudio(obj, dir): # obj - YouTube object
     filename = tools.Hash(obj.title)
@@ -68,40 +121,20 @@ def GetAudio(obj, dir): # obj - YouTube object
     PreprocessAudio(dir, filename)
     return os.path.join(dir, filename)
 
-def AudioSource(filepath):
-    return discord.FFmpegPCMAudio(filepath)
-
-def PreprocessAudio(dir, filename):
-    return None
-
-def Shuffle(local_env):
-    random.shuffle(GetMusicQueue(local_env))
-
-def Fetch(local_env):
-    local_queue = GetMusicQueue(local_env)
-    if len(local_queue) > 0:
-        return local_queue.pop(0)
-    return None
-
-def AddSong(local_env, url):
-    obj_list = []
-    if "playlist" in url:
-        obj_list = [ vid for vid in pytube.Playlist(url).videos ]
+def ProcessInput(args): # len(args) >= 1, guaranteed
+    # function to convert list of arguments into list of pytube.YouTube objects
+    objs = []
+    if tools.is_url(args[0]):
+        url = args.pop(0)
+        if "playlist" in url: # playlist
+            objs = [ obj for obj in pytube.Playlist(url).videos ]
+        else: # single video
+            objs = [ pytube.YouTube(url) ]
     else:
-        obj_list = [ pytube.YouTube(url) ]
-    for obj in obj_list:
-        GetMusicQueue(local_env).append(obj)
-        VidQueue.put(obj)
-
-################################################################################
-
-## Function that is called by subprocesses (downloading audio streams)
-def ProcessFunction(queue):
-    while True:
-        obj = queue.get()
-        GetAudio(obj, GetMusicDir())
-
-################################################################################
+        title = ' '.join(args)
+        results = pytube.Search(title).results
+        objs = [ results[0] ]
+    return objs
 
 class Player:
     def play(self, err):
@@ -109,25 +142,31 @@ class Player:
         if obj:
             filepath = GetAudio(obj, GetMusicDir())
             self.voice.play(AudioSource(filepath), after=self.play)
-    def __init__(self, voice, local_env):
+    def __init__(self, voice, temp_env):
         self.voice = voice
-        self.env = local_env
+        self.env = temp_env
         self.play(None)
 
-async def connect(ctx):
+################################################################################
+
+# Commands
+
+async def connect(temp_env, ctx):
     voice = ctx.author.voice
     channel = voice.channel
     return await channel.connect()
 
 async def play(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
-    url = args.pop(0) 
-    AddSong(local_env, url)
-    voice = await connect(ctx)
-    player = Player(voice, local_env)
-    return (True, None)
+    temp_env = temp.GetTempEnvironment(local_env)
+    if len(args) < 1: raise RuntimeError("You forgot to mention anything to be played")
+    voice = await connect(temp_env, ctx)
+    AddSongs(temp_env, ProcessInput(args))
+    temp_env["music_player"] = Player(voice, temp_env)
 
 ################################################################################
+
+# parser
 
 parser = cmd.Parser()
 cmd.Add(parser, "play", play, "play music by name, url or playlist url")
