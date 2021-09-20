@@ -31,7 +31,7 @@ minute = 1
 async def each_minute():
     global minute
     # purge temporary dir, once per day
-    if abs(minute) % 1 == 0: # 1440
+    if abs(minute) % 1440 == 0:
         print("Purging temporary directory ")
         try:
             temp.PurgeTempDir(DiscordClient)
