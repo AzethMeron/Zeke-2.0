@@ -121,19 +121,28 @@ def GetAudio(obj, dir): # obj - YouTube object
     PreprocessAudio(dir, filename)
     return os.path.join(dir, filename)
 
+def CheckIfVideoIsValid(obj):
+    try:
+        obj.check_availability()
+        if obj.length > (60*60 + 5): raise RuntimeError("Too long to be played")
+        return True
+    except:
+        return False
+
 def ProcessInput(args): # len(args) >= 1, guaranteed
     # function to convert list of arguments into list of pytube.YouTube objects
     objs = []
     if tools.is_url(args[0]):
         url = args.pop(0)
         if "playlist" in url: # playlist
-            objs = [ obj for obj in pytube.Playlist(url).videos ]
+            objs = [ obj for obj in pytube.Playlist(url).videos if CheckIfVideoIsValid(obj) ]
         else: # single video
-            objs = [ pytube.YouTube(url) ]
+            obj = pytube.YouTube(url)
+            if CheckIfVideoIsValid(obj): objs = [ obj ]
     else:
         title = ' '.join(args)
-        results = pytube.Search(title).results
-        objs = [ results[0] ]
+        obj = pytube.Search(title).results[0]
+        if CheckIfVideoIsValid(obj): objs = [ obj ]
     return objs
 
 class Player:
@@ -161,8 +170,10 @@ async def play(ctx, args):
     temp_env = temp.GetTempEnvironment(local_env)
     if len(args) < 1: raise RuntimeError("You forgot to mention anything to be played")
     voice = await connect(temp_env, ctx)
-    AddSongs(temp_env, ProcessInput(args))
+    objs = ProcessInput(args)
+    AddSongs(temp_env, objs)
     temp_env["music_player"] = Player(voice, temp_env)
+    await ctx.message.reply(str(objs))
 
 ################################################################################
 
