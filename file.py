@@ -25,8 +25,11 @@ def Save(filename,bin):
 	output.close()
 
 def EnsureDir(dir):
-    if not os.path.isdir(dir):
-        os.mkdir(dir)
+    try:
+        if not os.path.isdir(dir):
+            os.mkdir(dir)
+    except:
+        pass
 
 def PurgeDir(dir):
     if os.path.isdir(dir):

@@ -3,6 +3,7 @@ import os
 import os.path
 import shutil
 import copy
+import traceback
 
 import tools
 import file
@@ -21,7 +22,11 @@ def PurgeTempDir(bot):
     file.PurgeDir(tempdir)
     for guild in bot.guilds:
         local_env = data.GetGuildEnvironment(guild)
-        for func in triggers.PostTempPurge: func(local_env)
+        for func in triggers.PostTempPurge: 
+            try:
+                func(local_env)
+            except Exception as e:
+                print(traceback.format_exc())
 
 #####################################################################################################
 

@@ -30,13 +30,10 @@ minute = 1
 @tasks.loop(minutes=1)
 async def each_minute():
     global minute
-    # purge temporary dir, once per day
-    if abs(minute) % 1440 == 0:
-        print("Purging temporary directory ")
-        try:
-            temp.PurgeTempDir(DiscordClient)
-        except:
-            pass
+    if minute % (6*60) == 0:
+        temp.PurgeTempDir(DiscordClient)
+    if minute % (60) == 0:
+        for guild in DiscordClient.guilds: data.SaveGuildEnvironment(guild)
     await TimerTick(minute, DiscordClient)
     minute = (minute + 1) % 100000
 

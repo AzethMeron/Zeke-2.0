@@ -35,18 +35,18 @@ ProcNum = 4
 def OnInit(bot):
     global VidQueue, VidProcesses, ProcNum
     for i in range(0,ProcNum): 
-        VidProcesses.append( Process(target=ProcessFunction, args=(VidQueue,)) )
+        VidProcesses.append( Process(target=DownloaderProcess, args=(VidQueue,)) )
         VidProcesses[-1].start()
 triggers.OnInitTrigger.append(OnInit)
 
 def OnPurge(local_env):
-    queue = GetMusicQueue(local_env)
+    queue = GetMusicQueue(temp.GetTempEnvironment(local_env))
     for obj in queue:
         VidQueue.put(obj)
 triggers.PostTempPurge.append(OnPurge)
 
 ## Function that is called by subprocesses (downloading audio streams)
-def ProcessFunction(queue):
+def DownloaderProcess(queue):
     while True:
         obj = queue.get()
         GetAudio(obj, GetMusicDir())
@@ -57,10 +57,7 @@ def ProcessFunction(queue):
 
 def GetMusicDir():
     out = temp.GetTempDir() + music_dir
-    try:
-        file.EnsureDir(out)
-    except:
-        pass
+    file.EnsureDir(out)
     return out + "/"
 
 def GetMusicQueue(temp_env):
@@ -112,18 +109,20 @@ def AudioSource(filepath):
     return discord.FFmpegPCMAudio(filepath)
 
 def GetAudio(obj, dir): # obj - YouTube object
-    filename = tools.Hash(obj.title)
-    if filename in file.ListOfFiles(dir):
+    try:
+        filename = tools.Hash(obj.title)
+        if filename in file.ListOfFiles(dir):
+            return os.path.join(dir, filename)
+        streams = obj.streams
+        stream = streams.filter(type='audio').get_audio_only()
+        stream.download(output_path=dir, filename=filename, max_retries=10)
+        PreprocessAudio(dir, filename)
         return os.path.join(dir, filename)
-    streams = obj.streams
-    stream = streams.filter(type='audio').get_audio_only()
-    stream.download(output_path=dir, filename=filename, max_retries=10)
-    PreprocessAudio(dir, filename)
-    return os.path.join(dir, filename)
+    except:
+        return None
 
 def CheckIfVideoIsValid(obj):
     try:
-        obj.check_availability()
         if obj.length > (60*60 + 5): raise RuntimeError("Too long to be played")
         return True
     except:
@@ -150,7 +149,20 @@ class Player:
         obj = Fetch(self.env)
         if obj:
             filepath = GetAudio(obj, GetMusicDir())
-            self.voice.play(AudioSource(filepath), after=self.play)
+            if filepath:
+                self.voice.play(AudioSource(filepath), after=self.play)
+            else:
+                self.play(None)
+    def is_playing(self):
+        return self.voice.is_playing()
+    def is_paused(self):
+        return self.voice.is_paused()
+    def pause(self):
+        self.voice.pause()
+    def resume(self):
+        self.voice.resume()
+    def skip(self):
+        self.voice.stop()
     def __init__(self, voice, temp_env):
         self.voice = voice
         self.env = temp_env
@@ -173,7 +185,13 @@ async def play(ctx, args):
     objs = ProcessInput(args)
     AddSongs(temp_env, objs)
     temp_env["music_player"] = Player(voice, temp_env)
-    await ctx.message.reply(str(objs))
+    #await ctx.message.reply(str(objs))
+
+async def skip(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    temp_env = temp.GetTempEnvironment(local_env)
+    player = temp_env["music_player"]
+    player.skip()
 
 ################################################################################
 
@@ -181,6 +199,7 @@ async def play(ctx, args):
 
 parser = cmd.Parser()
 cmd.Add(parser, "play", play, "play music by name, url or playlist url")
+cmd.Add(parser, "skip", skip, "skip currently playing track")
 
 async def command(ctx, args):
     await cmd.Parse(parser, ctx, args)
