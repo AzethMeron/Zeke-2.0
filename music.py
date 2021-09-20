@@ -123,6 +123,7 @@ def GetAudio(obj, dir): # obj - YouTube object
 
 def CheckIfVideoIsValid(obj):
     try:
+    
         if obj.length > (60*60 + 5): raise RuntimeError("Too long to be played")
         return True
     except:
@@ -131,18 +132,29 @@ def CheckIfVideoIsValid(obj):
 def ProcessInput(args): # len(args) >= 1, guaranteed
     # function to convert list of arguments into list of pytube.YouTube objects
     objs = []
+    failed = []
     if tools.is_url(args[0]):
         url = args.pop(0)
         if "playlist" in url: # playlist
-            objs = [ obj for obj in pytube.Playlist(url).videos if CheckIfVideoIsValid(obj) ]
+            for obj in pytube.Playlist(url).videos:
+                if CheckIfVideoIsValid(obj):
+                    objs.append(obj)
+                else:
+                    failed.append(obj)
         else: # single video
             obj = pytube.YouTube(url)
-            if CheckIfVideoIsValid(obj): objs = [ obj ]
+            if CheckIfVideoIsValid(obj): 
+                objs.append(obj)
+            else:
+                failed.append(obj)
     else:
         title = ' '.join(args)
         obj = pytube.Search(title).results[0]
-        if CheckIfVideoIsValid(obj): objs = [ obj ]
-    return objs
+        if CheckIfVideoIsValid(obj): 
+            objs.append(obj)
+        else:
+            failed.append(obj)
+    return (objs, failed)
 
 class Player:
     def play(self, err):
@@ -182,7 +194,7 @@ async def play(ctx, args):
     temp_env = temp.GetTempEnvironment(local_env)
     if len(args) < 1: raise RuntimeError("You forgot to mention anything to be played")
     voice = await connect(temp_env, ctx)
-    objs = ProcessInput(args)
+    (objs, failed) = ProcessInput(args)
     AddSongs(temp_env, objs)
     temp_env["music_player"] = Player(voice, temp_env)
     #await ctx.message.reply(str(objs))
