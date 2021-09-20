@@ -77,6 +77,12 @@ def Shuffle(temp_env):
     random.shuffle(GetMusicQueue(temp_env))
     lock.release()
 
+def Clear(temp_env):
+    lock = GetMusicLock(temp_env)
+    lock.acquire()
+    GetMusicQueue(temp_env).clear()
+    lock.release()
+
 def Fetch(temp_env):
     local_queue = GetMusicQueue(temp_env)
     lock = GetMusicLock(temp_env)
@@ -163,6 +169,7 @@ class Player:
             filepath = GetAudio(obj, GetMusicDir())
             if filepath:
                 self.currently = obj
+                self.skip_voting = 0
                 self.voice.play(AudioSource(filepath), after=self.play)
             else:
                 self.play(None)
@@ -175,13 +182,21 @@ class Player:
     def resume(self):
         self.voice.resume()
     def skip(self):
-        self.voice.stop()
+        self.skip_voting = self.skip_voting + 1
+        num = len(self.voice.channel.members)
+        val = int(num/2) + 1 - self.skip_voting
+        print(val)
+        if val <= 0:
+            self.voice.stop()
+            return None
+        return val
     def currently_playing(self):
         return self.currently
     def __init__(self, voice, temp_env):
         self.voice = voice
         self.env = temp_env
         self.currently = None
+        self.skip_voting = 0
         self.play(None)
 
 ################################################################################
@@ -207,7 +222,9 @@ async def skip(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     player = temp_env["music_player"]
-    player.skip()
+    result = player.skip()
+    if result != None:
+        raise RuntimeWarning("Need more people to skip: " + str(result))
 
 ################################################################################
 
