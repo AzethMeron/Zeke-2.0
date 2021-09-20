@@ -17,8 +17,11 @@ def GetTempDir():
     file.EnsureDir(tempdir)
     return tempdir + '/'
 
-def PurgeTempDir():
+def PurgeTempDir(bot):
     file.PurgeDir(tempdir)
+    for guild in bot.guilds:
+        local_env = data.GetGuildEnvironment(guild)
+        for func in triggers.PostTempPurge: func(local_env)
 
 #####################################################################################################
 

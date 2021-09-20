@@ -19,7 +19,7 @@ import triggers
 # FEATURES
 import music
 
-PREFIX = "alexa "
+PREFIX = "zeke "
 load_dotenv() # load environmental variables from file .env
 intents = discord.Intents.default()
 DiscordClient = commands.Bot(command_prefix=PREFIX,intents=intents) # create client of discord-bot
@@ -31,9 +31,12 @@ minute = 1
 async def each_minute():
     global minute
     # purge temporary dir, once per day
-    if abs(minute) % 1440 == 0:
-        print("Purging temporary directory")
-        temp.PurgeTempDir()
+    if abs(minute) % 1 == 0: # 1440
+        print("Purging temporary directory ")
+        try:
+            temp.PurgeTempDir(DiscordClient)
+        except:
+            pass
     await TimerTick(minute, DiscordClient)
     minute = (minute + 1) % 100000
 

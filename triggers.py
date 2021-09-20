@@ -1,6 +1,9 @@
 
 # Main triggers
-OnInitTrigger = [] # func(bot)
+OnInitTrigger = [] # func(bot), called BEFORE connecting to discord
+# ( minutes, func(bot, local_env, guild, minute) )
+# minutes < 100000
+Timers = []
 
 # Discord Events
 on_message = [] # func(local_env, message)
@@ -12,6 +15,5 @@ PreSaveTrigger = [] # func(local_env): # Called BEFORE saving
 PostSaveTrigger = [] # func(local_env): # Called AFTER saving
 PostLoadTrigger = [] # func(local_env): # Called AFTER loading
 
-# ( minutes, func(bot, local_env, guild, minute) )
-# minutes < 100000
-Timers = []
+# Temp
+PostTempPurge = [] # func(local_env)

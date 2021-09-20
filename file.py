@@ -2,6 +2,7 @@ from pickle import load
 from pickle import dump
 import os
 import os.path
+import shutil
 
 # by Jakub Grzana
 
@@ -29,7 +30,7 @@ def EnsureDir(dir):
 
 def PurgeDir(dir):
     if os.path.isdir(dir):
-        shutil.rmtree(dir)
+        shutil.rmtree(dir, ignore_errors=True)
 
 def Exist(filepath):
     return os.path.isfile(filepath)

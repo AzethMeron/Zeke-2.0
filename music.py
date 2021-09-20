@@ -3,6 +3,7 @@ import random
 import pytube
 import os
 import os.path
+import threading
 from multiprocessing import Process
 from multiprocessing import Queue
 import discord
@@ -18,6 +19,7 @@ import cmd
 
 music_dir = "music"
 temp.NewTempEnvAdd("music_queue", [])
+temp.NewTempEnvAdd("queue_lock", None)
 
 ################################################################################
 
@@ -32,15 +34,29 @@ def OnInit(bot):
         VidProcesses[-1].start()
 triggers.OnInitTrigger.append(OnInit)
 
+def OnPurge(local_env):
+    queue = GetMusicQueue(local_env)
+    for obj in queue:
+        VidQueue.put(obj)
+triggers.PostTempPurge.append(OnPurge)
+
 ################################################################################
 
 def GetMusicDir():
     out = temp.GetTempDir() + music_dir
-    file.EnsureDir(out)
+    try:
+        file.EnsureDir(out)
+    except:
+        pass
     return out + "/"
 
 def GetMusicQueue(local_env):
     return temp.GetTempEnvironment(local_env)["music_queue"]
+
+def GetMusicLock(local_env):
+    if not temp.GetTempEnvironment(local_env)["queue_lock"]:
+        temp.GetTempEnvironment(local_env)["queue_lock"] = threading.Lock()
+    return temp.GetTempEnvironment(local_env)["queue_lock"]
 
 def GetAudio(obj, dir): # obj - YouTube object
     filename = tools.Hash(obj.title)
@@ -51,6 +67,9 @@ def GetAudio(obj, dir): # obj - YouTube object
     stream.download(output_path=dir, filename=filename, max_retries=10)
     PreprocessAudio(dir, filename)
     return os.path.join(dir, filename)
+
+def AudioSource(filepath):
+    return discord.FFmpegPCMAudio(filepath)
 
 def PreprocessAudio(dir, filename):
     return None
@@ -89,7 +108,7 @@ class Player:
         obj = Fetch(self.env)
         if obj:
             filepath = GetAudio(obj, GetMusicDir())
-            self.voice.play(discord.FFmpegPCMAudio(filepath), after=self.play)
+            self.voice.play(AudioSource(filepath), after=self.play)
     def __init__(self, voice, local_env):
         self.voice = voice
         self.env = local_env
@@ -102,7 +121,7 @@ async def connect(ctx):
 
 async def play(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
-    url = args.pop(0)
+    url = args.pop(0) 
     AddSong(local_env, url)
     voice = await connect(ctx)
     player = Player(voice, local_env)

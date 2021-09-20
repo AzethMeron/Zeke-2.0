@@ -34,4 +34,4 @@ async def Parse(parser, ctx, args):
         except Exception as e:
             await ctx.message.reply("Command failed: " + str(e))
     except Exception as e:
-        await ctx.message.reply("Internal error: " + str(e))
+        await ctx.message.reply("Command error: " + str(e))
