@@ -182,7 +182,7 @@ class Player:
         self.voice.pause()
     def resume(self):
         self.voice.resume()
-    def stop(selt):
+    def stop(self):
         lock = GetMusicLock(self.env)
         lock.acquire()
         backup_queue = [ obj for obj in GetMusicQueue(self.env) ]
