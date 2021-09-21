@@ -49,7 +49,6 @@ triggers.on_reaction_add.append(OnReaction)
 
 ################################################################################
 
-
 async def cmd_add(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     if len(args) != 2: raise RuntimeError("Incorrect arguments")
@@ -59,10 +58,19 @@ async def cmd_add(ctx, args):
     GetReactionTranslator(local_env)[emoji] = lang
     
 async def cmd_remove(ctx, args):
-    pass
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    emoji = args[0]
+    if emoji not in GetReactionTranslator(local_env): raise RuntimeError(f"Emoji {emoji} isn't used by translator")
+    del GetReactionTranslator(local_env)[emoji]
 
 async def cmd_list(ctx, args):
-    pass
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    output = "Programmed translations:\n"
+    for emoji in GetReactionTranslator(local_env):
+        output = output + f'{emoji} -> {GetReactionTranslator(local_env)[emoji]}\n'
+    for out in tools.segment_text(output, 1980):
+        await ctx.message.reply(out)
+    return True
 
 parser = cmd.Parser()
 cmd.Add(parser, "add", cmd_add, "dummy", "dummy")
