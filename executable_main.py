@@ -80,7 +80,11 @@ async def on_message(message):
     await DiscordClient.process_commands(message)
     (_1, _2, normalised) = tools.Translate('en', message.content)
     local_env = data.GetGuildEnvironment(message.guild)
-    for func in triggers.on_message: await func(local_env, message, normalised)
+    for func in triggers.on_message: 
+        try:
+            await func(local_env, message, normalised)
+        except:
+            print(traceback.format_exc())
 
 @DiscordClient.event
 async def on_reaction_add(reaction, user):
@@ -89,7 +93,11 @@ async def on_reaction_add(reaction, user):
     if not reaction.message.guild:
         return
     local_env = data.GetGuildEnvironment(reaction.message.guild)
-    for func in triggers.on_reaction_add: await func(local_env, reaction, user)
+    for func in triggers.on_reaction_add: 
+        try:
+            await func(local_env, reaction, user)
+        except:
+            print(traceback.format_exc())
 
 @DiscordClient.event        
 async def on_reaction_remove(reaction, user):
@@ -98,12 +106,20 @@ async def on_reaction_remove(reaction, user):
     if not reaction.message.guild:
         return
     local_env = data.GetGuildEnvironment(reaction.message.guild)
-    for func in triggers.on_reaction_remove: await func(local_env, reaction, user)
+    for func in triggers.on_reaction_remove: 
+        try:
+            await func(local_env, reaction, user)
+        except:
+            print(traceback.format_exc())
 
 @DiscordClient.event
 async def on_member_join(member):
     local_env = data.GetGuildEnvironment(member.guild)
-    for func in triggers.on_member_join: await func(local_env, member)
+    for func in triggers.on_member_join: 
+        try:
+            await func(local_env, member)
+        except:
+            print(traceback.format_exc())
 
 ################################################################################
 
@@ -145,6 +161,9 @@ async def on_ready():
     print("Number of servers (guilds) bot is connected to: "+str(len(DiscordClient.guilds)))
 
 if __name__ == '__main__':
-    for func in triggers.OnInitTrigger: func(DiscordClient)
+    try:
+        for func in triggers.OnInitTrigger: func(DiscordClient)
+    except:
+        print(traceback.format_exc())
     print("Startup finished. Connecting...")
     DiscordClient.run(os.getenv('DISCORD_TOKEN'))

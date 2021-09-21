@@ -1,4 +1,6 @@
 
+import traceback
+
 import tools
 import file
 import copy
@@ -52,15 +54,27 @@ def LoadGuildEnvironment(guild):
     else:
         guild_envs[guild.id] = file.Load(filepath)
         RecursiveDictUpdate(guild_envs[guild.id], NewGuildEnvironment())
-    for func in triggers.PostLoadTrigger: func(guild_envs[guild.id])
+    for func in triggers.PostLoadTrigger: 
+        try:
+            func(guild_envs[guild.id])
+        except:
+            print(traceback.format_exc())
         
 def SaveGuildEnvironment(guild):
     file.EnsureDir(guilddir)
     filepath = guilddir + "/" + tools.Hash(guild.id) + ".bse"
     local_env = GetGuildEnvironment(guild)
-    for func in triggers.PreSaveTrigger: func(local_env)
+    for func in triggers.PreSaveTrigger: 
+        try:
+            func(local_env)
+        except:
+            print(traceback.format_exc())
     file.Save(filepath,local_env)
-    for func in triggers.PostSaveTrigger: func(local_env)
+    for func in triggers.PostSaveTrigger: 
+        try:
+            func(local_env)
+        except:
+            print(traceback.format_exc())
 
 #####################################################################################################
 
