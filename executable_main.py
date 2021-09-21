@@ -15,6 +15,7 @@ import temp
 import data
 import cmd
 import triggers
+import debug
 
 # FEATURES
 import music
@@ -113,6 +114,11 @@ async def cmd_music(ctx, *args):
 @has_permissions(administrator=True)
 async def cmd_music(ctx, *args):
     await welcome.command(ctx, list(args))
+
+@DiscordClient.command(name="debug", help="Dummy")
+@has_permissions(administrator=True)
+async def cmd_debug(ctx, *args):
+    await debug.command(ctx, list(args))
 
 ################################################################################
 
