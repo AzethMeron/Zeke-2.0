@@ -45,6 +45,19 @@ def OnPurge(local_env):
         VidQueue.put(obj)
 triggers.PostTempPurge.append(OnPurge)
 
+async def EachMinute(bot, local_env, guild, minute):
+    temp_env = temp.GetTempEnvironment(local_env)
+    if temp_env["music_player"]:
+        if len(temp_env["music_player"].voice.channel.voice_states.keys()) == 1:
+            await stop_player(temp_env)
+            Clear(temp_env)
+            return None
+        if not temp_env["music_player"].is_playing():
+            await stop_player(temp_env)
+            return None
+        
+triggers.Timers.append( (1, EachMinute) )
+
 ## Function that is called by subprocesses (downloading audio streams)
 def DownloaderProcess(queue):
     while True:
@@ -93,12 +106,13 @@ def Fetch(temp_env):
     lock.release()
     return output
 
-def AddSongs(temp_env, objs):
+def AddSongs(temp_env, objs, first):
     lock = GetMusicLock(temp_env)
     lock.acquire()
     try:
         for obj in objs:
-            GetMusicQueue(temp_env).append(obj)
+            if first: GetMusicQueue(temp_env).insert(0, obj)
+            else: GetMusicQueue(temp_env).append(obj)
             VidQueue.put(obj)
     except Exception as e:
         print(e)
@@ -116,7 +130,7 @@ def AudioSource(filepath):
 
 def GetAudio(obj, dir): # obj - YouTube object
     try:
-        filename = tools.Hash(obj.title)
+        filename = tools.Hash(GetTitle(obj))
         if filename in file.ListOfFiles(dir):
             return os.path.join(dir, filename)
         streams = obj.streams
@@ -136,22 +150,23 @@ def CheckVideo(obj):
     return None
 
 def ValidateVideo(obj, successful, failed):
-    # Validating is too slow for playlists with current code
     result = CheckVideo(obj)
     if result: 
         failed.append( (obj, str(result)) )
         return None
     successful.append(obj)
 
-def ProcessInput(args): # len(args) >= 1, guaranteed
+def ProcessInput(args): 
     # function to convert list of arguments into list of pytube.YouTube objects
     objs = []
     failed = []
+    if len(args) == 0:
+        return ([], [])
     if tools.is_url(args[0]):
         url = args.pop(0)
         if "playlist" in url: # playlist
             for obj in pytube.Playlist(url).videos:
-                #ValidateVideo(obj, objs, failed)
+                #ValidateVideo(obj, objs, failed) # Validating is too slow for playlists with current code
                 objs.append(obj)
         else: # single video
             obj = pytube.YouTube(url)
@@ -162,15 +177,21 @@ def ProcessInput(args): # len(args) >= 1, guaranteed
         ValidateVideo(obj, objs, failed)
     return (objs, failed)
 
+def GetTitle(obj):
+    return obj.title
+
 class Player:
     def play(self, err):
         self.currently = None
+        self.skip_voting = 0
+        self.voters = set()
+        if self.stop_sign:
+            return False
         obj = Fetch(self.env)
         if obj:
             filepath = GetAudio(obj, GetMusicDir())
             if filepath:
                 self.currently = obj
-                self.skip_voting = 0
                 self.voice.play(AudioSource(filepath), after=self.play)
             else:
                 self.play(None)
@@ -178,25 +199,17 @@ class Player:
         return self.voice.is_playing()
     def is_paused(self):
         return self.voice.is_paused()
-    def pause(self):
-        self.voice.pause()
-    def resume(self):
-        self.voice.resume()
     def stop(self):
-        lock = GetMusicLock(self.env)
-        lock.acquire()
-        backup_queue = [ obj for obj in GetMusicQueue(self.env) ]
-        GetMusicQueue(self.env).clear()
+        self.stop_sign = True
         self.skip()
-        for obj in backup_queue: GetMusicQueue(self.env).append(obj)
-        lock.release()
     def skip(self):
         self.voice.stop()
-    def vote_skip(self):
-        self.skip_voting = self.skip_voting + 1
-        num = len(self.voice.channel.members)
-        val = int(num/2) - self.skip_voting
-        print(val) # temporary
+    def vote_skip(self, user):
+        if tools.Hash(user.id) not in self.voters: 
+            self.skip_voting = self.skip_voting + 1
+            self.voters.add(tools.Hash(user.id))
+        num = len(self.voice.channel.voice_states.keys())
+        val = round(num/2) - self.skip_voting
         if val <= 0:
             self.skip()
             return None
@@ -208,42 +221,116 @@ class Player:
         self.env = temp_env
         self.currently = None
         self.skip_voting = 0
+        self.voters = set()
+        self.stop_sign = False
         self.play(None)
 
 ################################################################################
 
 # Commands
 
-async def connect(temp_env, ctx):
+async def stop_player(temp_env):
+    temp_env["music_player"].stop()
+    await temp_env["music_player"].voice.disconnect()
+    temp_env["music_player"] = None
+
+async def connect(temp_env, ctx, player):
     voice = ctx.author.voice
+    if not voice: raise RuntimeError("You must be in voice channel to play music")
     channel = voice.channel
+    if player:
+        bot_channel = player.voice.channel
+        if bot_channel.id == channel.id: return player.voice
+        raise RuntimeError("You must be in the same channel as bot to use that command")
     return await channel.connect()
 
-async def play(ctx, args):
+async def play(ctx, args, first):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
-    if len(args) < 1: raise RuntimeError("You forgot to mention anything to be played")
-    voice = await connect(temp_env, ctx)
+    voice = await connect(temp_env, ctx, temp_env["music_player"])
     (objs, failed) = ProcessInput(args)
-    AddSongs(temp_env, objs)
-    temp_env["music_player"] = Player(voice, temp_env)
-    #await ctx.message.reply(str(objs))
+    AddSongs(temp_env, objs, first)
+    if not temp_env["music_player"]:
+        temp_env["music_player"] = Player(voice, temp_env)
 
-async def skip(ctx, args):
+async def cmd_play(ctx, args):
+    await play(ctx, args, False)
+
+async def cmd_insert(ctx, args):
+    await play(ctx, args, True)
+
+async def cmd_skip(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     player = temp_env["music_player"]
-    result = player.vote_skip()
+    if not player: raise RuntimeError("Not playing right now")
+    result = player.vote_skip(ctx.author)
     if result != None:
         raise RuntimeWarning("Need more people to skip: " + str(result))
+
+async def cmd_shuffle(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    temp_env = temp.GetTempEnvironment(local_env)
+    Shuffle(temp_env)
+
+async def cmd_clear(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    temp_env = temp.GetTempEnvironment(local_env)
+    Clear(temp_env)
+
+async def cmd_stop(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    temp_env = temp.GetTempEnvironment(local_env)
+    voice = ctx.author.voice
+    if not voice: raise RuntimeError("You must be in voice channel to use that command")
+    channel = voice.channel
+    if not temp_env["music_player"]: raise RuntimeError("Not playing right now")
+    bot_channel = temp_env["music_player"].voice.channel
+    if bot_channel.id != channel.id: raise RuntimeError("You must be in the same channel as bot to use that command")
+    await stop_player(temp_env)
+
+async def cmd_queue(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    temp_env = temp.GetTempEnvironment(local_env)
+    num_min = 0
+    num_max = 10
+    if len(args) == 1:
+        if int(args[0]) < 1: raise RuntimeError("Funny")
+        num_max = int(args[0])
+    if len(args) == 2:
+        if int(args[0]) < 1: raise RuntimeError("Funny")
+        if int(args[0]) > int(args[1]): raise RuntimeError("Funny")
+        num_min = int(args[0]) - 1
+        num_max = int(args[1])
+    output = "CURRENT QUEUE \n"
+    if temp_env["music_player"]:
+        if temp_env["music_player"].currently_playing():
+            output = output + "Currently playing: " + GetTitle(temp_env["music_player"].currently_playing()) + "\n"
+    lock = GetMusicLock(temp_env)
+    lock.acquire()
+    queue = GetMusicQueue(temp_env)
+    num_max = min(num_max,len(queue))
+    for i in range(num_min, num_max):
+        title = GetTitle(queue[i])
+        output = output + f'{i+1}. {title}\n'
+    if len(queue) > num_max:
+        output = output + "...\n"
+    lock.release()
+    await ctx.message.reply("```" + output + "```")
+    return True
 
 ################################################################################
 
 # parser
 
 parser = cmd.Parser()
-cmd.Add(parser, "play", play, "play music by name, url or playlist url")
-cmd.Add(parser, "skip", skip, "skip currently playing track")
+cmd.Add(parser, "play", cmd_play, "play music by name, url or playlist url")
+cmd.Add(parser, "skip", cmd_skip, "skip currently playing track")
+cmd.Add(parser, "shuffle", cmd_shuffle, "shuffle queue")
+cmd.Add(parser, "clear", cmd_clear, "clear queue")
+cmd.Add(parser, "stop", cmd_stop, "stops playing")
+cmd.Add(parser, "insert", cmd_insert, "play music, inserting it at beginning of queue")
+cmd.Add(parser, "queue", cmd_queue, "display queue")
 
 async def command(ctx, args):
     await cmd.Parse(parser, ctx, args)
