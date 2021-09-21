@@ -21,6 +21,7 @@ import debug
 import music
 import welcome
 import translate
+import dice
 
 PREFIX = "zeke "
 load_dotenv() # load environmental variables from file .env
@@ -111,6 +112,10 @@ async def on_member_join(member):
 @DiscordClient.command(name="music", help="Dummy")
 async def cmd_music(ctx, *args):
     await music.command(ctx, list(args))
+
+@DiscordClient.command(name="dice", help="Dummy")
+async def cmd_dice(ctx, *args):
+    await dice.command(ctx, list(args))
 
 @DiscordClient.command(name="welcome", help="Dummy")
 @has_permissions(administrator=True)
