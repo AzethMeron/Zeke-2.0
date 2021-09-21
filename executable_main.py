@@ -76,8 +76,9 @@ async def on_message(message):
         return
     # enforce execution of commands
     await DiscordClient.process_commands(message)
+    (_1, _2, normalised) = tools.Translate('en', message.content)
     local_env = data.GetGuildEnvironment(message.guild)
-    for func in triggers.on_message: await func(local_env, message)
+    for func in triggers.on_message: await func(local_env, message, normalised)
 
 @DiscordClient.event
 async def on_reaction_add(reaction, user):
