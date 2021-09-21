@@ -31,10 +31,11 @@ async def Parse(parser, ctx, args):
         cmd = args.pop(0)
         if cmd == "help":
             await ctx.message.reply(Help(parser, args))
-            return None
+            return True
         if cmd not in parser:
             raise KeyError(f'{cmd} - command not found')
         if not await parser[cmd][0](ctx, args):
             await ctx.message.add_reaction('👍')
     except Exception as e:
         await ctx.message.reply("Command error: " + str(traceback.format_exc())) # temporary
+    return True

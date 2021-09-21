@@ -366,6 +366,6 @@ cmd.Add(parser, "queue", cmd_queue, "display queue", "dummy")
 cmd.Add(parser, "remove", cmd_remove, "remove music from queue", "dummy")
 
 async def command(ctx, args):
-    await cmd.Parse(parser, ctx, args)
+    return await cmd.Parse(parser, ctx, args)
 
 ################################################################################
