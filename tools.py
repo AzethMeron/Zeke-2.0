@@ -21,6 +21,12 @@ def is_url(string):
 def segment_text(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
 
+def MatchUserId(members, hashed):
+    for member in members:
+        if Hash(member.id) == hashed:
+            return member
+    return None
+
 #####################################################################################################
 
 # Language tools
@@ -56,5 +62,13 @@ def DetectLanguage(text):
         except:
             pass
     return 'auto'
+
+def EnsureEnglish(text):
+    output = text
+    try:
+        output = RawTranslate('auto', 'en', text)
+    except:
+        pass
+    return output
 
 #####################################################################################################

@@ -8,7 +8,15 @@ import traceback
 
 ################################################################################
 
-data.NewGuildEnvAdd("reaction_translator", dict()) # dict[emoji] = tgt_lang
+default_emojis = dict()
+default_emojis['🇵🇱'] = 'pl'
+default_emojis['🇬🇧'] = 'en'
+default_emojis['🇪🇦'] = 'es'
+default_emojis['🇷🇺'] = 'ru'
+default_emojis['🇫🇷'] = 'fr'
+default_emojis['🇮🇹'] = 'it'
+
+data.NewGuildEnvAdd("reaction_translator", default_emojis) # dict[emoji] = tgt_lang
 custom_lang = dict()
 custom_lang['uwu'] = ('en', uwu_translator.convert)
 

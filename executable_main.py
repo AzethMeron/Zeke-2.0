@@ -22,6 +22,7 @@ import music
 import welcome
 import translate
 import dice
+import mode
 
 PREFIX = "zeke "
 load_dotenv() # load environmental variables from file .env
@@ -78,7 +79,7 @@ async def on_message(message):
         return
     # enforce execution of commands
     await DiscordClient.process_commands(message)
-    (_1, _2, normalised) = tools.Translate('en', message.content)
+    normalised = tools.EnsureEnglish(message.content)
     local_env = data.GetGuildEnvironment(message.guild)
     for func in triggers.on_message: 
         try:
