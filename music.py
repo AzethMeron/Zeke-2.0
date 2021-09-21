@@ -263,6 +263,10 @@ def check_channels(ctx, player):
     if bot_channel.id != channel.id: return False
     return True
 
+def check_permissions(ctx):
+    perms = ctx.message.author.guild_permissions
+    return perms.manage_channels
+
 async def play(ctx, args, first):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
@@ -297,12 +301,14 @@ async def cmd_clear(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     if not check_channels(ctx, temp_env["music_player"]): raise RuntimeError("You must be in the same channel as bot to use that command")
+    if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
     Clear(temp_env)
 
 async def cmd_stop(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     if not check_channels(ctx, temp_env["music_player"]): raise RuntimeError("You must be in the same channel as bot to use that command")
+    if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
     await stop_player(temp_env)
 
 async def cmd_queue(ctx, args):
@@ -339,6 +345,8 @@ async def cmd_queue(ctx, args):
 async def cmd_remove(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
+    if not check_channels(ctx, temp_env["music_player"]): raise RuntimeError("You must be in the same channel as bot to use that command")
+    if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
     if len(args) != 1: raise RuntimeError("incorrect arguments")
     index = int(args[0]) - 1
     if not Remove(temp_env, index): raise ValueError("Incorrect index")
