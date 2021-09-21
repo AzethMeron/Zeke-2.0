@@ -95,7 +95,17 @@ def Clear(temp_env):
     lock.acquire()
     GetMusicQueue(temp_env).clear()
     lock.release()
-
+    
+def Remove(temp_env, index):
+    lock = GetMusicLock(temp_env)
+    lock.acquire()
+    feedback = False
+    if index >= 0 and index < len(GetMusicQueue(temp_env)):
+        GetMusicQueue(temp_env).pop(index)
+        feedback = True
+    lock.release()
+    return feedback
+    
 def Fetch(temp_env):
     local_queue = GetMusicQueue(temp_env)
     lock = GetMusicLock(temp_env)
@@ -244,6 +254,15 @@ async def connect(temp_env, ctx, player):
         raise RuntimeError("You must be in the same channel as bot to use that command")
     return await channel.connect()
 
+def check_channels(ctx, player):
+    voice = ctx.author.voice
+    if not voice: return False
+    channel = voice.channel
+    if not player: return False
+    bot_channel = player.voice.channel
+    if bot_channel.id != channel.id: return False
+    return True
+
 async def play(ctx, args, first):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
@@ -263,7 +282,7 @@ async def cmd_skip(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     player = temp_env["music_player"]
-    if not player: raise RuntimeError("Not playing right now")
+    if not check_channels(ctx, player): raise RuntimeError("You must be in the same channel as bot to use that command")
     result = player.vote_skip(ctx.author)
     if result != None:
         raise RuntimeWarning("Need more people to skip: " + str(result))
@@ -271,22 +290,19 @@ async def cmd_skip(ctx, args):
 async def cmd_shuffle(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
+    if not check_channels(ctx, temp_env["music_player"]): raise RuntimeError("You must be in the same channel as bot to use that command")
     Shuffle(temp_env)
 
 async def cmd_clear(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
+    if not check_channels(ctx, temp_env["music_player"]): raise RuntimeError("You must be in the same channel as bot to use that command")
     Clear(temp_env)
 
 async def cmd_stop(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
-    voice = ctx.author.voice
-    if not voice: raise RuntimeError("You must be in voice channel to use that command")
-    channel = voice.channel
-    if not temp_env["music_player"]: raise RuntimeError("Not playing right now")
-    bot_channel = temp_env["music_player"].voice.channel
-    if bot_channel.id != channel.id: raise RuntimeError("You must be in the same channel as bot to use that command")
+    if not check_channels(ctx, temp_env["music_player"]): raise RuntimeError("You must be in the same channel as bot to use that command")
     await stop_player(temp_env)
 
 async def cmd_queue(ctx, args):
@@ -320,6 +336,13 @@ async def cmd_queue(ctx, args):
         await ctx.message.reply("```" + out + "```")
     return True
 
+async def cmd_remove(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    temp_env = temp.GetTempEnvironment(local_env)
+    if len(args) != 1: raise RuntimeError("incorrect arguments")
+    index = int(args[0]) - 1
+    if not Remove(temp_env, index): raise ValueError("Incorrect index")
+
 ################################################################################
 
 # parser
@@ -332,6 +355,7 @@ cmd.Add(parser, "clear", cmd_clear, "clear queue", "dummy")
 cmd.Add(parser, "stop", cmd_stop, "stops playing", "dummy")
 cmd.Add(parser, "insert", cmd_insert, "play music, inserting it at beginning of queue", "dummy")
 cmd.Add(parser, "queue", cmd_queue, "display queue", "dummy")
+cmd.Add(parser, "remove", cmd_remove, "remove music from queue", "dummy")
 
 async def command(ctx, args):
     await cmd.Parse(parser, ctx, args)
