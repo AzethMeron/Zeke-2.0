@@ -18,10 +18,12 @@ import triggers
 
 # FEATURES
 import music
+import welcome
 
 PREFIX = "zeke "
 load_dotenv() # load environmental variables from file .env
 intents = discord.Intents.default()
+intents.members = True
 DiscordClient = commands.Bot(command_prefix=PREFIX,intents=intents) # create client of discord-bot
 
 #################################### TIMER #####################################
@@ -42,7 +44,10 @@ async def TimerTick(minute, DiscordClient):
         if abs(minute) % m == 0:
             for guild in DiscordClient.guilds:
                 local_env = data.GetGuildEnvironment(guild)
-                await func(DiscordClient, local_env, guild, minute)
+                try:
+                    await func(DiscordClient, local_env, guild, minute)
+                except:
+                    print(traceback.format_exc())
 
 ################################################################################
 
@@ -71,7 +76,7 @@ async def on_message(message):
     # enforce execution of commands
     await DiscordClient.process_commands(message)
     local_env = data.GetGuildEnvironment(message.guild)
-    for func in triggers.on_message: func(local_env, message)
+    for func in triggers.on_message: await func(local_env, message)
 
 @DiscordClient.event
 async def on_reaction_add(reaction, user):
@@ -80,7 +85,7 @@ async def on_reaction_add(reaction, user):
     if not reaction.message.guild:
         return
     local_env = data.GetGuildEnvironment(reaction.message.guild)
-    for func in triggers.on_reaction_add: func(local_env, reaction, user)
+    for func in triggers.on_reaction_add: await func(local_env, reaction, user)
 
 @DiscordClient.event        
 async def on_reaction_remove(reaction, user):
@@ -89,16 +94,25 @@ async def on_reaction_remove(reaction, user):
     if not reaction.message.guild:
         return
     local_env = data.GetGuildEnvironment(reaction.message.guild)
-    for func in triggers.on_reaction_remove: func(local_env, reaction, user)
+    for func in triggers.on_reaction_remove: await func(local_env, reaction, user)
+
+@DiscordClient.event
+async def on_member_join(member):
+    local_env = data.GetGuildEnvironment(member.guild)
+    for func in triggers.on_member_join: await func(local_env, member)
 
 ################################################################################
 
 ################################## COMMANDS ####################################
 
 @DiscordClient.command(name="music", help="Dummy")
-#@has_permissions(administrator=True)
 async def cmd_music(ctx, *args):
     await music.command(ctx, list(args))
+
+@DiscordClient.command(name="welcome", help="Dummy")
+@has_permissions(administrator=True)
+async def cmd_music(ctx, *args):
+    await welcome.command(ctx, list(args))
 
 ################################################################################
 
@@ -106,6 +120,7 @@ async def cmd_music(ctx, *args):
 
 @DiscordClient.event
 async def on_ready():
+    triggers.BOT_REFERENCE = DiscordClient
     each_minute.start()
     print("Initialisation finished")
     print(f'{DiscordClient.user} has connected to Discord!')

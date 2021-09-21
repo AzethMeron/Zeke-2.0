@@ -48,7 +48,7 @@ triggers.PostTempPurge.append(OnPurge)
 async def EachMinute(bot, local_env, guild, minute):
     temp_env = temp.GetTempEnvironment(local_env)
     if temp_env["music_player"]:
-        if len(temp_env["music_player"].voice.channel.voice_states.keys()) == 1:
+        if len(temp_env["music_player"].voice.channel.voice_states.keys()) <= 1:
             await stop_player(temp_env)
             Clear(temp_env)
             return None
