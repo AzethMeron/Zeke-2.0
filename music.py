@@ -314,9 +314,10 @@ async def cmd_queue(ctx, args):
         title = GetTitle(queue[i])
         output = output + f'{i+1}. {title}\n'
     if len(queue) > num_max:
-        output = output + "...\n"
+        output = output + f'...{len(queue)}\n'
     lock.release()
-    await ctx.message.reply("```" + output + "```")
+    for out in tools.segment_text(output, 1980):
+        await ctx.message.reply("```" + out + "```")
     return True
 
 ################################################################################
@@ -324,13 +325,13 @@ async def cmd_queue(ctx, args):
 # parser
 
 parser = cmd.Parser()
-cmd.Add(parser, "play", cmd_play, "play music by name, url or playlist url")
-cmd.Add(parser, "skip", cmd_skip, "skip currently playing track")
-cmd.Add(parser, "shuffle", cmd_shuffle, "shuffle queue")
-cmd.Add(parser, "clear", cmd_clear, "clear queue")
-cmd.Add(parser, "stop", cmd_stop, "stops playing")
-cmd.Add(parser, "insert", cmd_insert, "play music, inserting it at beginning of queue")
-cmd.Add(parser, "queue", cmd_queue, "display queue")
+cmd.Add(parser, "play", cmd_play, "play music by name, url or playlist url", "dummy")
+cmd.Add(parser, "skip", cmd_skip, "skip currently playing track", "dummy")
+cmd.Add(parser, "shuffle", cmd_shuffle, "shuffle queue", "dummy")
+cmd.Add(parser, "clear", cmd_clear, "clear queue", "dummy")
+cmd.Add(parser, "stop", cmd_stop, "stops playing", "dummy")
+cmd.Add(parser, "insert", cmd_insert, "play music, inserting it at beginning of queue", "dummy")
+cmd.Add(parser, "queue", cmd_queue, "display queue", "dummy")
 
 async def command(ctx, args):
     await cmd.Parse(parser, ctx, args)
