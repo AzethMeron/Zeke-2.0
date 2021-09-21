@@ -4,6 +4,7 @@ import traceback
 import tools
 import cmd
 import data
+import triggers
 
 ################################################################################
 

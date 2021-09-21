@@ -41,7 +41,8 @@ def Translate(tgt_lang, text):
     src_lang = DetectLanguage(text)
     translated = text
     try:
-        translated = RawTranslate(src_lang, tgt_lang, text)
+        if src_lang != tgt_lang:
+            translated = RawTranslate(src_lang, tgt_lang, text)
     except:
         pass
     return (src_lang, tgt_lang, translated)
