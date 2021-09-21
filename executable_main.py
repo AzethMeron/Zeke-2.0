@@ -20,6 +20,7 @@ import debug
 # FEATURES
 import music
 import welcome
+import translate
 
 PREFIX = "zeke "
 load_dotenv() # load environmental variables from file .env
@@ -113,8 +114,13 @@ async def cmd_music(ctx, *args):
 
 @DiscordClient.command(name="welcome", help="Dummy")
 @has_permissions(administrator=True)
-async def cmd_music(ctx, *args):
+async def cmd_welcome(ctx, *args):
     await welcome.command(ctx, list(args))
+
+@DiscordClient.command(name="translate", help="Dummy")
+@has_permissions(administrator=True)
+async def cmd_translate(ctx, *args):
+    await translate.command(ctx, list(args))
 
 @DiscordClient.command(name="debug", help="Dummy")
 @has_permissions(administrator=True)

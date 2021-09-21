@@ -7,6 +7,7 @@ from random import randint as rand
 alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 
 def convert(sent):
+    sent = sent.split()
     global alphabet
     convertedSentence = ""
     for word in sent:
