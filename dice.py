@@ -14,6 +14,7 @@ async def cmd_roll(ctx, args):
     else:
         raise RuntimeError("Too many arguments")
     await ctx.message.reply("Dice rolled: " + str(val))
+    return True
 
 parser = cmd.Parser()
 cmd.Add(parser, "roll", cmd_roll, "dummy", "dummy")
