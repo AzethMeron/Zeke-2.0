@@ -167,8 +167,8 @@ def ValidateVideo(obj, successful, failed):
     result = CheckVideo(obj)
     if result: 
         failed.append( (obj, str(result)) )
-        return None
-    successful.append(obj)
+    else:
+        successful.append(obj)
 
 def ProcessInput(args): 
     # function to convert list of arguments into list of pytube.YouTube objects
