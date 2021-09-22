@@ -6,6 +6,7 @@ import threading
 from multiprocessing import Process
 from multiprocessing import Queue
 import traceback
+import datetime
 
 import tools
 import file
@@ -52,11 +53,9 @@ async def EachMinute(bot, local_env, guild, minute):
         if len(temp_env["music_player"].voice.channel.voice_states.keys()) <= 1:
             await stop_player(temp_env)
             Clear(temp_env)
-            return None
-        if not temp_env["music_player"].is_playing():
+        elif not temp_env["music_player"].is_playing():
             await stop_player(temp_env)
-            return None
-        
+    return None
 triggers.Timers.append( (1, EachMinute) )
 
 ## Function that is called by subprocesses (downloading audio streams)
@@ -192,6 +191,9 @@ def ProcessInput(args):
 def GetTitle(obj):
     return obj.title
 
+def GetDuration(obj): # in string, this isn't raw seconds length!
+    return str(datetime.timedelta(seconds=obj.length))
+    
 class Player:
     def play(self, err):
         self.currently = None
@@ -342,15 +344,17 @@ async def cmd_queue(ctx, args):
         num_max = int(args[1])
     output = "CURRENT QUEUE \n"
     if temp_env["music_player"]:
-        if temp_env["music_player"].currently_playing():
-            output = output + "Currently playing: " + GetTitle(temp_env["music_player"].currently_playing()) + "\n"
+        currently_playing = temp_env["music_player"].currently_playing()
+        if currently_playing:
+            output = output + "Currently playing: " + GetTitle(currently_playing) + f" [{GetDuration(currently_playing)}]\n"
     lock = GetMusicLock(temp_env)
     lock.acquire()
     queue = GetMusicQueue(temp_env)
     num_max = min(num_max,len(queue))
     for i in range(num_min, num_max):
         title = GetTitle(queue[i])
-        output = output + f'{i+1}. {title}\n'
+        duration = GetDuration(queue[i])
+        output = output + f'{i+1}. {title} [{duration}]\n'
     if len(queue) > num_max:
         output = output + f'...{len(queue)}\n'
     lock.release()
