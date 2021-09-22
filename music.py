@@ -27,6 +27,7 @@ music_dir = "music"
 temp.NewTempEnvAdd("music_queue", [])
 temp.NewTempEnvAdd("music_lock", None)
 temp.NewTempEnvAdd("music_player", None)
+temp.NewTempEnvAdd("music_loop", False)
 
 ################################################################################
 
@@ -113,6 +114,7 @@ def Fetch(temp_env):
     lock.acquire()
     if len(local_queue) > 0:
         output = local_queue.pop(0)
+        if temp_env["music_loop"]: local_queue.append(output)
     lock.release()
     return output
 
@@ -371,6 +373,24 @@ async def cmd_remove(ctx, args):
     index = int(args[0]) - 1
     if not Remove(temp_env, index): raise ValueError("Incorrect index")
 
+async def cmd_loop(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    temp_env = temp.GetTempEnvironment(local_env)
+    if not check_channels(ctx, temp_env["music_player"]): raise RuntimeError("You must be in the same channel as bot to use that command")
+    if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
+    if len(args) == 0:
+        temp_env["music_loop"] = not temp_env["music_loop"]
+        await ctx.message.reply(f"Loop state: {temp_env['music_loop']}") 
+        return True
+    else:
+        if args[0] == "enabled":
+            temp_env["music_loop"] = True
+        elif args[0] == "disabled":
+            temp_env["music_loop"] = False
+        else:
+            await ctx.message.reply(f"Incorrect argument {args[0]}, expected: enabled/disabled") 
+            return True
+
 ################################################################################
 
 # parser
@@ -385,6 +405,7 @@ cmd.Add(parser, "stop", cmd_stop, "stops playing", "dummy")
 cmd.Add(parser, "insert", cmd_insert, "play music, inserting it at beginning of queue", "dummy")
 cmd.Add(parser, "queue", cmd_queue, "display queue", "dummy")
 cmd.Add(parser, "remove", cmd_remove, "remove music from queue", "dummy")
+cmd.Add(parser, "loop", cmd_loop, "enable/disable looping of queue", "dummy")
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
