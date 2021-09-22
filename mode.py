@@ -22,7 +22,6 @@ tests = [] # (name, func, weight)
 # Add check for specific type of hate speech
 def AddTest(name, func, weight): # bool func(text)
     tests.append( (name, func, weight) )
-
 AddTest("offensive language", profanity, 10)
 
 ################################################################################
@@ -35,7 +34,7 @@ def RunTests(text): # return [ (name, result, weight) ]
         try:
             result = func(text)
         except:
-            pass # if test throws exception, 0 is assumed
+            pass # if test throws exception, False (0) is assumed
         output.append( (name, result, weight) )
     return output
 

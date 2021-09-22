@@ -336,35 +336,41 @@ async def cmd_stop(ctx, args):
     if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
     await stop_player(temp_env)
 
+def queue_describe_obj(index, obj):
+    try:
+        title = GetTitle(obj)
+        duration = GetDuration(obj)
+        return f'{index+1}. {title} [{duration}]\n'
+    except Exception as e:
+        return f'{index+1}. ERROR DURING PROCESSING {str(e)}\n'
+
+def queue_header(temp_env):
+    output = f"CURRENT QUEUE [Looping: {temp_env['music_loop']}]\n"
+    if temp_env["music_player"]:
+        currently_playing = temp_env["music_player"].currently_playing()
+        if currently_playing:
+            output = output + "Currently playing: " + GetTitle(currently_playing) + f" [{GetDuration(currently_playing)}]\n"
+    return output
+
 async def cmd_queue(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     num_min = 0
     num_max = 5
     if len(args) == 1:
-        if int(args[0]) < 1: raise RuntimeError("Funny")
-        num_max = int(args[0])
+        num_max = max(1, int(float(args[0])))
     if len(args) == 2:
-        if int(args[0]) < 1: raise RuntimeError("Funny")
-        if int(args[0]) > int(args[1]): raise RuntimeError("Funny")
-        num_min = int(args[0]) - 1
-        num_max = int(args[1])
-    output = f"CURRENT QUEUE [Looping: {temp_env['music_loop']}]\n"
-    if temp_env["music_player"]:
-        currently_playing = temp_env["music_player"].currently_playing()
-        if currently_playing:
-            output = output + "Currently playing: " + GetTitle(currently_playing) + f" [{GetDuration(currently_playing)}]\n"
+        min_arg = min(int(float(args[0])), int(float(args[1])))
+        max_arg = max(int(float(args[0])), int(float(args[1])))
+        num_min = max(1, min_arg) - 1
+        num_max = max(1, max_arg)
+    output = queue_header(temp_env)
     lock = GetMusicLock(temp_env)
     lock.acquire()
     queue = GetMusicQueue(temp_env)
     num_max = min(num_max,len(queue))
     for i in range(num_min, num_max):
-        try:
-            title = GetTitle(queue[i])
-            duration = GetDuration(queue[i])
-            output = output + f'{i+1}. {title} [{duration}]\n'
-        except Exception as e:
-            output = output + f'{i+1}. ERROR DURING PROCESSING {str(e)}\n'
+        output = output + queue_describe_obj(i, queue[i])
     if len(queue) > num_max:
         output = output + f'...{len(queue)}\n'
     lock.release()
