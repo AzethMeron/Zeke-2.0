@@ -368,6 +368,7 @@ async def cmd_queue(ctx, args):
     lock = GetMusicLock(temp_env)
     lock.acquire()
     queue = GetMusicQueue(temp_env)
+    num_min = min(num_min,len(queue))
     num_max = min(num_max,len(queue))
     for i in range(num_min, num_max):
         output = output + queue_describe_obj(i, queue[i])
