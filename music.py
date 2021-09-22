@@ -207,8 +207,6 @@ class Player:
                 self.play(None)
     def is_playing(self):
         return self.voice.is_playing()
-    def is_paused(self):
-        return self.voice.is_paused()
     def stop(self):
         self.stop_sign = True
         self.skip()
@@ -237,7 +235,7 @@ class Player:
 
 ################################################################################
 
-# Commands
+# Command tools
 
 async def stop_player(temp_env):
     temp_env["music_player"].stop()
@@ -267,14 +265,22 @@ def check_permissions(ctx):
     perms = ctx.message.author.guild_permissions
     return perms.manage_channels
 
+def run_player(voice, temp_env):
+    if temp_env["music_player"]:
+        if not temp_env["music_player"].is_playing():
+            temp_env["music_player"].play(None)
+    else:
+        temp_env["music_player"] = Player(voice, temp_env)
+
+################################################################################
+
 async def play(ctx, args, first):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     voice = await connect(temp_env, ctx, temp_env["music_player"])
     (objs, failed) = ProcessInput(args)
     AddSongs(temp_env, objs, first)
-    if not temp_env["music_player"]:
-        temp_env["music_player"] = Player(voice, temp_env)
+    run_player(voice, temp_env)
 
 async def cmd_play(ctx, args):
     await play(ctx, args, False)
@@ -290,6 +296,14 @@ async def cmd_skip(ctx, args):
     result = player.vote_skip(ctx.author)
     if result != None:
         raise RuntimeWarning("Need more people to skip: " + str(result))
+
+async def cmd_fskip(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    temp_env = temp.GetTempEnvironment(local_env)
+    player = temp_env["music_player"]
+    if not check_channels(ctx, player): raise RuntimeError("You must be in the same channel as bot to use that command")
+    if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
+    player.skip()
 
 async def cmd_shuffle(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
@@ -358,6 +372,7 @@ async def cmd_remove(ctx, args):
 parser = cmd.Parser()
 cmd.Add(parser, "play", cmd_play, "play music by name, url or playlist url", "dummy")
 cmd.Add(parser, "skip", cmd_skip, "skip currently playing track", "dummy")
+cmd.Add(parser, "fs", cmd_fskip, "skip currently playing track (without voting)", "dummy")
 cmd.Add(parser, "shuffle", cmd_shuffle, "shuffle queue", "dummy")
 cmd.Add(parser, "clear", cmd_clear, "clear queue", "dummy")
 cmd.Add(parser, "stop", cmd_stop, "stops playing", "dummy")

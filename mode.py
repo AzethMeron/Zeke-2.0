@@ -45,6 +45,7 @@ def GetAverageResults(results):
     for (name, result, weight) in results:
         sum = sum + int(result) * weight
         total_weight = total_weight + weight
+    if total_weight == 0: return 0
     return sum / total_weight
 
 ################################################################################
@@ -52,7 +53,7 @@ def GetAverageResults(results):
 async def OnMessage(local_env, message, normalised_text):
     results = RunTests(normalised_text)
     avg_results = GetAverageResults(results)
-    if avg_results > 0:
+    if avg_results:
         await HatefulMessageDetected(local_env, message, normalised_text, results, avg_results)
 triggers.on_message.append(OnMessage)
 
