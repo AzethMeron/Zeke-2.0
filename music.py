@@ -155,6 +155,7 @@ def GetAudio(obj, dir): # obj - YouTube object
         return None
 
 def CheckVideo(obj):
+    return None # Validating is slow, too slow for big playlists, and besides... why restrict private bot
     try:
         obj.check_availability()
         if obj.length > (60*60+5): raise RuntimeError("Cannot play video longer than 1 hour")
@@ -179,8 +180,7 @@ def ProcessInput(args):
         url = args.pop(0)
         if "playlist" in url: # playlist
             for obj in pytube.Playlist(url).videos:
-                #ValidateVideo(obj, objs, failed) # Validating is too slow for playlists with current code
-                objs.append(obj)
+                ValidateVideo(obj, objs, failed)
         else: # single video
             obj = pytube.YouTube(url)
             ValidateVideo(obj, objs, failed)
@@ -344,7 +344,7 @@ async def cmd_queue(ctx, args):
         if int(args[0]) > int(args[1]): raise RuntimeError("Funny")
         num_min = int(args[0]) - 1
         num_max = int(args[1])
-    output = "CURRENT QUEUE \n"
+    output = f"CURRENT QUEUE [Looping: {temp_env['music_loop']}]\n"
     if temp_env["music_player"]:
         currently_playing = temp_env["music_player"].currently_playing()
         if currently_playing:
@@ -354,9 +354,12 @@ async def cmd_queue(ctx, args):
     queue = GetMusicQueue(temp_env)
     num_max = min(num_max,len(queue))
     for i in range(num_min, num_max):
-        title = GetTitle(queue[i])
-        duration = GetDuration(queue[i])
-        output = output + f'{i+1}. {title} [{duration}]\n'
+        try:
+            title = GetTitle(queue[i])
+            duration = GetDuration(queue[i])
+            output = output + f'{i+1}. {title} [{duration}]\n'
+        except Exception as e:
+            output = output + f'{i+1}. ERROR DURING PROCESSING {str(e)}\n'
     if len(queue) > num_max:
         output = output + f'...{len(queue)}\n'
     lock.release()
@@ -376,11 +379,10 @@ async def cmd_remove(ctx, args):
 async def cmd_loop(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
-    if not check_channels(ctx, temp_env["music_player"]): raise RuntimeError("You must be in the same channel as bot to use that command")
     if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
     if len(args) == 0:
         temp_env["music_loop"] = not temp_env["music_loop"]
-        await ctx.message.reply(f"Loop state: {temp_env['music_loop']}") 
+        await ctx.message.reply(f"Looping: {temp_env['music_loop']}") 
         return True
     else:
         if args[0] == "enabled":
