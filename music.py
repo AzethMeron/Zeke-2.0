@@ -5,6 +5,7 @@ import os.path
 import threading
 from multiprocessing import Process
 from multiprocessing import Queue
+import traceback
 
 import tools
 import file
@@ -117,6 +118,7 @@ def Fetch(temp_env):
     return output
 
 def AddSongs(temp_env, objs, first):
+    if first: objs.reverse()
     lock = GetMusicLock(temp_env)
     lock.acquire()
     try:
@@ -125,7 +127,7 @@ def AddSongs(temp_env, objs, first):
             else: GetMusicQueue(temp_env).append(obj)
             VidQueue.put(obj)
     except Exception as e:
-        print(e)
+        print(traceback.format_exc())
     lock.release()
 
 ################################################################################

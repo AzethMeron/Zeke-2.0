@@ -26,6 +26,8 @@ def NewGuildEnvAdd(key, data):
         raise KeyError(f'{key} already present in New Guild Env') 
     NewGuild[key] = data
 
+NewGuildEnvAdd('users', dict())
+
 #####################################################################################################
 
 def NewUserEnvironment():

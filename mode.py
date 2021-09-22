@@ -31,10 +31,11 @@ AddTest("offensive language", profanity, 10)
 def RunTests(text): # return [ (name, result, weight) ]
     output = []
     for (name, func, weight) in tests:
+        result = False
         try:
             result = func(text)
         except:
-            result = False
+            pass # if test throws exception, 0 is assumed
         output.append( (name, result, weight) )
     return output
 
@@ -60,4 +61,4 @@ triggers.on_message.append(OnMessage)
 ################################################################################
 
 async def HatefulMessageDetected(local_env, message, normalised_text, results, avg_results):
-    pass
+    user_env = data.GetUserEnvironment(local_env, message.author)
