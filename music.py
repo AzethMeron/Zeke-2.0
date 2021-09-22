@@ -333,7 +333,7 @@ async def cmd_queue(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     num_min = 0
-    num_max = 10
+    num_max = 5
     if len(args) == 1:
         if int(args[0]) < 1: raise RuntimeError("Funny")
         num_max = int(args[0])
