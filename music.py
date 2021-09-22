@@ -29,6 +29,11 @@ temp.NewTempEnvAdd("music_lock", None)
 temp.NewTempEnvAdd("music_player", None)
 temp.NewTempEnvAdd("music_loop", False)
 
+# Note:
+# temp_env["music_player"] and temp_env["music_loop"] should be remade
+# instead of direct access, GetMusicPlayer(temp_env) and SetMusicPlayer(temp_env) functions should be used
+# Current code works so i'm not going to prioretize it tho. Maybe when i'll decide to add smt here, i'll remake it
+
 ################################################################################
 
 VidQueue = Queue()
