@@ -41,10 +41,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 # Features:  
 
 - Automated translation by using emojis, to any language supported by google translate.
-- Support for multiple servers (guilds, with separate variables & stuff)
 - Music bot features (only youtube)
-- Programmable Welcome messages.
+- Programmable Welcome/Farewell messages.
+- Dice rolling.
 - Very easily expandable "engine"
 - Own command parser (perhaps discord.py one is better but... ANYWAY)
+- Support for multiple servers (guilds, with separate variables & stuff)
 
 More features on the way.  
