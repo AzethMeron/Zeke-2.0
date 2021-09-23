@@ -161,7 +161,10 @@ async def cmd_translate(ctx, *args):
 @DiscordClient.command(name="debug", help="Dummy")
 @has_permissions(administrator=True)
 async def cmd_debug(ctx, *args):
-    await debug.command(ctx, list(args))
+    if os.getenv('DEBUG_MODE'):
+        await debug.command(ctx, list(args))
+    else:
+        await ctx.message.reply("Debug tools are disabled server-side. There's nothing you can do about it")
 
 ################################################################################
 

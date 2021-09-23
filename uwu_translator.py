@@ -7,13 +7,13 @@ from random import randint as rand
 alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 
 def convert(sent):
+    sent = sent.replace("\n", "🇵🇱")
     sent = sent.split()
     global alphabet
     convertedSentence = ""
     for word in sent:
         converted = ""
         doubleT = doubleT_Presence = th_Presence = False
-
         for i in range(len(word)):
             if doubleT or th_Presence:
                 doubleT = th_Presence = False
@@ -32,4 +32,5 @@ def convert(sent):
             convertedSentence += ((converted[0] + "-" + converted[0:]) if (rand(1, 10) == 1 and converted[0] in alphabet) else converted) + " "
         else:
             convertedSentence += word + " "
+    convertedSentence = convertedSentence.replace("🇵🇱", "\n")
     return convertedSentence
