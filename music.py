@@ -5,7 +5,6 @@ import os.path
 import threading
 from multiprocessing import Process
 from multiprocessing import Queue
-import traceback
 import datetime
 
 import tools
@@ -14,6 +13,7 @@ import temp
 import data
 import triggers
 import cmd
+import log
 
 # uses pytube to download audio from youtube videos
 # and ffmpeg to process/play it
@@ -133,7 +133,7 @@ def AddSongs(temp_env, objs, first):
             else: GetMusicQueue(temp_env).append(obj)
             VidQueue.put(obj)
     except Exception as e:
-        print(traceback.format_exc())
+        log.write(e)
     lock.release()
 
 ################################################################################

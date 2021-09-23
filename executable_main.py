@@ -6,7 +6,6 @@ from discord.ext import tasks
 from discord.ext import commands
 from dotenv import load_dotenv # ENV vars
 from discord.ext.commands import has_permissions, MissingPermissions, CommandNotFound
-import traceback
 
 # TOOLS
 import tools
@@ -16,6 +15,7 @@ import data
 import cmd
 import triggers
 import debug
+import log
 
 # FEATURES
 import music
@@ -50,8 +50,8 @@ async def TimerTick(minute, DiscordClient):
                 local_env = data.GetGuildEnvironment(guild)
                 try:
                     await func(DiscordClient, local_env, guild, minute)
-                except:
-                    print(traceback.format_exc())
+                except Exception as e:
+                    log.write(e)
 
 ################################################################################
 
@@ -61,7 +61,7 @@ async def TimerTick(minute, DiscordClient):
 async def on_error(event, *args, **kwargs):
     print("UNHANDLED EXCEPTION")
     print(event)
-    print(traceback.format_exc())
+    log.write("on_error event")
     
 @DiscordClient.event
 async def on_command_error(ctx, error):
@@ -84,8 +84,8 @@ async def on_message(message):
     for func in triggers.on_message: 
         try:
             await func(local_env, message, normalised)
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
 
 @DiscordClient.event
 async def on_reaction_add(reaction, user):
@@ -97,8 +97,8 @@ async def on_reaction_add(reaction, user):
     for func in triggers.on_reaction_add: 
         try:
             await func(local_env, reaction, user)
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
 
 @DiscordClient.event        
 async def on_reaction_remove(reaction, user):
@@ -110,8 +110,8 @@ async def on_reaction_remove(reaction, user):
     for func in triggers.on_reaction_remove: 
         try:
             await func(local_env, reaction, user)
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
 
 @DiscordClient.event
 async def on_member_join(member):
@@ -119,8 +119,8 @@ async def on_member_join(member):
     for func in triggers.on_member_join: 
         try:
             await func(local_env, member)
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
 
 @DiscordClient.event
 async def on_member_remove(member):
@@ -128,8 +128,8 @@ async def on_member_remove(member):
     for func in triggers.on_member_remove: 
         try:
             await func(local_env, member)
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
 
 ################################################################################
 
@@ -178,7 +178,7 @@ async def on_ready():
 if __name__ == '__main__':
     try:
         for func in triggers.OnInitTrigger: func(DiscordClient)
-    except:
-        print(traceback.format_exc())
+    except Exception as e:
+        log.write(e)
     print("Startup finished. Connecting...")
     DiscordClient.run(os.getenv('DISCORD_TOKEN'))

@@ -28,6 +28,7 @@ def Add(parser, cmd, func, help, longhelp):
 
 async def Parse(parser, ctx, args):
     try:
+        if len(args) == 0: raise KeyError("no command specified")
         cmd = args.pop(0)
         if cmd == "help":
             await ctx.message.reply(Help(parser, args))

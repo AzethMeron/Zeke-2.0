@@ -4,7 +4,7 @@ import tools
 import triggers
 import data
 import uwu_translator
-import traceback
+import log
 
 ################################################################################
 
@@ -51,8 +51,8 @@ async def OnReaction(local_env, reaction, user):
                 (src_lang, _, translated) = tools.Translate(tgt_lang, text)
             await reaction.message.add_reaction(reaction.emoji)
             await reaction.message.reply(MakeMessage(translated, user, src_lang, tgt_lang))
-    except:
-        print(traceback.format_exc())
+    except Exception as e:
+        log.write(e)
 triggers.on_reaction_add.append(OnReaction)
 
 ################################################################################

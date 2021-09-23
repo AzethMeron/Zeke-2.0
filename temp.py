@@ -3,8 +3,8 @@ import os
 import os.path
 import shutil
 import copy
-import traceback
 
+import log
 import tools
 import file
 import data
@@ -26,7 +26,7 @@ def PurgeTempDir(bot):
             try:
                 func(local_env)
             except Exception as e:
-                print(traceback.format_exc())
+                log.write(e)
 
 #####################################################################################################
 

@@ -1,8 +1,7 @@
 
-import traceback
 import random
 
-
+import log
 import tools
 import file
 import temp
@@ -27,8 +26,8 @@ def GetChannel(channel_id, bot):
     if channel_id:
         try:
             channel = bot.get_channel(channel_id)
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
     return channel
 
 def GetMessage(olist, member):

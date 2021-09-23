@@ -1,10 +1,9 @@
 
-import traceback
-
 import tools
 import file
 import copy
 import triggers
+import log
 
 # by Jakub Grzana
 guilddir = ".database"
@@ -59,8 +58,8 @@ def LoadGuildEnvironment(guild):
     for func in triggers.PostLoadTrigger: 
         try:
             func(guild_envs[guild.id])
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
         
 def SaveGuildEnvironment(guild):
     file.EnsureDir(guilddir)
@@ -69,14 +68,14 @@ def SaveGuildEnvironment(guild):
     for func in triggers.PreSaveTrigger: 
         try:
             func(local_env)
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
     file.Save(filepath,local_env)
     for func in triggers.PostSaveTrigger: 
         try:
             func(local_env)
-        except:
-            print(traceback.format_exc())
+        except Exception as e:
+            log.write(e)
 
 #####################################################################################################
 
