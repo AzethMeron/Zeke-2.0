@@ -183,7 +183,7 @@ def ProcessInput(args):
         return ([], [])
     if tools.is_url(args[0]):
         url = args.pop(0)
-        if "playlist" in url: # playlist
+        if "list" in url: # playlist
             for obj in pytube.Playlist(url).videos:
                 ValidateVideo(obj, objs, failed)
         else: # single video
