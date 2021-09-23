@@ -122,6 +122,15 @@ async def on_member_join(member):
         except:
             print(traceback.format_exc())
 
+@DiscordClient.event
+async def on_member_remove(member):
+    local_env = data.GetGuildEnvironment(member.guild)
+    for func in triggers.on_member_remove: 
+        try:
+            await func(local_env, member)
+        except:
+            print(traceback.format_exc())
+
 ################################################################################
 
 ################################## COMMANDS ####################################
@@ -137,7 +146,12 @@ async def cmd_dice(ctx, *args):
 @DiscordClient.command(name="welcome", help="Dummy")
 @has_permissions(administrator=True)
 async def cmd_welcome(ctx, *args):
-    await welcome.command(ctx, list(args))
+    await welcome.welcome_command(ctx, list(args))
+
+@DiscordClient.command(name="farewell", help="Dummy")
+@has_permissions(administrator=True)
+async def cmd_farewell(ctx, *args):
+    await welcome.farewell_command(ctx, list(args))
 
 @DiscordClient.command(name="translate", help="Dummy")
 @has_permissions(administrator=True)
