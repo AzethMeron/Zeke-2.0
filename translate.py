@@ -8,6 +8,25 @@ import log
 
 ################################################################################
 
+import urllib.parse
+import requests
+from time import sleep
+
+api = "https://api.funtranslations.com/translate/"
+
+def fun_translation(lang, text):
+    global api
+    try:
+        url = api + lang + "?" + urllib.parse.urlencode({'text': text})
+        response = requests.get(url)
+        json = response.json()
+        return json['contents']['translated']
+    except:
+        return "Too many requests, please try again later :C"
+
+
+################################################################################
+
 default_emojis = dict()
 default_emojis['🇵🇱'] = 'pl'
 default_emojis['🇬🇧'] = 'en'
@@ -18,7 +37,15 @@ default_emojis['🇮🇹'] = 'it'
 
 data.NewGuildEnvAdd("reaction_translator", default_emojis) # dict[emoji] = tgt_lang
 custom_lang = dict()
-custom_lang['uwu'] = ('en', uwu_translator.convert)
+custom_lang['uwu'] = ('en', uwu_translator.convert, 'Twanswate text intwo cuwe UwU wanguage :3')
+custom_lang['shakespeare'] = ('en', lambda text: fun_translation('shakespeare.json',text), 'helpfile')
+custom_lang['orcish'] = ('en', lambda text: fun_translation('orcish.json',text), 'helpfile')
+custom_lang['oldenglish'] = ('en', lambda text: fun_translation('oldenglish.json',text), 'helpfile')
+custom_lang['pirate'] = ('en', lambda text: fun_translation('pirate.json',text), 'helpfile')
+custom_lang['yoda'] = ('en', lambda text: fun_translation('yoda.json',text), 'helpfile')
+custom_lang['wow'] = ('en', lambda text: fun_translation('wow.json',text), 'helpfile')
+custom_lang['draconic'] = ('en', lambda text: fun_translation('draconic.json',text), 'helpfile')
+custom_lang['gungan'] = ('en', lambda text: fun_translation('gungan.json',text), 'helpfile')
 
 def GetReactionTranslator(local_env):
     return local_env["reaction_translator"]
@@ -80,10 +107,17 @@ async def cmd_list(ctx, args):
         await ctx.message.reply(out)
     return True
 
+async def cmd_custom(ctx, args):
+    output = "Available custom languages:\n"
+    for name in custom_lang:
+        output = output + f"{name}: {custom_lang[name][2]}\n"
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
+
 parser = cmd.Parser()
 cmd.Add(parser, "add", cmd_add, "dummy", "dummy")
 cmd.Add(parser, "remove", cmd_remove, "dummy", "dummy")
 cmd.Add(parser, "list", cmd_list, "dummy", "dummy")
+cmd.Add(parser, "custom", cmd_custom, "dummy", "dummy")
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
