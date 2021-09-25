@@ -10,13 +10,14 @@ import log
 
 import urllib.parse
 import requests
-from time import sleep
+import re
 
 api = "https://api.funtranslations.com/translate/"
 
 def fun_translation(lang, text):
     global api
     try:
+        text = re.sub(r'\W+', ' ', text)
         url = api + lang + "?" + urllib.parse.urlencode({'text': text})
         response = requests.get(url)
         json = response.json()
