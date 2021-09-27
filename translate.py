@@ -66,6 +66,8 @@ async def OnReaction(local_env, reaction, user):
             return None
         if reaction.count > 1: 
             return None
+        if len(reaction.message.content) < 4:
+            return None
         emoji = str(reaction.emoji)
         text = reaction.message.content
         if emoji in GetReactionTranslator(local_env):
