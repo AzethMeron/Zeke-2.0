@@ -36,6 +36,7 @@ def GetMessage(olist, member):
         output = random.choice(olist)
     if output:
         output = output.replace("USER", member.mention)
+        output = output.replace("NAME", member.name)
     return output
 
 async def GetWelcomeChannel(local_env, bot):
