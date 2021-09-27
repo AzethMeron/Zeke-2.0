@@ -17,7 +17,7 @@ uses = triggers.BOT_REFERENCE
 data.NewGuildEnvAdd("welcome_channel_id", None)
 data.NewGuildEnvAdd("welcome_message", ["USER joined the server!"]) 
 data.NewGuildEnvAdd("farewell_channel_id", None)
-data.NewGuildEnvAdd("farewell_message", ["USER left the server :C"]) 
+data.NewGuildEnvAdd("farewell_message", ["NAME left the server :C"]) 
 
 ################################################################################
 
