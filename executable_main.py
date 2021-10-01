@@ -136,25 +136,25 @@ async def on_member_remove(member):
 
 ################################## COMMANDS ####################################
 
-@DiscordClient.command(name="music", help="Dummy")
+@DiscordClient.command(name="music", help="Music bot feature")
 async def cmd_music(ctx, *args):
     await music.command(ctx, list(args))
 
-@DiscordClient.command(name="dice", help="Dummy")
+@DiscordClient.command(name="dice", help="Roll dice")
 async def cmd_dice(ctx, *args):
     await dice.command(ctx, list(args))
 
-@DiscordClient.command(name="welcome", help="Dummy")
+@DiscordClient.command(name="welcome", help="Setup welcome messages")
 @has_permissions(administrator=True)
 async def cmd_welcome(ctx, *args):
     await welcome.welcome_command(ctx, list(args))
 
-@DiscordClient.command(name="farewell", help="Dummy")
+@DiscordClient.command(name="farewell", help="Setup farewell messages")
 @has_permissions(administrator=True)
 async def cmd_farewell(ctx, *args):
     await welcome.farewell_command(ctx, list(args))
 
-@DiscordClient.command(name="translate", help="Dummy")
+@DiscordClient.command(name="translate", help="Setup translation feature")
 @has_permissions(administrator=True)
 async def cmd_translate(ctx, *args):
     await translate.command(ctx, list(args))

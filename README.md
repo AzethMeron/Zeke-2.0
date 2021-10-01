@@ -44,8 +44,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - Music bot features (only youtube)
 - Programmable Welcome/Farewell messages.
 - Dice rolling.
+- Levels (basic but it does work)
 - Very easily expandable "engine"
 - Own command parser (perhaps discord.py one is better but... ANYWAY)
 - Support for multiple servers (guilds, with separate variables & stuff)
 
-More features on the way.  
+More features on the way. Moderation feature TODO  
