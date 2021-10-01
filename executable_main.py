@@ -23,6 +23,7 @@ import welcome
 import translate
 import dice
 import mode
+import levels
 
 PREFIX = "zeke "
 load_dotenv() # load environmental variables from file .env
@@ -157,6 +158,11 @@ async def cmd_farewell(ctx, *args):
 @has_permissions(administrator=True)
 async def cmd_translate(ctx, *args):
     await translate.command(ctx, list(args))
+
+@DiscordClient.command(name="levels", help="Dummy")
+@has_permissions(administrator=True)
+async def cmd_levels(ctx, *args):
+    await levels.command(ctx, list(args))
 
 @DiscordClient.command(name="debug", help="Dummy")
 @has_permissions(administrator=True)
