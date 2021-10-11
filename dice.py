@@ -17,7 +17,7 @@ async def cmd_roll(ctx, args):
     return True
 
 parser = cmd.Parser()
-cmd.Add(parser, "roll", cmd_roll, "dummy", "dummy")
+cmd.Add(parser, "roll", cmd_roll, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke dice roll - get random number from 1 to 6\n- zeke dice roll <max> - get random number from 1 to <max>\n- zeke dice roll <min> <max> - get random number from <min> to <max>")
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)

@@ -42,11 +42,11 @@ custom_lang['uwu'] = ('en', uwu_translator.convert, 'Twanswate text intwo cuwe U
 custom_lang['shakespeare'] = ('en', lambda text: fun_translation('shakespeare.json',text), 'helpfile')
 custom_lang['orcish'] = ('en', lambda text: fun_translation('orcish.json',text), 'helpfile')
 custom_lang['oldenglish'] = ('en', lambda text: fun_translation('oldenglish.json',text), 'helpfile')
-custom_lang['pirate'] = ('en', lambda text: fun_translation('pirate.json',text), 'helpfile')
-custom_lang['yoda'] = ('en', lambda text: fun_translation('yoda.json',text), 'helpfile')
-custom_lang['wow'] = ('en', lambda text: fun_translation('wow.json',text), 'helpfile')
-custom_lang['draconic'] = ('en', lambda text: fun_translation('draconic.json',text), 'helpfile')
-custom_lang['gungan'] = ('en', lambda text: fun_translation('gungan.json',text), 'helpfile')
+custom_lang['pirate'] = ('en', lambda text: fun_translation('pirate.json',text), 'Arr, raise the anchor and translate text into Corsair jargon!')
+custom_lang['yoda'] = ('en', lambda text: fun_translation('yoda.json',text), 'Text into language of ancient jedi master,  translate.')
+#custom_lang['wow'] = ('en', lambda text: fun_translation('wow.json',text), 'doesnt work?')
+#custom_lang['draconic'] = ('en', lambda text: fun_translation('draconic.json',text), 'doesnt work?')
+#custom_lang['gungan'] = ('en', lambda text: fun_translation('gungan.json',text), 'doesnt work?')
 
 def GetReactionTranslator(local_env):
     return local_env["reaction_translator"]
@@ -117,10 +117,10 @@ async def cmd_custom(ctx, args):
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
 
 parser = cmd.Parser()
-cmd.Add(parser, "add", cmd_add, "dummy", "dummy")
-cmd.Add(parser, "remove", cmd_remove, "dummy", "dummy")
-cmd.Add(parser, "list", cmd_list, "dummy", "dummy")
-cmd.Add(parser, "custom", cmd_custom, "dummy", "dummy")
+cmd.Add(parser, "add", cmd_add, "Add emoji translation for language.", "Add emoji translation for language.\nSyntax: zeke translate add <emoji> <language>\n<language> is two-character long ISO language code.")
+cmd.Add(parser, "remove", cmd_remove, "Remove emoji translation for language.", "Remove emoji translation for language.\nSyntax: zeke translate remove <emoji>")
+cmd.Add(parser, "list", cmd_list, "Display list of current emojis used in translations.", "Display list of current emojis used in translations.\nSyntax: zeke translate list")
+cmd.Add(parser, "custom", cmd_custom, "Display list of available custom languages.", "Display list of available custom languages.\nNot real languages obviously.\nSyntax: zeke translate list")
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)

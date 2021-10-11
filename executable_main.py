@@ -159,12 +159,12 @@ async def cmd_farewell(ctx, *args):
 async def cmd_translate(ctx, *args):
     await translate.command(ctx, list(args))
 
-@DiscordClient.command(name="levels", help="Dummy")
+@DiscordClient.command(name="levels", help="Message counter and server levels")
 @has_permissions(administrator=True)
 async def cmd_levels(ctx, *args):
     await levels.command(ctx, list(args))
 
-@DiscordClient.command(name="debug", help="Dummy")
+@DiscordClient.command(name="debug", help="Tools useful for debugging this bot")
 @has_permissions(administrator=True)
 async def cmd_debug(ctx, *args):
     if os.getenv('DEBUG_MODE'):

@@ -72,8 +72,8 @@ async def cmd_verbose(ctx, args):
     return True
 
 parser = cmd.Parser()
-cmd.Add(parser, "list", cmd_list, "dummy", "dummy")
-cmd.Add(parser, "verbose", cmd_verbose, "dummy", "dummy")
+cmd.Add(parser, "list", cmd_list, "Display leaderboard.", "Display leaderboard.")
+cmd.Add(parser, "verbose", cmd_verbose, "Toggle verbose levels.", "Toggle whether level up should be announced or not.")
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)

@@ -2,6 +2,9 @@
 import triggers
 import data
 
+# THIS ONE ISN'T FINISHED, NOT SURE WHEN I'LL CONTINUE WORKING ON IT
+# MAKING GOOD AI-BASED ADVISOR TOOLS IS HARDER THAN THOUGHT
+
 ################################################################################
 
 # Here goes data
