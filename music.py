@@ -60,7 +60,8 @@ async def EachMinute(bot, local_env, guild, minute):
             await stop_player(temp_env)
             Clear(temp_env)
         elif not temp_env["music_player"].is_playing():
-            await stop_player(temp_env)
+            if QueueLength(temp_env) == 0:
+                await stop_player(temp_env)
     return None
 triggers.Timers.append( (1, EachMinute) )
 
@@ -120,6 +121,15 @@ def Fetch(temp_env):
     if len(local_queue) > 0:
         output = local_queue.pop(0)
         if temp_env["music_loop"]: local_queue.append(output)
+    lock.release()
+    return output
+
+def QueueLength(temp_env):
+    local_queue = GetMusicQueue(temp_env)
+    lock = GetMusicLock(temp_env)
+    output = None
+    lock.acquire()
+    output = len(local_queue)
     lock.release()
     return output
 
@@ -202,7 +212,7 @@ def GetDuration(obj): # in string, this isn't raw seconds length!
     return str(datetime.timedelta(seconds=obj.length))
     
 class Player:
-    def play(self, err):
+    def internal_play(self, err):
         self.currently = None
         self.skip_voting = 0
         self.voters = set()
@@ -213,9 +223,11 @@ class Player:
             filepath = GetAudio(obj, GetMusicDir())
             if filepath:
                 self.currently = obj
-                self.voice.play(AudioSource(filepath), after=self.play)
+                self.voice.play(AudioSource(filepath), after=self.internal_play)
             else:
-                self.play(None)
+                self.internal_play(None)
+    def play(self, err):
+        self.voice.play(AudioSource("ZQUIET.WAV"), after=self.internal_play)
     def is_playing(self):
         return self.voice.is_playing()
     def stop(self):
