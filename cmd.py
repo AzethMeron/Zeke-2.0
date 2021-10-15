@@ -20,7 +20,7 @@ def Help(parser, args):
         return output
     for cmd in parser:
         (_, help, _2) = parser[cmd]
-        output = output + f'{cmd}           ' + help + "\n"
+        output = output + '{0: <10}'.format(cmd) + help + "\n"
     return output
 
 # func(ctx, args)

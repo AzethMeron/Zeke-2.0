@@ -62,7 +62,7 @@ async def TimerTick(minute, DiscordClient):
 async def on_error(event, *args, **kwargs):
     print("UNHANDLED EXCEPTION")
     print(event)
-    log.write("on_error event")
+    log.write(RuntimeError("on_error event"))
     
 @DiscordClient.event
 async def on_command_error(ctx, error):
