@@ -53,16 +53,9 @@ def GetReactionTranslator(local_env):
 
 ################################################################################
 
-def MakeMessage(text, user, src_lang, tgt_lang):
-    mess = f"\
-    {text}\n\
-    {src_lang} -> {tgt_lang}\n\
-    Requested by: {user.display_name}"
-    return mess
-
 async def Reply(message, user, translated_text, src_lang, tgt_lang):
     mess = f"\
-    {text}\n\
+    {translated_text}\n\
     {src_lang} -> {tgt_lang}\n\
     Requested by: {user.display_name}"
     await message.reply(mess)

@@ -50,3 +50,26 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - Support for multiple servers (guilds, with separate variables & stuff)
 
 More features on the way. Moderation feature TODO  
+
+---
+# The way data is stored:  
+
+Every guild has its own environment, realised as dictionary. You can get this dict by using data.GetGuildEnvironment(guild). In code it's referred to as "local_env".  
+Inside this dictonary, there're additional dictionaries for user data. You can get this by using data.GetUserEnvironment(local_env, user). In code, it's referred to as "user_env".  
+All data inside of those must be pickleable, because this is the way data is saved/loaded.  
+
+Additionally, there's temporary environment that can be used with not-pickleable datatypes. This aswell is dictionary. You can get it by using temp.GetTempEnvironment(local_env). In code, it's referred to as "temp_env".  
+
+It's useful to initialise "variables" in enviroments with some data. Here's simple example:  
+data.NewGuildEnvAdd("welcome_channel_id", None)  
+data.NewGuildEnvAdd("welcome_message", ["USER joined the server!"])   
+Those "variables" will be accessible then in every newcoming guild.  
+
+NO SELFREFERENCING LOOPS INSIDE THIS DATA IS ALLOWED!  
+Every time guild data is loaded from disk, it's updated. All new keys from "NewGuildData" are copied into guild data.  
+This can save you some trouble, but remember it does only work if key wasn't used by that guild before. So if you suddenly change value under the same key, don't expect it to be updated.  
+Same applies to temp_env and user_env.  
+
+Note: data declared in temp_env still must be pickleable, but then you can switch it to anything and it will be fine:  
+temp.NewTempEnvAdd("music_lock", None)  
+
