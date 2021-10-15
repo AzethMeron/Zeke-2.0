@@ -93,58 +93,52 @@ def PreprocessAudio(dir, filename):
 
 def Shuffle(temp_env):
     lock = GetMusicLock(temp_env)
-    lock.acquire()
-    random.shuffle(GetMusicQueue(temp_env))
-    lock.release()
+    with lock:
+        random.shuffle(GetMusicQueue(temp_env))
 
 def Clear(temp_env):
     lock = GetMusicLock(temp_env)
-    lock.acquire()
-    GetMusicQueue(temp_env).clear()
-    lock.release()
+    with lock:
+        GetMusicQueue(temp_env).clear()
     
 def Remove(temp_env, index):
     lock = GetMusicLock(temp_env)
-    lock.acquire()
     feedback = False
-    if index >= 0 and index < len(GetMusicQueue(temp_env)):
-        GetMusicQueue(temp_env).pop(index)
-        feedback = True
-    lock.release()
+    with lock:
+        if index >= 0 and index < len(GetMusicQueue(temp_env)):
+            GetMusicQueue(temp_env).pop(index)
+            feedback = True
     return feedback
     
 def Fetch(temp_env):
     local_queue = GetMusicQueue(temp_env)
     lock = GetMusicLock(temp_env)
     output = None
-    lock.acquire()
-    if len(local_queue) > 0:
-        output = local_queue.pop(0)
-        if temp_env["music_loop"]: local_queue.append(output)
-    lock.release()
+    with lock:
+        if len(local_queue) > 0:
+            output = local_queue.pop(0)
+            if temp_env["music_loop"]: local_queue.append(output)
     return output
 
 def QueueLength(temp_env):
     local_queue = GetMusicQueue(temp_env)
     lock = GetMusicLock(temp_env)
     output = None
-    lock.acquire()
-    output = len(local_queue)
-    lock.release()
+    with lock:
+        output = len(local_queue)
     return output
 
 def AddSongs(temp_env, objs, first):
     if first: objs.reverse()
     lock = GetMusicLock(temp_env)
-    lock.acquire()
-    try:
-        for obj in objs:
-            if first: GetMusicQueue(temp_env).insert(0, obj)
-            else: GetMusicQueue(temp_env).append(obj)
-            VidQueue.put(obj)
-    except Exception as e:
-        log.write(e)
-    lock.release()
+    with lock:
+        try:
+            for obj in objs:
+                if first: GetMusicQueue(temp_env).insert(0, obj)
+                else: GetMusicQueue(temp_env).append(obj)
+                VidQueue.put(obj)
+        except Exception as e:
+            log.write(e)
 
 ################################################################################
 
@@ -369,14 +363,13 @@ async def cmd_queue(ctx, args):
     temp_env = temp.GetTempEnvironment(local_env)
     output = queue_header(temp_env)
     lock = GetMusicLock(temp_env)
-    lock.acquire()
-    queue = GetMusicQueue(temp_env)
-    (num_min, num_max) = tools.list_size_args(args, queue, 0, 5)
-    for i in range(num_min, num_max):
-        output = output + queue_describe_obj(i, queue[i])
-    if len(queue) > num_max:
-        output = output + f'...{len(queue)}\n'
-    lock.release()
+    with lock:
+        queue = GetMusicQueue(temp_env)
+        (num_min, num_max) = tools.list_size_args(args, queue, 0, 5)
+        for i in range(num_min, num_max):
+            output = output + queue_describe_obj(i, queue[i])
+        if len(queue) > num_max:
+            output = output + f'...{len(queue)}\n'
     for out in tools.segment_text(output, 1980):
         await ctx.message.reply("```" + out + "```")
     return True
