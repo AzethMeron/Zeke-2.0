@@ -1,1 +1,1 @@
-web: python executable_main.py
+worker: python executable_main.py
