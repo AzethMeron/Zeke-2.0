@@ -60,6 +60,13 @@ def MakeMessage(text, user, src_lang, tgt_lang):
     Requested by: {user.display_name}"
     return mess
 
+async def Reply(message, user, translated_text, src_lang, tgt_lang):
+    mess = f"\
+    {text}\n\
+    {src_lang} -> {tgt_lang}\n\
+    Requested by: {user.display_name}"
+    await message.reply(mess)
+
 async def OnReaction(local_env, reaction, user):
     try:
         if reaction.message.author.bot:
@@ -80,7 +87,7 @@ async def OnReaction(local_env, reaction, user):
             else:
                 (src_lang, _, translated) = tools.Translate(tgt_lang, text)
             await reaction.message.add_reaction(reaction.emoji)
-            await reaction.message.reply(MakeMessage(translated, user, src_lang, tgt_lang))
+            await Reply(reaction.message, user, translated, src_lang, tgt_lang)
     except Exception as e:
         log.write(e)
 triggers.on_reaction_add.append(OnReaction)

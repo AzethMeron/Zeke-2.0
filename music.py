@@ -367,21 +367,11 @@ def queue_header(temp_env):
 async def cmd_queue(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
-    num_min = 0
-    num_max = 5
-    if len(args) == 1:
-        num_max = max(1, int(float(args[0])))
-    if len(args) == 2:
-        min_arg = min(int(float(args[0])), int(float(args[1])))
-        max_arg = max(int(float(args[0])), int(float(args[1])))
-        num_min = max(1, min_arg) - 1
-        num_max = max(1, max_arg)
     output = queue_header(temp_env)
     lock = GetMusicLock(temp_env)
     lock.acquire()
     queue = GetMusicQueue(temp_env)
-    num_min = min(num_min,len(queue))
-    num_max = min(num_max,len(queue))
+    (num_min, num_max) = tools.list_size_args(args, queue, 0, 5)
     for i in range(num_min, num_max):
         output = output + queue_describe_obj(i, queue[i])
     if len(queue) > num_max:

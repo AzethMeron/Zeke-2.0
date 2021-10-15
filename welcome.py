@@ -87,14 +87,7 @@ async def cmd_welcome_message_add(ctx, args):
 async def cmd_welcome_message_list(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     olist = local_env["welcome_message"]
-    num_min = 0
-    num_max = min(len(olist), 10)
-    if len(args) == 1:
-        num_max = min(len(olist), int(args[0]))
-    if len(args) == 2:
-        num_min = max(0, int(args[0])-1)
-        num_max = min(len(olist), int(args[1]))
-        if num_min > num_max: raise RuntimeError("Very funny")
+    (num_min, num_max) = tools.list_size_args(args, olist, 0, 10)
     output = "Programmed welcome messages:\n"
     for i in range(num_min, num_max):
         output = output + f'{i+1}. {olist[i]}\n'
@@ -138,14 +131,7 @@ async def cmd_farewell_message_add(ctx, args):
 async def cmd_farewell_message_list(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     olist = local_env["farewell_message"]
-    num_min = 0
-    num_max = min(len(olist), 10)
-    if len(args) == 1:
-        num_max = min(len(olist), int(args[0]))
-    if len(args) == 2:
-        num_min = max(0, int(args[0])-1)
-        num_max = min(len(olist), int(args[1]))
-        if num_min > num_max: raise RuntimeError("Very funny")
+    (num_min, num_max) = tools.list_size_args(args, olist, 0, 10)
     output = "Programmed farewell messages:\n"
     for i in range(num_min, num_max):
         output = output + f'{i+1}. {olist[i]}\n'

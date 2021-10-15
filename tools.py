@@ -21,6 +21,20 @@ def is_url(string):
 def segment_text(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
 
+def list_size_args(args, _list, default_min, default_max):
+    num_min = default_min
+    num_max = default_max
+    if len(args) == 1:
+        num_max = max(1, int(float(args[0])))
+    if len(args) == 2:
+        min_arg = min(int(float(args[0])), int(float(args[1])))
+        max_arg = max(int(float(args[0])), int(float(args[1])))
+        num_min = max(1, min_arg) - 1
+        num_max = max(1, max_arg)
+    num_min = max(num_min, 0)
+    num_max = min(num_max, len(_list))
+    return (num_min, num_max)
+
 #####################################################################################################
 
 # Language tools
