@@ -15,7 +15,10 @@ Ffmpeg must be installed and present in PATH environmental variable.
 Tokens must be included in ".env" file in working directory, containing:  
 DISCORD_TOKEN="your token here"  
 DETECT_LANGUAGE_TOKEN="your token here"  
+DROPBOX_TOKEN="your token here"  
 Discord bot must have "members intent" enabled.  
+
+Dropbox token is optional. If you specify it, all guild data will be saved/loaded from dropbox if local copy isn't available. Useful when there's no persistent memory.   
 
 ---
 # Disclaimer: UwU translator
