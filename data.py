@@ -4,6 +4,7 @@ import file
 import copy
 import triggers
 import log
+import storage
 
 # by Jakub Grzana
 guilddir = ".database"
@@ -49,12 +50,12 @@ def RecursiveDictUpdate(dict_data, dict_temp):
 
 def LoadGuildEnvironment(guild):
     file.EnsureDir(guilddir)
-    filepath = guilddir + "/" + tools.Hash(guild.id) + ".bse"
-    if not file.Exist(filepath):
+    filename = tools.Hash(guild.id) + ".bse"
+    filepath = guilddir + "/" + filename
+    guild_envs[guild.id] = storage.load_guild(filepath, filename)
+    if not guild_envs[guild.id]:
         guild_envs[guild.id] = NewGuildEnvironment()
-    else:
-        guild_envs[guild.id] = file.Load(filepath)
-        RecursiveDictUpdate(guild_envs[guild.id], NewGuildEnvironment())
+    RecursiveDictUpdate(guild_envs[guild.id], NewGuildEnvironment())
     for func in triggers.PostLoadTrigger: 
         try:
             func(guild_envs[guild.id])
@@ -63,14 +64,15 @@ def LoadGuildEnvironment(guild):
         
 def SaveGuildEnvironment(guild):
     file.EnsureDir(guilddir)
-    filepath = guilddir + "/" + tools.Hash(guild.id) + ".bse"
+    filename = tools.Hash(guild.id) + ".bse"
+    filepath = guilddir + "/" + filename
     local_env = GetGuildEnvironment(guild)
     for func in triggers.PreSaveTrigger: 
         try:
             func(local_env)
         except Exception as e:
             log.write(e)
-    file.Save(filepath,local_env)
+    storage.save_guild(local_env, filepath, filename)
     for func in triggers.PostSaveTrigger: 
         try:
             func(local_env)
