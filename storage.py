@@ -11,17 +11,55 @@ import log
 # Ngl this solution is hacked into this bot
 # Should be remade? prolly
 
+########################################################################################################
+
 load_dotenv() # load environmental variables from file .env
 dbx = None
 if os.getenv('DROPBOX_TOKEN'):
     dbx = dropbox.Dropbox(os.getenv('DROPBOX_TOKEN'))
 
-def send_file(filedata, filename):
+def initialised():
     if dbx:
-        data = pickle.dumps(filedata, -1)
-        dbx.files_upload(data, '/' + filename, mute=True, mode=dropbox.files.WriteMode.overwrite)
+        return True
     else:
-        raise RuntimeError("Dropbox not activated")
+        return False
+
+def raw_send(var, filename):
+    data = pickle.dumps(var, -1)
+    dbx.files_upload(data, '/' + filename, mute=True, mode=dropbox.files.WriteMode.overwrite)
+
+def raw_get(filename):
+    f, r = dbx.files_download('/' + filename)
+    return pickle.loads(r.content)
+
+def file_exist(filename):
+    try:
+        dbx.files_get_metadata('/' + filename)
+        return True
+    except:
+        return False
+
+########################################################################################################
+
+def save(var, filepath):
+    if initialised():
+        filename = tools.Hash(filepath)
+        try:
+            raw_send(var, filename)
+        except Exception as e:
+            log.write(e)
+
+def load(filepath):
+    if initialised():
+        filename = tools.Hash(filepath)
+        if file_exist(filename):
+            try:
+                return raw_get(filename)
+            except Exception as e:
+                log.write(e)
+    return None
+
+########################################################################################################
     
 def get_file(filename):
     if dbx:
@@ -32,10 +70,7 @@ def get_file(filename):
     
 def save_guild(local_env, filepath, filename):
     # Remote copy
-    try:
-        send_file(local_env, filename)
-    except:
-        pass
+    save(local_env, filename)
     # Local copy
     file.Save(filepath, local_env)
     
