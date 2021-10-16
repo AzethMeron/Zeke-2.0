@@ -52,6 +52,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - Own command parser (perhaps discord.py one is better but... ANYWAY)
 - Support for multiple servers (guilds, with separate variables & stuff)
 - Persistent data stored remotely on Dropbox (optional and easy to reprogram so it works with some other platform)
+- (pretty much) Heroku-ready
 
 More features on the way. Moderation feature TODO  
 
@@ -89,3 +90,9 @@ Same applies to temp_env and user_env.
 Note: data declared in temp_env still must be pickleable, but then you can switch it to anything and it will be fine:  
 temp.NewTempEnvAdd("music_lock", None)  
 Before saving data, engine replaces temp_env of guild with "NewTempEnvironment()", then saves entire local_env and finally swappes tmp_env back to its place. This way, real data stored in temp_env isn't saved but persists after saving.  
+
+---
+# Triggers:  
+
+All discord events are handled by main file, which calls "triggers" stored in lists you can find in triggers.py  
+This way, there's no need to modify main just to explicitely call new function. You can just append it to the list.  

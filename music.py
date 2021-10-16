@@ -15,6 +15,10 @@ import triggers
 import cmd
 import log
 
+# Youtube video urls, used for checking status
+# THEY MUST BE SHORT AND AVAILABLE. Also more than 3 is overkill and harmful one
+testing_urls = ["https://youtu.be/07RVnTrRDAo", "https://youtu.be/WI1CqmWSjgQ", "https://youtu.be/dQw4w9WgXcQ"] 
+
 # uses pytube to download audio from youtube videos
 # and ffmpeg to process/play it
 # "music_queue" stores pytube.YouTube objects, however it is abstracted so switching to smt else like url shouldn't be too problematic
@@ -162,6 +166,13 @@ def GetAudio(obj, dir): # obj - YouTube object
         return os.path.join(dir, filename)
     except:
         return None
+
+async def youtubeStatus():
+    for url in testing_urls:
+        obj = pytube.YouTube(url)
+        if GetAudio(obj, GetMusicDir()): return True
+    return False
+triggers.Status.append( ("Music bot's youtube integration", youtubeStatus) )
 
 def CheckVideo(obj):
     return None # Validating is slow, too slow for big playlists, and besides... why restrict private bot

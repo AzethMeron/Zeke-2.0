@@ -173,10 +173,10 @@ async def cmd_levels(ctx, *args):
 @DiscordClient.command(name="status", help="Check status of integration with third party")
 @has_permissions(administrator=True)
 async def cmd_status(ctx, *args):
-    output = "ZEKE BOT " + VERSION + " [https://github.com/AzethMeron/Zeke-2.0]\n" + "\n"
-    for check in triggers.Status:
+    output = "ZEKE BOT " + VERSION + " [https://github.com/AzethMeron/Zeke-2.0]" + "\n"
+    for (name, check) in triggers.Status:
         try:
-            output = output + await check() + "\n"
+            output = output + name + ": " + tools.convert_status( (await check()) ) + "\n"
         except Exception as e:
             log.write(e)
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")

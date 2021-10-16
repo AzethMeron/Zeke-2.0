@@ -47,7 +47,7 @@ def raw_exist(filename):
 def raw_remove(filename):
     dbx.files_delete('/' + filename)
 
-def raw_status():
+async def raw_status():
     data = tools.random_string(10)
     filename = tools.random_string(5)
     try:
@@ -58,6 +58,7 @@ def raw_status():
         else: return False
     except:
         return False
+triggers.Status.append( ("Storage integration",raw_status) )
 
 ########################################################################################################
 
@@ -79,10 +80,11 @@ def Load(filepath):
                 log.write(e)
     return None
 
-async def Status():
-    output = "Storage integration: " + tools.convert_status(raw_status())
-    return output
-triggers.Status.append(Status)
+def Exist(filepath):
+    if initialised():
+        filename = tools.Hash(filepath)
+        return raw_exist(filename)
+    return False
 
 ########################################################################################################
     

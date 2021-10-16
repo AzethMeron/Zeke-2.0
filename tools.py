@@ -55,6 +55,7 @@ from deep_translator import GoogleTranslator
 import detectlanguage # better but restricted by API
 import langdetect # worse but no restrictions
 import os
+import triggers
 
 load_dotenv() # load environmental variables from file .env
 detectlanguage.configuration.api_key = os.getenv('DETECT_LANGUAGE_TOKEN')
@@ -91,3 +92,18 @@ def EnsureEnglish(text):
     return output
 
 #####################################################################################################
+
+async def traslator_status():
+    pl_text = "Dzisiaj jest piękny dzień. W dni takie jak te, dzieci twojego pokroju..."
+    try:
+        RawTranslate('pl', 'en', pl_text)
+        return True
+    except:
+        return False
+triggers.Status.append( ("Google translate integration", traslator_status) )
+
+async def detect_status():
+    pl_text = "Dzisiaj jest piękny dzień. W dni takie jak te, dzieci twojego pokroju..."
+    detect =  True if DetectLanguage(pl_text) == 'pl' else False
+    return detect
+triggers.Status.append( ("Detect language integration", detect_status) )
