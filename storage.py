@@ -9,9 +9,13 @@ import file
 import log
 
 # Ngl this solution is hacked into this bot
-# Should be remade? prolly
+# but i think it is good enough
 
 ########################################################################################################
+
+# Low-leve section
+# NOTE: All files are stord in one directory
+# Filename passed as argument should bd HASHED FILEPATH!!!
 
 load_dotenv() # load environmental variables from file .env
 dbx = None
@@ -32,7 +36,7 @@ def raw_get(filename):
     f, r = dbx.files_download('/' + filename)
     return pickle.loads(r.content)
 
-def file_exist(filename):
+def raw_exist(filename):
     try:
         dbx.files_get_metadata('/' + filename)
         return True
@@ -41,7 +45,7 @@ def file_exist(filename):
 
 ########################################################################################################
 
-def save(var, filepath):
+def Save(var, filepath):
     if initialised():
         filename = tools.Hash(filepath)
         try:
@@ -49,10 +53,10 @@ def save(var, filepath):
         except Exception as e:
             log.write(e)
 
-def load(filepath):
+def Load(filepath):
     if initialised():
         filename = tools.Hash(filepath)
-        if file_exist(filename):
+        if raw_exist(filename):
             try:
                 return raw_get(filename)
             except Exception as e:
@@ -61,27 +65,17 @@ def load(filepath):
 
 ########################################################################################################
     
-def get_file(filename):
-    if dbx:
-        f, r = dbx.files_download('/' + filename)
-        return pickle.loads(r.content)
-    else:
-        raise RuntimeError("Dropbox not activated")
-    
 def save_guild(local_env, filepath, filename):
     # Remote copy
-    save(local_env, filename)
+    Save(local_env, filename)
     # Local copy
     file.Save(filepath, local_env)
     
 def load_guild(filepath, filename):
     # Remote copy
-    try:
-        return get_file(filename)
-    except Exception as e:
-        pass
+    tmp = Load(filename)
+    if tmp: return tmp
     # Local copy
-    if file.Exist(filepath):
-        return file.Load(filepath)
+    if file.Exist(filepath): return file.Load(filepath)
     # None if not found
     return None
