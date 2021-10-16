@@ -6,6 +6,8 @@
 
 import hashlib
 import requests
+import string
+import random
 
 def Hash(name):
     encoded = str(name).encode()
@@ -34,6 +36,15 @@ def list_size_args(args, _list, default_min, default_max):
     num_min = max(num_min, 0)
     num_max = min(num_max, len(_list))
     return (num_min, num_max)
+
+def random_string(length):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k = length))  
+
+def convert_status(boolean):
+    if boolean:
+        return "OK"
+    else:
+        return "FAILED"
 
 #####################################################################################################
 

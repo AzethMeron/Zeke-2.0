@@ -20,6 +20,9 @@ PostLoadTrigger = [] # func(local_env): # Called AFTER loading
 # Temp
 PostTempPurge = [] # func(local_env)
 
+# Check status of feature (integration)
+Status = [] # (str) async func()
+
 # Reference to Bot
 # i hate this global variable but i hate passing it everywhere as argument even more
 BOT_REFERENCE = None # Note: it is initiated AFTER establishing connection. Before that, it is None

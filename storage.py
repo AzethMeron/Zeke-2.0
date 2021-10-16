@@ -4,6 +4,7 @@ import os
 import pickle
 from dotenv import load_dotenv # ENV vars
 
+import triggers
 import tools
 import file
 import log
@@ -43,6 +44,21 @@ def raw_exist(filename):
     except:
         return False
 
+def raw_remove(filename):
+    dbx.files_delete('/' + filename)
+
+def raw_status():
+    data = tools.random_string(10)
+    filename = tools.random_string(5)
+    try:
+        raw_send(data, filename)
+        recv = raw_get(filename)
+        raw_remove(filename)
+        if data == recv: return True
+        else: return False
+    except:
+        return False
+
 ########################################################################################################
 
 def Save(var, filepath):
@@ -62,6 +78,11 @@ def Load(filepath):
             except Exception as e:
                 log.write(e)
     return None
+
+async def Status():
+    output = "Storage integration: " + tools.convert_status(raw_status())
+    return output
+triggers.Status.append(Status)
 
 ########################################################################################################
     

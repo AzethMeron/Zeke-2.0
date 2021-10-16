@@ -27,6 +27,8 @@ import mode
 import levels
 
 PREFIX = "zeke "
+version = "2.0"
+
 load_dotenv() # load environmental variables from file .env
 intents = discord.Intents.default()
 intents.members = True
@@ -164,6 +166,17 @@ async def cmd_translate(ctx, *args):
 @has_permissions(administrator=True)
 async def cmd_levels(ctx, *args):
     await levels.command(ctx, list(args))
+
+@DiscordClient.command(name="status", help="Check status of integration with third party")
+@has_permissions(administrator=True)
+async def cmd_status(ctx, *args):
+    output = "ZEKE BOT\nVersion: " + version + "\n"
+    for check in triggers.Status:
+        try:
+            output = output + await check() + "\n"
+        except Exception as e:
+            log.write(e)
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
 
 @DiscordClient.command(name="debug", help="Tools useful for debugging this bot")
 @has_permissions(administrator=True)
