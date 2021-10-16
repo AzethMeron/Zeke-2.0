@@ -15,7 +15,7 @@ Ffmpeg must be installed and present in PATH environmental variable.
 Tokens must be included in ".env" file in working directory, containing:  
 DISCORD_TOKEN="your token here"  
 DETECT_LANGUAGE_TOKEN="your token here"  
-DROPBOX_TOKEN="your token here"  
+(optional) DROPBOX_TOKEN="your token here"  
 Discord bot must have "members intent" enabled.  
 
 Dropbox token is optional. If you specify it, all guild data will be saved/loaded from dropbox if local copy isn't available. Useful when there's no persistent memory.   
@@ -51,8 +51,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - Very easily expandable "engine"
 - Own command parser (perhaps discord.py one is better but... ANYWAY)
 - Support for multiple servers (guilds, with separate variables & stuff)
+- Persistent data stored remotely on Dropbox (optional and easy to reprogram so it works with some other platform)
 
 More features on the way. Moderation feature TODO  
+
+---
+# Commands, how-to-use:  
+
+Zeke comes with own command parser, but also uses Discord cmd parser for first layer. So it's inconsistent and cumbersome. Sorry about that.  
+
+To get first layer of help, use:  
+	zeke help  
+To get help about particular commands, use:  
+	zeke <cmd> help  
+Sometimes command have subcommands. Their help can be reached by using  
+	zeke <cmd> help <subcmd>  
 
 ---
 # The way data is stored:  
@@ -69,10 +82,10 @@ data.NewGuildEnvAdd("welcome_message", ["USER joined the server!"])
 Those "variables" will be accessible then in every newcoming guild.  
 
 NO SELFREFERENCING LOOPS INSIDE THIS DATA IS ALLOWED!  
-Every time guild data is loaded from disk, it's updated. All new keys from "NewGuildData" are copied into guild data.  
+Every time guild data is loaded from disk, it's updated. All new keys from "NewGuildEnvironment()" are copied into guild data.  
 This can save you some trouble, but remember it does only work if key wasn't used by that guild before. So if you suddenly change value under the same key, don't expect it to be updated.  
 Same applies to temp_env and user_env.  
 
 Note: data declared in temp_env still must be pickleable, but then you can switch it to anything and it will be fine:  
 temp.NewTempEnvAdd("music_lock", None)  
-
+Before saving data, engine replaces temp_env of guild with "NewTempEnvironment()", then saves entire local_env and finally swappes tmp_env back to its place. This way, real data stored in temp_env isn't saved but persists after saving.  

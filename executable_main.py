@@ -27,7 +27,7 @@ import mode
 import levels
 
 PREFIX = "zeke "
-version = "2.0"
+VERSION = "2.0"
 
 load_dotenv() # load environmental variables from file .env
 intents = discord.Intents.default()
@@ -36,13 +36,16 @@ DiscordClient = commands.Bot(command_prefix=PREFIX,intents=intents) # create cli
 
 #################################### TIMER #####################################
 
+PURGE_DIR_INTERVAL_MIN = int(os.getenv('PURGE_DIR_INTERVAL_MIN')) if os.getenv('PURGE_DIR_INTERVAL_MIN') else 6*60
+DATA_SAVE_INTERVAL_MIN = int(os.getenv('DATA_SAVE_INTERVAL_MIN')) if os.getenv('DATA_SAVE_INTERVAL_MIN') else 60
+
 minute = 1
 @tasks.loop(minutes=1)
 async def each_minute():
     global minute
-    if minute % (6*60) == 0:
+    if minute % (PURGE_DIR_INTERVAL_MIN) == 0:
         temp.PurgeTempDir(DiscordClient)
-    if minute % (60) == 0:
+    if minute % (DATA_SAVE_INTERVAL_MIN) == 0:
         for guild in DiscordClient.guilds: data.SaveGuildEnvironment(guild)
     await TimerTick(minute, DiscordClient)
     minute = (minute + 1) % 100000
@@ -170,7 +173,7 @@ async def cmd_levels(ctx, *args):
 @DiscordClient.command(name="status", help="Check status of integration with third party")
 @has_permissions(administrator=True)
 async def cmd_status(ctx, *args):
-    output = "ZEKE BOT\nVersion: " + version + "\n"
+    output = "ZEKE BOT " + VERSION + " [https://github.com/AzethMeron/Zeke-2.0]\n" + "\n"
     for check in triggers.Status:
         try:
             output = output + await check() + "\n"
