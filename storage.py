@@ -12,15 +12,19 @@ import log
 # Should be remade? prolly
 
 load_dotenv() # load environmental variables from file .env
-dbx = dropbox.Dropbox(os.getenv('DROPBOX_TOKEN'))
+dbx = None
+if os.getenv('DROPBOX_TOKEN'):
+    dbx = dropbox.Dropbox(os.getenv('DROPBOX_TOKEN'))
 
 def send_file(filedata, filename):
-    data = pickle.dumps(filedata, -1)
-    dbx.files_upload(data, '/' + filename, mute=True, mode=dropbox.files.WriteMode.overwrite)
+    if os.getenv('DROPBOX_TOKEN'):
+        data = pickle.dumps(filedata, -1)
+        dbx.files_upload(data, '/' + filename, mute=True, mode=dropbox.files.WriteMode.overwrite)
     
 def get_file(filename):
-    f, r = dbx.files_download('/' + filename)
-    return pickle.loads(r.content)
+    if os.getenv('DROPBOX_TOKEN'):
+        f, r = dbx.files_download('/' + filename)
+        return pickle.loads(r.content)
     
 def save_guild(local_env, filepath, filename):
     # Local copy
