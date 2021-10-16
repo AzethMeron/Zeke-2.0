@@ -61,11 +61,11 @@ More features on the way. Moderation feature TODO
 Zeke comes with own command parser, but also uses Discord cmd parser for first layer. So it's inconsistent and cumbersome. Sorry about that.  
 
 To get first layer of help, use:  
-	zeke help  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke help  
 To get help about particular commands, use:  
-	zeke <cmd> help  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke :cmd: help  
 Sometimes command have subcommands. Their help can be reached by using  
-	zeke <cmd> help <subcmd>  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke :cmd: help :subcmd:  
 
 ---
 # The way data is stored:  
