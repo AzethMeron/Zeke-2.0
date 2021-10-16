@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import signal
 import discord # Discord API
 from discord.ext import tasks
 from discord.ext import commands
@@ -176,6 +177,11 @@ async def cmd_debug(ctx, *args):
 ################################################################################
 
 #################################### MAIN ######################################
+
+def term_handler(signum, frame):
+    for guild in DiscordClient.guilds: data.SaveGuildEnvironment(guild)
+
+signal.signal(signal.SIGTERM, term_handler)
 
 @DiscordClient.event
 async def on_ready():
