@@ -16,7 +16,7 @@ import log
 
 # Low-leve section
 # NOTE: All files are stord in one directory
-# Filename passed as argument should bd HASHED FILEPATH!!!
+# Filename passed as argument (to raw functions) should bd HASHED FILEPATH!!!
 
 load_dotenv() # load environmental variables from file .env
 dbx = None
@@ -58,7 +58,6 @@ async def raw_status():
         else: return False
     except:
         return False
-triggers.Status.append( ("Storage integration",raw_status) )
 
 ########################################################################################################
 
@@ -67,8 +66,10 @@ def Save(var, filepath):
         filename = tools.Hash(filepath)
         try:
             raw_send(var, filename)
+            return True
         except Exception as e:
             log.write(e)
+    return False
 
 def Load(filepath):
     if initialised():
@@ -85,6 +86,10 @@ def Exist(filepath):
         filename = tools.Hash(filepath)
         return raw_exist(filename)
     return False
+
+async def Status():
+    return await raw_status()
+triggers.Status.append( ("Storage integration",Status) )
 
 ########################################################################################################
     
