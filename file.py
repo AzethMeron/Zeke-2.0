@@ -38,5 +38,8 @@ def PurgeDir(dir):
 def Exist(filepath):
     return os.path.isfile(filepath)
 
+def ExistInDir(dir, filename):
+    return Exist(os.path.join(dir, filename))
+
 def ListOfFiles(path):
     return [ f for f in os.listdir(path) if os.path.isfile( os.path.join(path, f) ) ]

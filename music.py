@@ -157,7 +157,7 @@ def AudioSource(filepath):
 def GetAudio(obj, dir): # obj - YouTube object
     try:
         filename = tools.Hash(GetTitle(obj))
-        if filename in file.ListOfFiles(dir):
+        if file.ExistInDir(dir, filename):
             return os.path.join(dir, filename)
         streams = obj.streams
         stream = streams.filter(type='audio').get_audio_only()
