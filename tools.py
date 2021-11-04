@@ -22,8 +22,11 @@ def is_url(string):
 
 def segment_text(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
+    
+def flatten(_lists):
+    return [item for sublist in _lists for item in sublist]
 
-def list_size_args(args, _list, default_min, default_max):
+def list_size_args(args, olist, default_min, default_max):
     num_min = default_min
     num_max = default_max
     if len(args) == 1:
@@ -34,7 +37,7 @@ def list_size_args(args, _list, default_min, default_max):
         num_min = max(1, min_arg) - 1
         num_max = max(1, max_arg)
     num_min = max(num_min, 0)
-    num_max = min(num_max, len(_list))
+    num_max = min(num_max, len(olist))
     return (num_min, num_max)
 
 def random_string(length):
