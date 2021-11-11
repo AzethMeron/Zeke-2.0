@@ -8,3 +8,4 @@ alt-profanity-check>=0.24.0
 requests>=2.25.1
 python-dotenv>=0.17.0
 dropbox>=11.21.0
+pycryptodome>=3.11.0
