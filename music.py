@@ -175,10 +175,11 @@ async def youtubeStatus():
 triggers.Status.append( ("Music bot's youtube integration", youtubeStatus) )
 
 def CheckVideo(obj):
-    return None # Validating is slow, too slow for big playlists, and besides... why restrict private bot
+    #return None # Validating is slow, too slow for big playlists, and besides... why restrict private bot
     try:
         obj.check_availability()
-        if obj.length > (60*60+5): raise RuntimeError("Cannot play video longer than 1 hour")
+        dummy = obj.streams
+        #if obj.length > (60*60+5): raise RuntimeError("Cannot play video longer than 1 hour")
     except Exception as e:
         return e
     return None
@@ -200,7 +201,8 @@ def ProcessInput(args):
         url = args.pop(0)
         if "list" in url: # playlist
             for obj in pytube.Playlist(url).videos:
-                ValidateVideo(obj, objs, failed)
+                #ValidateVideo(obj, objs, failed)
+                objs.append(obj)
         else: # single video
             obj = pytube.YouTube(url)
             ValidateVideo(obj, objs, failed)
@@ -215,6 +217,14 @@ def GetTitle(obj):
 
 def GetDuration(obj): # in string, this isn't raw seconds length!
     return str(datetime.timedelta(seconds=obj.length))
+    
+def DescribeObj(obj):
+    try:
+        title = GetTitle(obj)
+        duration = GetDuration(obj)
+        return f'{title} [{duration}]'
+    except Exception as e:
+        return f'ERROR DURING PROCESSING {str(e)}'
     
 class Player:
     def internal_play(self, err):
@@ -302,19 +312,32 @@ def run_player(voice, temp_env):
 
 ################################################################################
 
+async def user_feedback(ctx, objs, failed):
+    if len(failed) == 1:
+        message  = "Failed to play video: " + DescribeObj(failed[0][0]) + " REASON: " + failed[0][1]
+        await ctx.message.reply("```" + message + "```")
+        return True
+    elif len(objs) == 1:
+        message = "Played: " + DescribeObj(objs[0])
+        await ctx.message.reply("```" + message + "```")
+        return True
+    return False
+
 async def play(ctx, args, first):
     local_env = data.GetGuildEnvironment(ctx.guild)
     temp_env = temp.GetTempEnvironment(local_env)
     voice = await connect(temp_env, ctx, temp_env["music_player"])
     (objs, failed) = ProcessInput(args)
+    feedback = await user_feedback(ctx, objs, failed)
     AddSongs(temp_env, objs, first)
     run_player(voice, temp_env)
+    return feedback
 
 async def cmd_play(ctx, args):
-    await play(ctx, args, False)
+    return await play(ctx, args, False)
 
 async def cmd_insert(ctx, args):
-    await play(ctx, args, True)
+    return await play(ctx, args, True)
 
 async def cmd_skip(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
@@ -353,20 +376,12 @@ async def cmd_stop(ctx, args):
     if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
     await stop_player(temp_env)
 
-def queue_describe_obj(index, obj):
-    try:
-        title = GetTitle(obj)
-        duration = GetDuration(obj)
-        return f'{index+1}. {title} [{duration}]\n'
-    except Exception as e:
-        return f'{index+1}. ERROR DURING PROCESSING {str(e)}\n'
-
 def queue_header(temp_env):
     output = f"CURRENT QUEUE [Looping: {temp_env['music_loop']}]\n"
     if temp_env["music_player"]:
         currently_playing = temp_env["music_player"].currently_playing()
         if currently_playing:
-            output = output + "Currently playing: " + GetTitle(currently_playing) + f" [{GetDuration(currently_playing)}]\n"
+            output = output + "Currently playing: " + DescribeObj(currently_playing) + "\n"
     return output
 
 async def cmd_queue(ctx, args):
@@ -378,7 +393,7 @@ async def cmd_queue(ctx, args):
         queue = GetMusicQueue(temp_env)
         (num_min, num_max) = tools.list_size_args(args, queue, 0, 5)
         for i in range(num_min, num_max):
-            output = output + queue_describe_obj(i, queue[i])
+            output = output + f'{i+1}. ' + DescribeObj(queue[i]) + '\n'
         if len(queue) > num_max:
             output = output + f'...{len(queue)}\n'
     for out in tools.segment_text(output, 1980):
