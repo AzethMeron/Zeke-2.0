@@ -27,7 +27,7 @@ async def cmd_roll(ctx, args):
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
     return True
 
-async def cmd_shuffle(ctx, args):
+async def cmd_sequence(ctx, args):
     min_val = 1
     max_val = 10
     step = 1
@@ -48,8 +48,7 @@ async def cmd_shuffle(ctx, args):
 
 parser = cmd.Parser()
 cmd.Add(parser, "roll", cmd_roll, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke dice roll - get random number from 1 to 6\n- zeke dice roll <max> - get random number from 1 to <max>\n- zeke dice roll <min> <max> - get random number from <min> to <max>")
-cmd.Add(parser, "shuffle", cmd_shuffle, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke dice roll - get random number from 1 to 6\n- zeke dice roll <max> - get random number from 1 to <max>\n- zeke dice roll <min> <max> - get random number from <min> to <max>")
-
+cmd.Add(parser, "sequence", cmd_sequence, "Generate sequence of numbers, randomly shuffled.", "TODO")
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)

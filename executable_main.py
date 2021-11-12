@@ -19,7 +19,6 @@ import log
 import storage
 import aes
 
-
 # FEATURES
 import music
 import welcome
@@ -27,6 +26,7 @@ import translate
 import dice
 import mode
 import levels
+import text_ai
 
 PREFIX = "zeke "
 VERSION = "2.0"
@@ -190,6 +190,10 @@ async def cmd_debug(ctx, *args):
         await debug.command(ctx, list(args))
     else:
         await ctx.message.reply("Debug tools are disabled server-side. There's nothing you can do about it")
+
+@DiscordClient.command(name="text", help="Tools to generate or process text. Only English.")
+async def cmd_text(ctx, *args):
+    await text_ai.command(ctx, list(args))
 
 ################################################################################
 

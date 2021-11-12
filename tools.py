@@ -107,6 +107,6 @@ triggers.Status.append( ("Google translate integration", traslator_status) )
 
 async def detect_status():
     pl_text = "Dzisiaj jest piękny dzień. W dni takie jak te, dzieci twojego pokroju..."
-    detect =  True if DetectLanguage(pl_text) == 'pl' else False
+    detect = True if DetectLanguage(pl_text) == 'pl' else False
     return detect
 triggers.Status.append( ("Detect language integration", detect_status) )
