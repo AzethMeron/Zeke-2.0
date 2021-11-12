@@ -175,11 +175,11 @@ async def youtubeStatus():
 triggers.Status.append( ("Music bot's youtube integration", youtubeStatus) )
 
 def CheckVideo(obj):
-    #return None # Validating is slow, too slow for big playlists, and besides... why restrict private bot
+    return None # Validating is slow, too slow for big playlists, and besides... why restrict private bot
     try:
         obj.check_availability()
-        dummy = obj.streams
-        #if obj.length > (60*60+5): raise RuntimeError("Cannot play video longer than 1 hour")
+        streams_check = obj.streams
+        if obj.length > (60*60+5): raise RuntimeError("Cannot play video longer than 1 hour")
     except Exception as e:
         return e
     return None
@@ -201,8 +201,7 @@ def ProcessInput(args):
         url = args.pop(0)
         if "list" in url: # playlist
             for obj in pytube.Playlist(url).videos:
-                #ValidateVideo(obj, objs, failed)
-                objs.append(obj)
+                ValidateVideo(obj, objs, failed)
         else: # single video
             obj = pytube.YouTube(url)
             ValidateVideo(obj, objs, failed)
