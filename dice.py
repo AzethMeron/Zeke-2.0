@@ -47,7 +47,7 @@ async def cmd_sequence(ctx, args):
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
 
 parser = cmd.Parser()
-cmd.Add(parser, "roll", cmd_roll, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke dice roll - get random number from 1 to 6\n- zeke dice roll <max> - get random number from 1 to <max>\n- zeke dice roll <min> <max> - get random number from <min> to <max>")
+cmd.Add(parser, "roll", cmd_roll, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke dice roll - get random number from 1 to 6\n- zeke dice roll <max> - get random number from 1 to <max>\n- zeke dice roll <min> <max> - get random number from <min> to <max>\n- zeke dice roll <min> <max> <times> - generate many random numbers in one go, calculate sum and average")
 cmd.Add(parser, "sequence", cmd_sequence, "Generate sequence of numbers, randomly shuffled.", "TODO")
 
 async def command(ctx, args):
