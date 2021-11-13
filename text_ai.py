@@ -115,6 +115,7 @@ async def cmd_deep_ai(function, ctx, args):
         message = ctx.message.reference.resolved
         text = message.content
     await ProcessAndRespond(function, ctx.message, text)
+    return True
 
 async def cmd_ask(ctx,args):
     text = ' '.join(args)
