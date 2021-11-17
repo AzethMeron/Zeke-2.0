@@ -109,6 +109,36 @@ async def on_reaction_add(reaction, user):
         except Exception as e:
             log.write(e)
 
+@DiscordClient.event
+async def on_raw_reaction_add(payload):
+    if not payload.guild_id: return
+    guild = DiscordClient.get_guild(payload.guild_id)
+    local_env = data.GetGuildEnvironment(guild)
+    member = guild.get_member(payload.user_id)
+    if member.bot: return
+    emoji = payload.emoji
+    message = await guild.get_channel(payload.channel_id).fetch_message(payload.message_id)
+    for func in triggers.raw_reaction_add: 
+        try:
+            await func(payload, local_env, emoji, member, guild, message)
+        except Exception as e:
+            log.write(e)
+
+@DiscordClient.event
+async def on_raw_reaction_remove(payload):
+    if not payload.guild_id: return
+    guild = DiscordClient.get_guild(payload.guild_id)
+    local_env = data.GetGuildEnvironment(guild)
+    member = guild.get_member(payload.user_id)
+    if member.bot: return
+    emoji = payload.emoji
+    message = await guild.get_channel(payload.channel_id).fetch_message(payload.message_id)
+    for func in triggers.raw_reaction_remove: 
+        try:
+            await func(payload, local_env, emoji, member, guild, message)
+        except Exception as e:
+            log.write(e)
+
 @DiscordClient.event        
 async def on_reaction_remove(reaction, user):
     if user.bot:
