@@ -32,10 +32,7 @@ class ReactionData:
         else:
             raise RuntimeWarning(f"Emoji {emoji} isn't used")
     def GetList(self):
-        output = "Programmed reaction roles:\n"
-        for emoji in self.reaction_roles:
-            output = output + f'{emoji} - {self.reaction_roles[emoji]}\n'
-        return output
+        return [ (emoji, self.reaction_roles[emoji]) for emoji in self.reaction_roles ]
 data.NewGuildEnvAdd("reaction_roles", ReactionData()) # [emoji] = role_id
 def GetReactionData(local_env):
     return local_env["reaction_roles"]
@@ -92,7 +89,11 @@ async def cmd_remove_rr(ctx, args):
 async def cmd_list_rr(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     reaction_data = GetReactionData(local_env)
-    await ctx.message.reply(reaction_data.GetList())
+    output = "Programmed reaction roles:\n"
+    for (emoji, role_id) in reaction_data.GetList(): 
+        role = ctx.guild.get_role(role_id)
+        output = output + f'{emoji} - {role.mention}\n'
+    await ctx.message.reply(output)
     return True
 
 ##################################################################################################
