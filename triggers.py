@@ -28,3 +28,9 @@ Status = [] # (name, async func()), func must return True/False
 # Reference to Bot
 # i hate this global variable but i hate passing it everywhere as argument even more
 BOT_REFERENCE = None # Note: it is initiated AFTER establishing connection. Before that, it is None
+
+def GetBot():
+    if BOT_REFERENCE:
+        return BOT_REFERENCE
+    else:
+        raise RuntimeError("Bot referenced via triggers before reference was initiated")

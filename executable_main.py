@@ -27,6 +27,7 @@ import dice
 import mode
 import levels
 import text_ai
+import reaction_roles
 
 PREFIX = "zeke "
 VERSION = "2.0"
@@ -224,6 +225,11 @@ async def cmd_debug(ctx, *args):
 @DiscordClient.command(name="text", help="Tools to generate or process text. Only English.")
 async def cmd_text(ctx, *args):
     await text_ai.command(ctx, list(args))
+
+@DiscordClient.command(name="rr", help="Reaction roles.")
+@has_permissions(administrator=True)
+async def cmd_rr(ctx, *args):
+    await reaction_roles.command(ctx, list(args))
 
 ################################################################################
 

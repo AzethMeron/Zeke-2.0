@@ -10,7 +10,7 @@ import triggers
 import cmd
 
 # Clausule
-uses = triggers.BOT_REFERENCE
+#uses = triggers.BOT_REFERENCE
 
 ################################################################################
 
@@ -58,7 +58,7 @@ async def GetFarewellMessage(local_env, member):
 ################################################################################
 
 async def on_member_join(local_env, member):
-    channel = await GetWelcomeChannel(local_env, triggers.BOT_REFERENCE)
+    channel = await GetWelcomeChannel(local_env, triggers.GetBot())
     if channel:
         output = await GetWelcomeMessage(local_env, member)
         if output:
@@ -66,7 +66,7 @@ async def on_member_join(local_env, member):
 triggers.on_member_join.append(on_member_join)
 
 async def on_member_remove(local_env, member):
-    channel = await GetFarewellChannel(local_env, triggers.BOT_REFERENCE)
+    channel = await GetFarewellChannel(local_env, triggers.GetBot())
     if channel:
         output = await GetFarewellMessage(local_env, member)
         if output:
