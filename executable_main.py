@@ -179,8 +179,8 @@ async def on_member_remove(member):
 async def cmd_music(ctx, *args):
     await music.command(ctx, list(args))
 
-@DiscordClient.command(name="dice", help="Roll dice")
-async def cmd_dice(ctx, *args):
+@DiscordClient.command(name="random", help="Get random values/words")
+async def cmd_random(ctx, *args):
     await dice.command(ctx, list(args))
 
 @DiscordClient.command(name="welcome", help="Setup welcome messages")

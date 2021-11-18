@@ -23,7 +23,7 @@ def fun_translation(lang, text):
         json = response.json()
         return json['contents']['translated']
     except:
-        return "Too many requests, please try again later :C"
+        return "Error, most likely too many requests. Please try in an hour."
 
 
 ################################################################################

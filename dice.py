@@ -1,10 +1,12 @@
 
 import random
+from random_word import RandomWords
+R = RandomWords()
 
 import cmd
 import tools
 
-async def cmd_roll(ctx, args):
+async def cmd_dice(ctx, args):
     min_val = 1
     max_val = 6
     times = 1
@@ -46,9 +48,18 @@ async def cmd_sequence(ctx, args):
     for i in sequence: output = output + f' {i}'
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
 
+async def cmd_word(ctx, args):
+    num = 1
+    if len(args) >= 1:
+        num = int(args[0])
+    words = R.get_random_words(limit=num)
+    output = "Random words for you: " + ', '.join(words)
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")    
+
 parser = cmd.Parser()
-cmd.Add(parser, "roll", cmd_roll, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke dice roll - get random number from 1 to 6\n- zeke dice roll <max> - get random number from 1 to <max>\n- zeke dice roll <min> <max> - get random number from <min> to <max>\n- zeke dice roll <min> <max> <times> - generate many random numbers in one go, calculate sum and average")
+cmd.Add(parser, "dice", cmd_dice, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke random dice - get random number from 1 to 6\n- zeke random dice <max> - get random number from 1 to <max>\n- zeke random dice <min> <max> - get random number from <min> to <max>\n- zeke random dice <min> <max> <times> - generate many random numbers in one go, calculate sum and average")
 cmd.Add(parser, "sequence", cmd_sequence, "Generate sequence of numbers, randomly shuffled.", "TODO")
+cmd.Add(parser, "word", cmd_word, "", "")
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)

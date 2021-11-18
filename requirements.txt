@@ -10,3 +10,5 @@ python-dotenv>=0.17.0
 dropbox>=11.21.0
 pycryptodome>=3.11.0
 google-search-results>=2.4.0
+pyyaml>=6.0
+random-word>=1.0.7
