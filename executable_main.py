@@ -206,7 +206,7 @@ async def cmd_levels(ctx, *args):
 @DiscordClient.command(name="status", help="Check status of integration with third party")
 @has_permissions(administrator=True)
 async def cmd_status(ctx, *args):
-    ctx.message.add_reaction('👍')
+    await ctx.message.add_reaction('👍') 
     output = "ZEKE BOT " + VERSION + " [https://github.com/AzethMeron/Zeke-2.0]" + "\n"
     for (name, check) in triggers.Status:
         try:
