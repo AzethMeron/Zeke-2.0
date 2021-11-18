@@ -114,6 +114,8 @@ async def cmd_deep_ai(function, ctx, args):
     elif ctx.message.reference:
         message = ctx.message.reference.resolved
         text = message.content
+    else:
+        raise RuntimeError("Looks like you forgot to attach starting text")
     await ProcessAndRespond(function, ctx.message, text)
     return True
 
