@@ -12,3 +12,5 @@ pycryptodome>=3.11.0
 google-search-results>=2.4.0
 pyyaml>=6.0
 random-word>=1.0.7
+python-Levenshtein>=0.12.2
+fuzzywuzzy>=0.18.0
