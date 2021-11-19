@@ -47,6 +47,7 @@ async def cmd_sequence(ctx, args):
     output = "Sequence:"
     for i in sequence: output = output + f' {i}'
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
+    return True
 
 async def cmd_word(ctx, args):
     num = 1
@@ -54,7 +55,8 @@ async def cmd_word(ctx, args):
         num = int(args[0])
     words = R.get_random_words(limit=num)
     output = "Random words for you: " + ', '.join(words)
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")    
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
+    return True
 
 parser = cmd.Parser()
 cmd.Add(parser, "dice", cmd_dice, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke random dice - get random number from 1 to 6\n- zeke random dice <max> - get random number from 1 to <max>\n- zeke random dice <min> <max> - get random number from <min> to <max>\n- zeke random dice <min> <max> <times> - generate many random numbers in one go, calculate sum and average")
