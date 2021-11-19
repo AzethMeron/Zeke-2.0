@@ -41,6 +41,7 @@ async def Parse(parser, ctx, args):
             return True
         if cmd not in parser:
             commands = [ command for command in parser ]
+            commands.append("help")
             commands.sort(key = lambda x: -fuzz.ratio(x, cmd))
             raise KeyError(f'{cmd} - command not found. Did you mean {commands[0]}?')
         if not await parser[cmd][0](ctx, args):
