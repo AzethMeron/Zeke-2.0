@@ -4,6 +4,7 @@ import os
 import traceback
 import copy
 import tools
+from fuzzywuzzy import fuzz
 
 default_parser = dict()
 
@@ -39,7 +40,9 @@ async def Parse(parser, ctx, args):
                 await ctx.message.reply("```"+out+"```")
             return True
         if cmd not in parser:
-            raise KeyError(f'{cmd} - command not found')
+            commands = [ command for command in parser ]
+            commands.sort(key = lambda x: -fuzz.ratio(x, cmd))
+            raise KeyError(f'{cmd} - command not found. Did you mean {commands[0]}?')
         if not await parser[cmd][0](ctx, args):
             await ctx.message.add_reaction('👍')
     except Exception as e:
