@@ -45,8 +45,9 @@ async def Parse(parser, ctx, args):
             commands.append("help")
             commands.sort(key = lambda x: -fuzz.ratio(x, cmd))
             raise KeyError(f'Command "{cmd}" not found. Did you mean {commands[0]}?')
+            return True
         if not ctx.message.author.guild_permissions >= parser[cmd][3]: 
-            raise RuntimeError("Unsufficent permissions")
+            raise RuntimeError("Insufficent permissions")
         if not await parser[cmd][0](ctx, args):
             await ctx.message.add_reaction('👍')
     except Exception as e:

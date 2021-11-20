@@ -86,9 +86,9 @@ async def cmd_verbose(ctx, args):
 
 parser = cmd.Parser()
 cmd.Add(parser, "list", cmd_list, "Display leaderboard.", "Display leaderboard.")
-cmd.Add(parser, "verbose", cmd_verbose, "Toggle verbose levels.", "Toggle whether level up should be announced or not.")
+cmd.Add(parser, "verbose", cmd_verbose, "Toggle verbose levels.", "Toggle whether level up should be announced or not.", discord.Permissions.all())
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
 
-cmd.Add(triggers.parser, "levels", command, "Message counter and server levels", "", discord.Permissions.all())
+cmd.Add(triggers.parser, "levels", command, "Message counter and server levels", "")
