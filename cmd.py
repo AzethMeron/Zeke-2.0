@@ -31,6 +31,8 @@ def Help(parser, args, author):
     return output
 
 # func(ctx, args)
+# you can put func = parser if you're embedding parsers, no need for using lambdas or functions anymore
+# If you put func = parser, then longhelp is ignored (help for that parser is called instead)
 def Add(parser, cmd, func, help = "dummy", longhelp = "dummy", perms = discord.Permissions.none()):
     if cmd in parser:
         raise KeyError(f'{cmd} already present in parser')
