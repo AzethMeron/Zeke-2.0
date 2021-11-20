@@ -22,7 +22,7 @@ def Help(parser, args, author):
         if type(parser[cmd]) == type(Parser()):
             return Help(parser[cmd], args[1:], author)
         else:
-            return arser[cmd][2]
+            return parser[cmd][2]
     # Not parametrized
     output = str()
     for cmd in parser:
