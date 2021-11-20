@@ -32,6 +32,11 @@ data.NewGuildEnvAdd('alias', dict())
 
 ########################################################################################################################
 
+# MAIN PARSER OF ENGINE
+parser = Parser()
+
+########################################################################################################################
+
 def Help(parser, args, author, prev_args):
     # Parametried
     if len(args) == 1:
@@ -59,12 +64,14 @@ def GetSimilarCommands(parser, cmd, author):
     commands.sort(key = lambda x: -fuzz.ratio(x, cmd))
     return commands
 
+########################################################################################################################
+
 async def ProcessCommands(local_env, message, DiscordClient):
     content = message.content.split()
     if len(content) >= 1:
         if content[0] == PREFIX: # command
             ctx = await DiscordClient.get_context(message)
-            await Parse(triggers.parser, ctx, content[1:], content[:1])
+            await Parse(parser, ctx, content[1:], content[:1])
             return True
         elif content[0] in local_env['alias']: # alias
             new_content = message.content.replace(content[0], local_env['alias'][content[0]])
@@ -108,5 +115,43 @@ async def Parse(parser, ctx, args, prev_args = []):
         else:
             await ctx.message.reply("Command error: " + str(e))
     return True
+
+########################################################################################################################
+
+def AddAlias(local_env, alias, cmd):
+    local_env['alias'][alias] = cmd
+
+def RemoveAlias(local_env, alias):
+    if alias in local_env['alias']:
+        del local_env['alias'][alias]
+
+def AliasList(local_env):
+    return [ (alias, local_env['alias'][alias]) for alias in local_env['alias'] ]
+
+async def cmd_alias_add(ctx, args):
+    if len(args) < 2: raise RuntimeError("Not enough arguments")
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    alias = args[0]
+    command = ' '.join(args[1:])
+    AddAlias(local_env, alias, command)
+
+async def cmd_alias_remove(ctx, args):
+    if len(args) < 1: raise RuntimeError("Not enough arguments")
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    alias = args[0]
+    RemoveAlias(local_env, alias)
+
+async def cmd_alias_list(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    output = "Created aliases:\n"
+    for (alias, command) in AliasList(local_env):
+        output = output + f'{alias} -> {command}\n'
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
+
+alias_parser = Parser()
+Add(alias_parser, "add", cmd_alias_add, "Create alias.", "Create alias (macro) for command.\nThis can be used to replace prefix, or as fast way to use common command.\n\nSyntac:\nUPLINE <alias> <command> - now you can type in <alias> to run <command.\nExample: UPLINE !play zeke music play - now you can play music by using !play", discord.Permissions.all())
+Add(alias_parser, "remove", cmd_alias_remove, "Remove existing alias.", "Remove alias.\n\nSyntax: UPLINE <alias>",discord.Permissions.all())
+Add(alias_parser, "list", cmd_alias_list, "Display existing macros", "Display existing macros\n\nUPLINE")
+Add(parser, "alias", alias_parser, "Manage aliases (macros) for commands", "")
 
 ########################################################################################################################

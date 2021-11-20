@@ -174,7 +174,7 @@ async def cmd_status(ctx, args):
             log.write(e)
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
     return True
-cmd.Add(triggers.parser, "status", cmd_status, "Check status of integration with third party", "", discord.Permissions.all())
+cmd.Add(cmd.parser, "status", cmd_status, "Check status of integration with third party", "", discord.Permissions.all())
 
 async def cmd_debug(ctx, args):
     if os.getenv('DEBUG_MODE'):
@@ -182,15 +182,7 @@ async def cmd_debug(ctx, args):
     else:
         await ctx.message.reply("Debug tools are disabled server-side. There's nothing you can do about it")
     return True
-cmd.Add(triggers.parser, "debug", cmd_debug, "Tools useful for debugging this bot", "", discord.Permissions.all())
-
-async def cmd_alias(ctx, args):
-    if len(args) < 2: raise RuntimeError("Not enough arguments")
-    local_env = data.GetGuildEnvironment(ctx.guild)
-    alias = args[0]
-    cmd = ' '.join(args[1:])
-    local_env['alias'][alias] = cmd
-cmd.Add(triggers.parser, "alias", cmd_alias, "dummy", "dummy", discord.Permissions.all())
+cmd.Add(cmd.parser, "debug", cmd_debug, "Tools useful for debugging this bot", "", discord.Permissions.all())
 
 ################################################################################
 

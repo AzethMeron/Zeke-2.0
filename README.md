@@ -50,29 +50,77 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - Programmable Welcome/Farewell messages.
 - Dice rolling.
 - Levels (basic but it does work)
-- Very easily expandable "engine"
-- Own command parser (perhaps discord.py one is better but... ANYWAY)
+- Reaction roles.
+- Text generation, summarization with Deep AI.
+- Very easily expandable "engine".
+- Own command parser.
 - Support for multiple servers (guilds, with separate variables & stuff)
 - Persistent data stored remotely on Dropbox (optional and easy to reprogram so it works with some other platform)
-- (pretty much) Heroku-ready
+- (pretty much) Heroku-ready.
 
 More features on the way. Moderation feature TODO  
 
 ---
 # Commands, how-to-use:  
 
-Zeke comes with own command parser, but also uses Discord cmd parser for first layer. So it's inconsistent and cumbersome. Sorry about that.  
-EDIT: Now original Discord's parser is completely removed. My own iw worse and better the same time. Perhaps i will rewrite it so the interface is the same, but parser itself is written in OOP.  
-
-To get first layer of help, use:  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke help  
-To get help about particular commands, use:  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke :cmd: help  
-Sometimes command have subcommands. Their help can be reached by using  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke :cmd: help :subcmd:  
+Zeke comes with own command parser, written in cmd.py.  
+Prefix is "zeke". It can be changed by using aliases.  
+To read help for any command, put "help" before it.  
+For example, "zeke help alias".  
 
 ---
-# The way data is stored:  
+# Feature: translation
+
+To translate message, you need react to it (with emoji) corresponding to target language.  
+By default there're very few programmed-in languages. You can check the list of them with "zeke translate list"  
+To add new language, use "zeke translate add :emoji: :language:", where :language: is two-character long ISO language code.  
+There're some joke languages too. You can see the list of them with "zeke translate custom".  
+
+Example - adding japanese translation support:  
+zeke translate add :flag_jp: ja  
+
+---
+# Feature: reaction roles
+
+Reaction roles is mechanism that grants/removes role from user upon their reaction to specific emoji under specific message.  
+To use it, you need to set the message and corelate reactions (emojis) with roles.  
+Easiest way to set a message: "zeke rr setup". This will make THIS message a reaction-roles message.  
+Then you corelate reactions with roles by using "zeke rr add :emoji: :role:".  
+That's it. Everytime user uses reacton , he gets given role. If he removes his reaction, role is removed too.  
+
+Remember to grant bot permission to manage roles, and to place all reaction-roles BELOW bot in permission menager of your server.  
+To remove reaction-role, use "zeke rr remove :emoji:"  
+To see what reaction-roles are currently used, check "zeke rr list"  
+
+---
+# Feature: music from youtube
+
+Most of music commands can only be used when you're in the same voice channel as bot.   
+If bot isn't connected to any other channel, it will automatically join.  
+
+There're many commands for music bot, i won't cover them all here. To check help, use "zeke help music".  
+To play music, use "zeke music play :arg:". :arg: can be link to youtube video, playlist, or just name of that video.  
+To display queue, use "zeke music queue". By default, it displays current song and 5 next in queue.  
+To randomize queue, use "zeke music shuffle".  
+To vote for skip, use "zeke music vote".  
+
+---
+# Feature: Welcome/Farewell messages
+
+Welcome/Farewell messages are sent when user joins/leaves your server.   
+They're randomly chosen from programmed list, and sent in channel chosen by you.  
+Syntax for both is exactly the same.  
+
+To choose channel for welcome/farewell messages, use "zeke welcome/farewell channel". Channel in which you cast this command will be used.  
+To check existing welcome/farewell messages, use "zeke welcome/farewell message list". It will show you list of messages, with indexes.   
+To add new message, cast "zeke welcome/farewell message add :your message:".  
+To remove message, use "zeke welcome/farewell message remove :id:", where :id: is index taken from list.  
+
+Inside messages, you can refer to arriving/leaving user by USER (this will mention them) or NAME (which will just paste their discord username).  
+Example: "zeke welcome message add USER joined the server!"  
+
+---
+# Engine: The way data is stored, data.py:  
 
 Every guild has its own environment, realised as dictionary. You can get this dict by using data.GetGuildEnvironment(guild). In code it's referred to as "local_env".  
 Inside this dictonary, there're additional dictionaries for user data. You can get this by using data.GetUserEnvironment(local_env, user). In code, it's referred to as "user_env".  
@@ -95,7 +143,22 @@ temp.NewTempEnvAdd("music_lock", None)
 Before saving data, engine replaces temp_env of guild with "NewTempEnvironment()", then saves entire local_env and finally swappes tmp_env back to its place. This way, real data stored in temp_env isn't saved but persists after saving.  
 
 ---
-# Triggers:  
+# Engine: Discord events, triggers.py:  
 
 All discord events are handled by main file, which calls "triggers" stored in lists you can find in triggers.py  
 This way, there's no need to modify main just to explicitely call new function. You can just append it to the list.  
+
+---
+# Engine: Custom parser, cmd.py: 
+
+To create instance of parser, use  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parser = cmd.Parser()  
+Then you can add commands to that parser with  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cmd.Add(parser, "command (one word)", function(ctx, args), "optional: short help", "optional: long help", discord.Permissions required)  
+You can insert another object of parser instead of function. In this case, longhelp is ignored (it's mostly autogenerated)  
+
+Inside longhelp, you can use word UPLINE to insert full command for which you're writting documentation.   
+For example, for "zeke random help dice" -> UPLINE = "zeke random dice"  
+
+Main parser of bot resides in cmd.py, simply named "parser". Refer to it from outside with cmd.parser.  
+You can add your own commands/other parsers to it.  

@@ -101,11 +101,11 @@ async def cmd_list_rr(ctx, args):
 ##################################################################################################
 
 parser = cmd.Parser()
-cmd.Add(parser, "setup", cmd_set_message, "Set message", "dummy")
-cmd.Add(parser, "add", cmd_add_rr, "Add reaction role", "dummy")
-cmd.Add(parser, "remove", cmd_remove_rr, "Remove reaction role", "dummy")
-cmd.Add(parser, "list", cmd_list_rr, "Show list of programmed reaction roles", "dummy")
+cmd.Add(parser, "setup", cmd_set_message, "Set message used for reaction roles.", "Set message used for reaction roles.\n\nSyntax:\nUPLINE - set THIS message to be used with reaction roles.\nUPLINE <message id> - set message with given message id\nUPLINE (responding to another message) - set message to the one you're responding to.\n\nNote: you must use this command in the same channel as the message you set up.")
+cmd.Add(parser, "add", cmd_add_rr, "Add reaction role", "Add reaction role\n\nSyntax: UPLINE <emoji> <role>")
+cmd.Add(parser, "remove", cmd_remove_rr, "Remove reaction role", "Remove reaction role\n\nSyntax: UPLINE <emoji>")
+cmd.Add(parser, "list", cmd_list_rr, "Show list of programmed reaction roles", "Show list of programmed reaction roles\n\nSyntax: UPLINE")
 
-cmd.Add(triggers.parser, "rr", parser, "Reaction roles.", "", discord.Permissions.all())
+cmd.Add(cmd.parser, "rr", parser, "Reaction roles.", "", discord.Permissions.all())
 
 ##################################################################################################

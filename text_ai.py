@@ -131,7 +131,7 @@ cmd.Add(parser, "summarize", lambda ctx, args: cmd_deep_ai(Summarize, ctx, args)
 cmd.Add(parser, "tag", lambda ctx, args: cmd_deep_ai(Tag, ctx, args), "Tag keywords in text", "")
 cmd.Add(parser, "ask", cmd_ask, "Ask questions to Google", "")
     
-cmd.Add(triggers.parser, "text", parser, "Tools to generate or process text. Only English.", "")
+cmd.Add(cmd.parser, "text", parser, "Tools to generate or process text. Only English.", "")
 
 ##################################################################################################
 
