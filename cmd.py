@@ -31,7 +31,7 @@ def Help(parser, args, author):
     return output
 
 # func(ctx, args)
-def Add(parser, cmd, func, help, longhelp, perms = discord.Permissions.none()):
+def Add(parser, cmd, func, help = "dummy", longhelp = "dummy", perms = discord.Permissions.none()):
     if cmd in parser:
         raise KeyError(f'{cmd} already present in parser')
     parser[cmd] = (func, help, longhelp, perms)
@@ -56,8 +56,11 @@ async def Parse(parser, ctx, args):
             raise KeyError(f'Command "{cmd}" not found. Did you mean {commands[0]}?')
         if not ctx.message.author.guild_permissions >= parser[cmd][3]: 
             raise RuntimeError("Insufficent permissions")
-        if not await parser[cmd][0](ctx, args):
-            await ctx.message.add_reaction('👍')
+        if type(parser[cmd][0]) == type(Parser()):
+            feedback = await Parse(parser[cmd][0], ctx, args)
+        else:
+            feedback = await parser[cmd][0](ctx, args)
+        if not feedback: await ctx.message.add_reaction('👍')
     except Exception as e:
         if os.getenv('DEBUG_MODE'):
             await ctx.message.reply("Command error: " + str(traceback.format_exc()))

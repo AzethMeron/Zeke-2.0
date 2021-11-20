@@ -106,17 +106,11 @@ cmd.Add(msg_parser_welcome, "add", cmd_welcome_message_add, "Add welcome message
 cmd.Add(msg_parser_welcome, "list", cmd_welcome_message_list, "Display list of programmed welcome messages.", "Display list of programmed welcome messages.\nSyntax: zeke welcome message list")
 cmd.Add(msg_parser_welcome, "remove", cmd_welcome_message_remove, "Remove welcome message from list.", "Remove welcome message from list.\nSyntax: zeke welcome message remove <index>")
 
-async def cmd_welcome_message(ctx, args):
-    return await cmd.Parse(msg_parser_welcome, ctx, args)
-
 parser_welcome = cmd.Parser()
 cmd.Add(parser_welcome, "channel", cmd_welcome_channel, "Set channel into which welcome messages will be sent", "Set channel into which welcome messages will be sent\nSyntax: zeke welcome channel")
-cmd.Add(parser_welcome, "message", cmd_welcome_message, "Commands related to welcome messages itself.", "Commands related to welcome messages itself.\nThis bot allows you to create multiple welcome messages, of which one will be randomly chosen.\nSyntax: zeke welcome messages <cmd>")
-
-async def welcome_command(ctx, args):
-    await cmd.Parse(parser_welcome, ctx, args)
+cmd.Add(parser_welcome, "message", msg_parser_welcome, "Commands related to welcome messages itself.", "Commands related to welcome messages itself.\nThis bot allows you to create multiple welcome messages, of which one will be randomly chosen.\nSyntax: zeke welcome messages <cmd>")
     
-cmd.Add(triggers.parser, "welcome", welcome_command, "Setup welcome messages", "", discord.Permissions.all())
+cmd.Add(triggers.parser, "welcome", parser_welcome, "Setup welcome messages", "", discord.Permissions.all())
 
 ################################################################################
 
@@ -150,16 +144,10 @@ cmd.Add(msg_parser_farewell, "add", cmd_farewell_message_add, "Add farewell mess
 cmd.Add(msg_parser_farewell, "list", cmd_farewell_message_list, "Display list of programmed farewell messages.", "Display list of programmed farewell messages.\nSyntax: zeke farewell message list")
 cmd.Add(msg_parser_farewell, "remove", cmd_farewell_message_remove, "Remove farewell message from list.", "Remove farewell message from list.\nSyntax: zeke farewell message remove <index>")
 
-async def cmd_farewell_message(ctx, args):
-    return await cmd.Parse(msg_parser_farewell, ctx, args)
-
 parser_farewell = cmd.Parser()
 cmd.Add(parser_farewell, "channel", cmd_farewell_channel, "Set channel into which farewell messages will be sent", "Set channel into which farewell messages will be sent\nSyntax: zeke farewell channel")
-cmd.Add(parser_farewell, "message", cmd_farewell_message, "Commands related to farewell messages itself.", "Commands related to farewell messages itself.\nThis bot allows you to create multiple farewell messages, of which one will be randomly chosen.\nSyntax: zeke farewell messages <cmd>")
+cmd.Add(parser_farewell, "message", msg_parser_farewell, "Commands related to farewell messages itself.", "Commands related to farewell messages itself.\nThis bot allows you to create multiple farewell messages, of which one will be randomly chosen.\nSyntax: zeke farewell messages <cmd>")
 
-async def farewell_command(ctx, args):
-    await cmd.Parse(parser_farewell, ctx, args)
-
-cmd.Add(triggers.parser, "farewell", farewell_command, "Setup farewell messages", "")
+cmd.Add(triggers.parser, "farewell", parser_farewell, "Setup farewell messages", "")
 
 ################################################################################

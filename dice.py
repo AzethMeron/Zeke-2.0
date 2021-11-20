@@ -63,8 +63,5 @@ parser = cmd.Parser()
 cmd.Add(parser, "dice", cmd_dice, "Roll a dice.", "Roll a dice.\nUsage:\n- zeke random dice - get random number from 1 to 6\n- zeke random dice <max> - get random number from 1 to <max>\n- zeke random dice <min> <max> - get random number from <min> to <max>\n- zeke random dice <min> <max> <times> - generate many random numbers in one go, calculate sum and average")
 cmd.Add(parser, "sequence", cmd_sequence, "Generate sequence of numbers, randomly shuffled.", "TODO")
 cmd.Add(parser, "word", cmd_word, "", "")
-
-async def command(ctx, args):
-    return await cmd.Parse(parser, ctx, args)
     
-cmd.Add(triggers.parser, "random", command, "Get random values/words", "")
+cmd.Add(triggers.parser, "random", parser, "Get random values/words", "")

@@ -106,8 +106,6 @@ cmd.Add(parser, "add", cmd_add_rr, "Add reaction role", "dummy")
 cmd.Add(parser, "remove", cmd_remove_rr, "Remove reaction role", "dummy")
 cmd.Add(parser, "list", cmd_list_rr, "Show list of programmed reaction roles", "dummy")
 
-async def command(ctx, args):
-    return await cmd.Parse(parser, ctx, args)
-cmd.Add(triggers.parser, "rr", command, "Reaction roles.", "", discord.Permissions.all())
+cmd.Add(triggers.parser, "rr", parser, "Reaction roles.", "", discord.Permissions.all())
 
 ##################################################################################################

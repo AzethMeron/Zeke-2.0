@@ -124,9 +124,6 @@ cmd.Add(parser, "remove", cmd_remove, "Remove emoji translation for language.", 
 cmd.Add(parser, "list", cmd_list, "Display list of current emojis used in translations.", "Display list of current emojis used in translations.\nSyntax: zeke translate list")
 cmd.Add(parser, "custom", cmd_custom, "Display list of available custom languages.", "Display list of available custom languages.\nNot real languages obviously.\nSyntax: zeke translate list")
 
-async def command(ctx, args):
-    return await cmd.Parse(parser, ctx, args)
-
-cmd.Add(triggers.parser, "translate", command, "Setup translation feature", "", discord.Permissions.all())
+cmd.Add(triggers.parser, "translate", parser, "Setup translation feature", "", discord.Permissions.all())
 
 ################################################################################

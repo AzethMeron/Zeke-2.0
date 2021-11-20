@@ -130,11 +130,8 @@ cmd.Add(parser, "generate", lambda ctx, args: cmd_deep_ai(Generate, ctx, args), 
 cmd.Add(parser, "summarize", lambda ctx, args: cmd_deep_ai(Summarize, ctx, args), "Autosummarize text", "")
 cmd.Add(parser, "tag", lambda ctx, args: cmd_deep_ai(Tag, ctx, args), "Tag keywords in text", "")
 cmd.Add(parser, "ask", cmd_ask, "Ask questions to Google", "")
-
-async def command(ctx, args):
-    return await cmd.Parse(parser, ctx, args)
     
-cmd.Add(triggers.parser, "text", command, "Tools to generate or process text. Only English.", "")
+cmd.Add(triggers.parser, "text", parser, "Tools to generate or process text. Only English.", "")
 
 ##################################################################################################
 
