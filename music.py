@@ -444,4 +444,6 @@ cmd.Add(parser, "loop", cmd_loop, "enable/disable looping of queue", "dummy")
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
 
+cmd.Add(triggers.parser, "music", command, "Music bot feature", "")
+
 ################################################################################

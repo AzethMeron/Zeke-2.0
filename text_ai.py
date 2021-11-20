@@ -134,4 +134,7 @@ cmd.Add(parser, "ask", cmd_ask, "Ask questions to Google", "")
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
     
+cmd.Add(triggers.parser, "text", command, "Tools to generate or process text. Only English.", "")
+
 ##################################################################################################
+

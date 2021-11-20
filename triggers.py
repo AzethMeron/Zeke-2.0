@@ -1,6 +1,9 @@
 
+import cmd
+
 # Main triggers
 OnInitTrigger = [] # func(bot), called BEFORE connecting to discord
+parser = cmd.Parser()
 # ( minutes, async func(bot, local_env, guild, minute) )
 # 0 <= minutes < 100000
 Timers = []

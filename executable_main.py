@@ -29,7 +29,7 @@ import levels
 import text_ai
 import reaction_roles
 
-PREFIX = "zeke "
+PREFIX = "zeke"
 VERSION = "2.0"
 
 load_dotenv() # load environmental variables from file .env
@@ -83,12 +83,17 @@ async def on_command_error(ctx, error):
 
 @DiscordClient.event
 async def on_message(message):
-    if message.author.bot:
-        return
-    if not message.guild:
-        return
+    if message.author.bot: return
+    if not message.guild: return
     # enforce execution of commands
-    await DiscordClient.process_commands(message)
+    #await DiscordClient.process_commands(message)
+    # Custom command parser
+    content = message.content.split()
+    if len(content) >= 1:
+        if content[0] == PREFIX:
+            ctx = await DiscordClient.get_context(message)
+            await cmd.Parse(triggers.parser, ctx, content[1:])
+    # end of custom command parser
     normalised = tools.EnsureEnglish(message.content)
     local_env = data.GetGuildEnvironment(message.guild)
     for func in triggers.on_message: 
@@ -99,10 +104,8 @@ async def on_message(message):
 
 @DiscordClient.event
 async def on_reaction_add(reaction, user):
-    if user.bot:
-        return 
-    if not reaction.message.guild:
-        return
+    if user.bot: return 
+    if not reaction.message.guild: return
     local_env = data.GetGuildEnvironment(reaction.message.guild)
     for func in triggers.on_reaction_add: 
         try:
@@ -175,37 +178,7 @@ async def on_member_remove(member):
 
 ################################## COMMANDS ####################################
 
-@DiscordClient.command(name="music", help="Music bot feature")
-async def cmd_music(ctx, *args):
-    await music.command(ctx, list(args))
-
-@DiscordClient.command(name="random", help="Get random values/words")
-async def cmd_random(ctx, *args):
-    await dice.command(ctx, list(args))
-
-@DiscordClient.command(name="welcome", help="Setup welcome messages")
-@has_permissions(administrator=True)
-async def cmd_welcome(ctx, *args):
-    await welcome.welcome_command(ctx, list(args))
-
-@DiscordClient.command(name="farewell", help="Setup farewell messages")
-@has_permissions(administrator=True)
-async def cmd_farewell(ctx, *args):
-    await welcome.farewell_command(ctx, list(args))
-
-@DiscordClient.command(name="translate", help="Setup translation feature")
-@has_permissions(administrator=True)
-async def cmd_translate(ctx, *args):
-    await translate.command(ctx, list(args))
-
-@DiscordClient.command(name="levels", help="Message counter and server levels")
-@has_permissions(administrator=True)
-async def cmd_levels(ctx, *args):
-    await levels.command(ctx, list(args))
-
-@DiscordClient.command(name="status", help="Check status of integration with third party")
-@has_permissions(administrator=True)
-async def cmd_status(ctx, *args):
+async def cmd_status(ctx, args):
     await ctx.message.add_reaction('👍') 
     output = "ZEKE BOT " + VERSION + " [https://github.com/AzethMeron/Zeke-2.0]" + "\n"
     for (name, check) in triggers.Status:
@@ -214,23 +187,14 @@ async def cmd_status(ctx, *args):
         except Exception as e:
             log.write(e)
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
+cmd.Add(triggers.parser, "status", cmd_status, "Check status of integration with third party", "", discord.Permissions.all())
 
-@DiscordClient.command(name="debug", help="Tools useful for debugging this bot")
-@has_permissions(administrator=True)
-async def cmd_debug(ctx, *args):
+async def cmd_debug(ctx, args):
     if os.getenv('DEBUG_MODE'):
         await debug.command(ctx, list(args))
     else:
         await ctx.message.reply("Debug tools are disabled server-side. There's nothing you can do about it")
-
-@DiscordClient.command(name="text", help="Tools to generate or process text. Only English.")
-async def cmd_text(ctx, *args):
-    await text_ai.command(ctx, list(args))
-
-@DiscordClient.command(name="rr", help="Reaction roles.")
-@has_permissions(administrator=True)
-async def cmd_rr(ctx, *args):
-    await reaction_roles.command(ctx, list(args))
+cmd.Add(triggers.parser, "debug", cmd_debug, "Tools useful for debugging this bot", "", discord.Permissions.all())
 
 ################################################################################
 

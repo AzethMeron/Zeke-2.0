@@ -62,6 +62,7 @@ More features on the way. Moderation feature TODO
 # Commands, how-to-use:  
 
 Zeke comes with own command parser, but also uses Discord cmd parser for first layer. So it's inconsistent and cumbersome. Sorry about that.  
+EDIT: Now original Discord's parser is completely removed. My own iw worse and better the same time. Perhaps i will rewrite it so the interface is the same, but parser itself is written in OOP.  
 
 To get first layer of help, use:  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke help  

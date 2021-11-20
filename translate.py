@@ -1,4 +1,6 @@
 
+import discord
+
 import cmd
 import tools
 import triggers
@@ -124,5 +126,7 @@ cmd.Add(parser, "custom", cmd_custom, "Display list of available custom language
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
-    
+
+cmd.Add(triggers.parser, "translate", command, "Setup translation feature", "", discord.Permissions.all())
+
 ################################################################################

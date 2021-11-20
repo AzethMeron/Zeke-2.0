@@ -1,4 +1,6 @@
 
+import discord
+
 import cmd
 import data
 import log
@@ -106,5 +108,6 @@ cmd.Add(parser, "list", cmd_list_rr, "Show list of programmed reaction roles", "
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
+cmd.Add(triggers.parser, "rr", command, "Reaction roles.", "", discord.Permissions.all())
 
 ##################################################################################################

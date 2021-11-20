@@ -1,6 +1,7 @@
 
 import random
 import math
+import discord
 
 import cmd
 import triggers
@@ -89,4 +90,5 @@ cmd.Add(parser, "verbose", cmd_verbose, "Toggle verbose levels.", "Toggle whethe
 
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
-    
+
+cmd.Add(triggers.parser, "levels", command, "Message counter and server levels", "", discord.Permissions.all())

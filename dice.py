@@ -1,4 +1,5 @@
 
+import triggers
 import random
 from random_word import RandomWords
 R = RandomWords()
@@ -66,3 +67,4 @@ cmd.Add(parser, "word", cmd_word, "", "")
 async def command(ctx, args):
     return await cmd.Parse(parser, ctx, args)
     
+cmd.Add(triggers.parser, "random", command, "Get random values/words", "")

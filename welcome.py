@@ -1,5 +1,6 @@
 
 import random
+import discord
 
 import log
 import tools
@@ -112,11 +113,11 @@ parser_welcome = cmd.Parser()
 cmd.Add(parser_welcome, "channel", cmd_welcome_channel, "Set channel into which welcome messages will be sent", "Set channel into which welcome messages will be sent\nSyntax: zeke welcome channel")
 cmd.Add(parser_welcome, "message", cmd_welcome_message, "Commands related to welcome messages itself.", "Commands related to welcome messages itself.\nThis bot allows you to create multiple welcome messages, of which one will be randomly chosen.\nSyntax: zeke welcome messages <cmd>")
 
-################################################################################
-
 async def welcome_command(ctx, args):
     await cmd.Parse(parser_welcome, ctx, args)
     
+cmd.Add(triggers.parser, "welcome", welcome_command, "Setup welcome messages", "", discord.Permissions.all())
+
 ################################################################################
 
 async def cmd_farewell_channel(ctx, args):
@@ -158,5 +159,7 @@ cmd.Add(parser_farewell, "message", cmd_farewell_message, "Commands related to f
 
 async def farewell_command(ctx, args):
     await cmd.Parse(parser_farewell, ctx, args)
+
+cmd.Add(triggers.parser, "farewell", farewell_command, "Setup farewell messages", "")
 
 ################################################################################
