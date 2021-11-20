@@ -1,13 +1,4 @@
 
-import cmd
-
-# Main triggers
-OnInitTrigger = [] # func(bot), called BEFORE connecting to discord
-parser = cmd.Parser()
-# ( minutes, async func(bot, local_env, guild, minute) )
-# 0 <= minutes < 100000
-Timers = []
-
 # Discord Events
 on_message = [] # async func(local_env, message, normalised_text)
 on_reaction_add = [] # async func(local_env, reaction, user)
@@ -37,3 +28,11 @@ def GetBot():
         return BOT_REFERENCE
     else:
         raise RuntimeError("Bot referenced via triggers before reference was initiated")
+
+# Main triggers
+OnInitTrigger = [] # func(bot), called BEFORE connecting to discord
+# ( minutes, async func(bot, local_env, guild, minute) )
+# 0 <= minutes < 100000
+Timers = []
+import cmd
+parser = cmd.Parser()

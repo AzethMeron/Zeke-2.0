@@ -3,18 +3,34 @@
 # or just left alone as it is, only updated with fixes
 # it's spaghetti code i hate
 
-import os
+# HOW TO USE
+# parser = cmd.Parser()
+# cmd.Add(parser, "command (one word)", function(ctx, args), "optional: short help", "optional: long help", discord.Permissions required)
+# You can insert another object of parser instead of function. Note that then longholp is ignored
+# Inside longhelp, you can use word UPLINE to insert full command for which you're writting documentation
+# for example, for "zeke random help dice" -> UPLINE = "zeke random dice"
 
+import os
 import traceback
 import copy
-import tools
 import discord
 from fuzzywuzzy import fuzz
 
+import tools
+import triggers
+import data
+
+########################################################################################################################
+
+PREFIX = "zeke"
 default_parser = dict()
 
 def Parser():
     return copy.deepcopy(default_parser)
+
+data.NewGuildEnvAdd('alias', dict())
+
+########################################################################################################################
 
 def Help(parser, args, author, prev_args):
     # Parametried
@@ -37,6 +53,27 @@ def Help(parser, args, author, prev_args):
         if author.guild_permissions >= perms: output = output + '{0: <10}'.format(cmd) + help + "\n"
     return output
 
+def GetSimilarCommands(parser, cmd, author):
+    commands = [ command for command in parser if author.guild_permissions >= parser[command][3] ]
+    commands.append("help")
+    commands.sort(key = lambda x: -fuzz.ratio(x, cmd))
+    return commands
+
+async def ProcessCommands(local_env, message, DiscordClient):
+    content = message.content.split()
+    if len(content) >= 1:
+        if content[0] == PREFIX: # command
+            ctx = await DiscordClient.get_context(message)
+            await Parse(triggers.parser, ctx, content[1:], content[:1])
+            return True
+        elif content[0] in local_env['alias']: # alias
+            new_content = message.content.replace(content[0], local_env['alias'][content[0]])
+            message.content = new_content
+            return await ProcessCommands(local_env, message, DiscordClient)
+    return False
+
+########################################################################################################################
+
 # func(ctx, args)
 # you can put func = parser if you're embedding parsers, no need for using lambdas or functions anymore
 # If you put func = parser, then longhelp is ignored (help for that parser is called instead)
@@ -44,12 +81,6 @@ def Add(parser, cmd, func, help = "dummy", longhelp = "dummy", perms = discord.P
     if cmd in parser:
         raise KeyError(f'{cmd} already present in parser')
     parser[cmd] = (func, help, longhelp, perms)
-
-def GetSimilarCommands(parser, cmd, author):
-    commands = [ command for command in parser if author.guild_permissions >= parser[command][3] ]
-    commands.append("help")
-    commands.sort(key = lambda x: -fuzz.ratio(x, cmd))
-    return commands
 
 async def Parse(parser, ctx, args, prev_args = []):
     try:
@@ -77,3 +108,5 @@ async def Parse(parser, ctx, args, prev_args = []):
         else:
             await ctx.message.reply("Command error: " + str(e))
     return True
+
+########################################################################################################################

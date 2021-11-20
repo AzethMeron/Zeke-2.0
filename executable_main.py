@@ -29,13 +29,11 @@ import levels
 import text_ai
 import reaction_roles
 
-PREFIX = "zeke"
-VERSION = "2.0"
-
 load_dotenv() # load environmental variables from file .env
 intents = discord.Intents.default()
 intents.members = True
-DiscordClient = commands.Bot(command_prefix=PREFIX,intents=intents) # create client of discord-bot
+DiscordClient = commands.Bot(command_prefix="unused",intents=intents) # create client of discord-bot
+VERSION = "2.0"
 
 #################################### TIMER #####################################
 
@@ -72,10 +70,6 @@ async def on_error(event, *args, **kwargs):
     print("UNHANDLED EXCEPTION")
     print(event)
     log.write(RuntimeError("on_error event"))
-    
-@DiscordClient.event
-async def on_command_error(ctx, error):
-    await ctx.message.reply(str(error))
 
 ################################################################################
 
@@ -85,17 +79,9 @@ async def on_command_error(ctx, error):
 async def on_message(message):
     if message.author.bot: return
     if not message.guild: return
-    # enforce execution of commands
-    #await DiscordClient.process_commands(message)
-    # Custom command parser
-    content = message.content.split()
-    if len(content) >= 1:
-        if content[0] == PREFIX:
-            ctx = await DiscordClient.get_context(message)
-            await cmd.Parse(triggers.parser, ctx, content[1:], content[:1])
-    # end of custom command parser
     normalised = tools.EnsureEnglish(message.content)
     local_env = data.GetGuildEnvironment(message.guild)
+    await cmd.ProcessCommands(local_env, message, DiscordClient)
     for func in triggers.on_message: 
         try:
             await func(local_env, message, normalised)
@@ -197,6 +183,14 @@ async def cmd_debug(ctx, args):
         await ctx.message.reply("Debug tools are disabled server-side. There's nothing you can do about it")
     return True
 cmd.Add(triggers.parser, "debug", cmd_debug, "Tools useful for debugging this bot", "", discord.Permissions.all())
+
+async def cmd_alias(ctx, args):
+    if len(args) < 2: raise RuntimeError("Not enough arguments")
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    alias = args[0]
+    cmd = ' '.join(args[1:])
+    local_env['alias'][alias] = cmd
+cmd.Add(triggers.parser, "alias", cmd_alias, "dummy", "dummy", discord.Permissions.all())
 
 ################################################################################
 
