@@ -187,6 +187,7 @@ async def cmd_status(ctx, args):
         except Exception as e:
             log.write(e)
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
+    return True
 cmd.Add(triggers.parser, "status", cmd_status, "Check status of integration with third party", "", discord.Permissions.all())
 
 async def cmd_debug(ctx, args):
@@ -194,6 +195,7 @@ async def cmd_debug(ctx, args):
         await debug.command(ctx, list(args))
     else:
         await ctx.message.reply("Debug tools are disabled server-side. There's nothing you can do about it")
+    return True
 cmd.Add(triggers.parser, "debug", cmd_debug, "Tools useful for debugging this bot", "", discord.Permissions.all())
 
 ################################################################################
