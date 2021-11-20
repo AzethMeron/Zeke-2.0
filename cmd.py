@@ -19,8 +19,8 @@ def Help(parser, args, author):
         if cmd not in parser:
             commands = GetSimilarCommands(parser, cmd, author)
             raise KeyError(f'Command "{cmd}" not found. Did you mean {commands[0]}?')
-        if type(parser[cmd]) == type(Parser()):
-            return Help(parser[cmd], args[1:], author)
+        if type(parser[cmd][0]) == type(Parser()):
+            return Help(parser[cmd][0], args[1:], author)
         else:
             return parser[cmd][2]
     # Not parametrized
