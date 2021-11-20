@@ -52,6 +52,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - Levels (basic but it does work)
 - Reaction roles.
 - Text generation, summarization with Deep AI.
+- Aliases (macros) to shorten frequently used commands.
 - Very easily expandable "engine".
 - Own command parser.
 - Support for multiple servers (guilds, with separate variables & stuff)
@@ -118,6 +119,16 @@ To remove message, use "zeke welcome/farewell message remove :id:", where :id: i
 
 Inside messages, you can refer to arriving/leaving user by USER (this will mention them) or NAME (which will just paste their discord username).  
 Example: "zeke welcome message add USER joined the server!"  
+
+---
+# Feature: Aliases/macros
+
+You can create aliases (or macros) for any command you need to use. It can also be used to change "prefix" (tho zeke will always work)  
+For example, "zeke alias add !play zeke music play" will make "!play" macro for "zeke music play".  
+You can also create alias for entire command with arguments. "zeke alias add PlayAMV zeke music play :link to your AMV playlist:"  
+"zeke alias add d6 zeke random dice 1 6"  
+
+You can check exisitng aliases with "zeke alias list"  
 
 ---
 # Engine: The way data is stored, data.py:  

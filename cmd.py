@@ -44,7 +44,7 @@ def Help(parser, args, author, prev_args):
         prev_args.append(cmd)
         if cmd not in parser:
             commands = GetSimilarCommands(parser, cmd, author)
-            raise KeyError(f'Command "{cmd}" not found. Did you mean {commands[0]}?')
+            raise KeyError(f'Command "{cmd}" not found. Did you mean "{commands[0]}"?')
         if type(parser[cmd][0]) == type(Parser()):
             return parser[cmd][1] + "\n\n" + Help(parser[cmd][0], args[1:], author, prev_args)
         else:
@@ -101,7 +101,7 @@ async def Parse(parser, ctx, args, prev_args = []):
             return True
         if cmd not in parser:
             commands = GetSimilarCommands(parser, cmd, ctx.message.author)
-            raise KeyError(f'Command "{cmd}" not found. Did you mean {commands[0]}?')
+            raise KeyError(f'Command "{cmd}" not found. Did you mean "{commands[0]}"?')
         if not ctx.message.author.guild_permissions >= parser[cmd][3]: 
             raise RuntimeError("Insufficent permissions")
         if type(parser[cmd][0]) == type(Parser()):
@@ -147,6 +147,7 @@ async def cmd_alias_list(ctx, args):
     for (alias, command) in AliasList(local_env):
         output = output + f'{alias} -> {command}\n'
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
+    return True
 
 alias_parser = Parser()
 Add(alias_parser, "add", cmd_alias_add, "Create alias.", "Create alias (macro) for command.\nThis can be used to replace prefix, or as fast way to use common command.\n\nSyntac:\nUPLINE <alias> <command> - now you can type in <alias> to run <command.\nExample: UPLINE !play zeke music play - now you can play music by using !play", discord.Permissions.all())
