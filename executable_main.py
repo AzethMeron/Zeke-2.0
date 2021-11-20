@@ -92,7 +92,7 @@ async def on_message(message):
     if len(content) >= 1:
         if content[0] == PREFIX:
             ctx = await DiscordClient.get_context(message)
-            await cmd.Parse(triggers.parser, ctx, content[1:])
+            await cmd.Parse(triggers.parser, ctx, content[1:], content[:1])
     # end of custom command parser
     normalised = tools.EnsureEnglish(message.content)
     local_env = data.GetGuildEnvironment(message.guild)

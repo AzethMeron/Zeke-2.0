@@ -1,4 +1,8 @@
 
+# This parser should be either rewritten into OOP object
+# or just left alone as it is, only updated with fixes
+# it's spaghetti code i hate
+
 import os
 
 import traceback
@@ -12,17 +16,20 @@ default_parser = dict()
 def Parser():
     return copy.deepcopy(default_parser)
 
-def Help(parser, args, author):
+def Help(parser, args, author, prev_args):
     # Parametried
     if len(args) == 1:
         cmd = args[0]
+        prev_args.append(cmd)
         if cmd not in parser:
             commands = GetSimilarCommands(parser, cmd, author)
             raise KeyError(f'Command "{cmd}" not found. Did you mean {commands[0]}?')
         if type(parser[cmd][0]) == type(Parser()):
-            return Help(parser[cmd][0], args[1:], author)
+            return parser[cmd][1] + "\n\n" + Help(parser[cmd][0], args[1:], author, prev_args)
         else:
-            return parser[cmd][2]
+            prev_args.remove('help')
+            upline = ' '.join(prev_args)
+            return parser[cmd][2].replace('UPLINE', upline)
     # Not parametrized
     output = str()
     for cmd in parser:
@@ -44,12 +51,13 @@ def GetSimilarCommands(parser, cmd, author):
     commands.sort(key = lambda x: -fuzz.ratio(x, cmd))
     return commands
 
-async def Parse(parser, ctx, args):
+async def Parse(parser, ctx, args, prev_args = []):
     try:
         if len(args) == 0: raise KeyError('no command specified. Try "help"')
         cmd = args.pop(0)
+        prev_args.append(cmd)
         if cmd == "help":
-            help = Help(parser, args, ctx.message.author)
+            help = Help(parser, args, ctx.message.author, prev_args)
             for out in tools.segment_text(help,1980):
                 await ctx.message.reply("```"+out+"```")
             return True
@@ -59,7 +67,7 @@ async def Parse(parser, ctx, args):
         if not ctx.message.author.guild_permissions >= parser[cmd][3]: 
             raise RuntimeError("Insufficent permissions")
         if type(parser[cmd][0]) == type(Parser()):
-            feedback = await Parse(parser[cmd][0], ctx, args)
+            feedback = await Parse(parser[cmd][0], ctx, args, prev_args)
         else:
             feedback = await parser[cmd][0](ctx, args)
         if not feedback: await ctx.message.add_reaction('👍')
