@@ -62,30 +62,30 @@ async def Reply(message, user, translated_text, src_lang, tgt_lang):
     Requested by: {user.display_name}"
     await message.reply(mess)
 
-async def OnReaction(local_env, reaction, user):
-    try:
-        if reaction.message.author.bot:
-            return None
-        if reaction.count > 1: 
-            return None
-        if len(reaction.message.content) < 4:
-            return None
-        emoji = str(reaction.emoji)
-        text = reaction.message.content
-        if emoji in GetReactionTranslator(local_env):
-            tgt_lang = GetReactionTranslator(local_env)[emoji]
-            (src_lang, _, translated) = ('auto', tgt_lang, text)
-            if tgt_lang in custom_lang:
-                normalised_lang = custom_lang[tgt_lang][0]
-                (src_lang, _, translated) = tools.Translate(normalised_lang, text)
-                translated = custom_lang[tgt_lang][1](translated)
-            else:
-                (src_lang, _, translated) = tools.Translate(tgt_lang, text)
-            await reaction.message.add_reaction(reaction.emoji)
-            await Reply(reaction.message, user, translated, src_lang, tgt_lang)
-    except Exception as e:
-        log.write(e)
-triggers.on_reaction_add.append(OnReaction)
+def GetReaction(PartialEmoji, message):
+    for reaction in message.reactions:
+        if str(PartialEmoji) == str(reaction): return reaction
+    return None
+
+async def OnRawReaction(payload, local_env, PartialEmoji, member, guild, message):
+    if member.bot: return
+    if len(message.content) < 4: return
+    reaction = GetReaction(PartialEmoji, message)
+    if reaction and reaction.count > 1: return
+    emoji = str(PartialEmoji)
+    text = message.content
+    if emoji in GetReactionTranslator(local_env):
+        tgt_lang = GetReactionTranslator(local_env)[emoji]
+        (src_lang, _, translated) = ('auto', tgt_lang, text)
+        if tgt_lang in custom_lang:
+            normalised_lang = custom_lang[tgt_lang][0]
+            (src_lang, _, translated) = tools.Translate(normalised_lang, text)
+            translated = custom_lang[tgt_lang][1](translated)
+        else:
+            (src_lang, _, translated) = tools.Translate(tgt_lang, text)
+        await message.add_reaction(PartialEmoji)
+        await Reply(message, member, translated, src_lang, tgt_lang)
+triggers.raw_reaction_add.append(OnRawReaction)
 
 ################################################################################
 

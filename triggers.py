@@ -11,8 +11,8 @@ on_reaction_add = [] # async func(local_env, reaction, user)
 on_reaction_remove = [] # async func(local_env, reaction, user)
 on_member_join = [] # async func(local_env, member)
 on_member_remove = [] # async func(local_env, member)
-raw_reaction_add = [] # async (payload, local_env, emoji, member, guild, message)
-raw_reaction_remove = [] # async (payload, local_env, emoji, member, guild, message)
+raw_reaction_add = [] # async (payload, local_env, PartialEmoji, member, guild, message)
+raw_reaction_remove = [] # async (payload, local_env, PartialEmoji, member, guild, message)
 
 # Data
 PreSaveTrigger = [] # func(local_env): # Called BEFORE saving

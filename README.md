@@ -129,6 +129,7 @@ You can also create alias for entire command with arguments. "zeke alias add Pla
 "zeke alias add d6 zeke random dice 1 6"  
 
 You can check exisitng aliases with "zeke alias list"  
+Alias can be only singular word, and must be first in command. So you CANNOT use "zeke alias add play msic play" -> "zeke play ..."  
 
 ---
 # Engine: The way data is stored, data.py:  
@@ -173,3 +174,16 @@ For example, for "zeke random help dice" -> UPLINE = "zeke random dice"
 
 Main parser of bot resides in cmd.py, simply named "parser". Refer to it from outside with cmd.parser.  
 You can add your own commands/other parsers to it.  
+
+---
+# Engine: Adding/removing features: 
+
+Scripts of this bot are segregated into two groups: engine and features.  
+Due to how the engine is constructed, you can add features without any changes to engine scripts.  
+Read more about "data.py", "triggers.py" and "cmd.py".  
+Then all you need to do is to import feature script in executable_main.py.  
+To remove any feature, you can just remove that import.  
+
+Limitation: You cannot remove support to feature if both are true  
+- it was used previously, and its data is saved in "database".  
+- Data of this feature (script) uses class.  
