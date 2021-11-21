@@ -119,11 +119,15 @@ async def Parse(parser, ctx, args, prev_args = []):
 ########################################################################################################################
 
 def AddAlias(local_env, alias, cmd):
+    tmp = cmd.split()
+    if len(tmp) >= 1 and tmp[0] in local_env['alias']: raise RuntimeError("Alias cannot refer to another alias")
     local_env['alias'][alias] = cmd
 
 def RemoveAlias(local_env, alias):
     if alias in local_env['alias']:
         del local_env['alias'][alias]
+    else:
+        raise RuntimeError(f"There's no {alias} alias")
 
 def AliasList(local_env):
     return [ (alias, local_env['alias'][alias]) for alias in local_env['alias'] ]

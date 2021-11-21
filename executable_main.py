@@ -81,7 +81,10 @@ async def on_message(message):
     if not message.guild: return
     normalised = tools.EnsureEnglish(message.content)
     local_env = data.GetGuildEnvironment(message.guild)
-    await cmd.ProcessCommands(local_env, message, DiscordClient)
+    try:
+        await cmd.ProcessCommands(local_env, message, DiscordClient)
+    except Exception as e:
+        log.write(e)
     for func in triggers.on_message: 
         try:
             await func(local_env, message, normalised)
