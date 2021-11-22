@@ -129,7 +129,7 @@ You can also create alias for entire command with arguments. "zeke alias add Pla
 "zeke alias add d6 zeke random dice 1 6"  
 
 You can check exisitng aliases with "zeke alias list"  
-Alias can be only singular word, and must be first in command. So you CANNOT use "zeke alias add play msic play" -> "zeke play ..."  
+Alias can be only singular word, and must be first in command. So you CANNOT use "zeke alias add play music play" -> "zeke play ..."  
 
 ---
 # Engine: The way data is stored, data.py:  
@@ -141,8 +141,8 @@ All data inside of those must be pickleable, because this is the way data is sav
 Additionally, there's temporary environment that can be used with not-pickleable datatypes. This aswell is dictionary. You can get it by using temp.GetTempEnvironment(local_env). In code, it's referred to as "temp_env".  
 
 It's useful to initialise "variables" in enviroments with some data. Here's simple example:  
-data.NewGuildEnvAdd("welcome_channel_id", None)  
-data.NewGuildEnvAdd("welcome_message", ["USER joined the server!"])   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.NewGuildEnvAdd("welcome_channel_id", None)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.NewGuildEnvAdd("welcome_message", ["USER joined the server!"])   
 Those "variables" will be accessible then in every newcoming guild.  
 
 NO SELFREFERENCING LOOPS INSIDE THIS DATA IS ALLOWED!  
@@ -151,7 +151,7 @@ This can save you some trouble, but remember it does only work if key wasn't use
 Same applies to temp_env and user_env.  
 
 Note: data declared in temp_env still must be pickleable, but then you can switch it to anything and it will be fine:  
-temp.NewTempEnvAdd("music_lock", None)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;temp.NewTempEnvAdd("music_lock", None)  
 Before saving data, engine replaces temp_env of guild with "NewTempEnvironment()", then saves entire local_env and finally swappes tmp_env back to its place. This way, real data stored in temp_env isn't saved but persists after saving.  
 
 ---
