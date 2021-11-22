@@ -10,9 +10,6 @@ import data
 import triggers
 import cmd
 
-# Clausule
-#uses = triggers.BOT_REFERENCE
-
 ################################################################################
 
 data.NewGuildEnvAdd("welcome_channel_id", None)
@@ -22,11 +19,11 @@ data.NewGuildEnvAdd("farewell_message", ["NAME left the server :C"])
 
 ################################################################################
 
-def GetChannel(channel_id, bot):
+def GetChannel(channel_id, guild):
     channel = None
     if channel_id:
         try:
-            channel = bot.get_channel(channel_id)
+            channel = guild.get_channel(channel_id)
         except Exception as e:
             log.write(e)
     return channel
@@ -40,13 +37,13 @@ def GetMessage(olist, member):
         output = output.replace("NAME", member.name)
     return output
 
-async def GetWelcomeChannel(local_env, bot):
+async def GetWelcomeChannel(local_env, guild):
     channel_id = local_env["welcome_channel_id"]
-    return GetChannel(channel_id, bot)
+    return GetChannel(channel_id, guild)
 
-async def GetFarewellChannel(local_env, bot):
+async def GetFarewellChannel(local_env, guild):
     channel_id = local_env["farewell_channel_id"]
-    return GetChannel(channel_id, bot)
+    return GetChannel(channel_id, guild)
 
 async def GetWelcomeMessage(local_env, member):
     olist = local_env["welcome_message"]
@@ -59,7 +56,7 @@ async def GetFarewellMessage(local_env, member):
 ################################################################################
 
 async def on_member_join(local_env, member):
-    channel = await GetWelcomeChannel(local_env, triggers.GetBot())
+    channel = await GetWelcomeChannel(local_env, member.guild)
     if channel:
         output = await GetWelcomeMessage(local_env, member)
         if output:
@@ -67,7 +64,7 @@ async def on_member_join(local_env, member):
 triggers.on_member_join.append(on_member_join)
 
 async def on_member_remove(local_env, member):
-    channel = await GetFarewellChannel(local_env, triggers.GetBot())
+    channel = await GetFarewellChannel(local_env, member.guild)
     if channel:
         output = await GetFarewellMessage(local_env, member)
         if output:

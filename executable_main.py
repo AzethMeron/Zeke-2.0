@@ -193,7 +193,6 @@ cmd.Add(cmd.parser, "debug", cmd_debug, "Tools useful for debugging this bot", "
 
 @DiscordClient.event
 async def on_ready():
-    triggers.BOT_REFERENCE = DiscordClient
     each_minute.start()
     print("Initialisation finished")
     print(f'{DiscordClient.user} has connected to Discord!')
