@@ -28,12 +28,14 @@ import mode
 import levels
 import text_ai
 import reaction_roles
+import reactionary
 
 load_dotenv() # load environmental variables from file .env
 intents = discord.Intents.default()
 intents.members = True
 DiscordClient = commands.Bot(command_prefix="unused",intents=intents) # create client of discord-bot
 VERSION = "2.0"
+REPO_LINK = "https://github.com/AzethMeron/Zeke-2.0"
 
 #################################### TIMER #####################################
 
@@ -102,6 +104,17 @@ async def on_reaction_add(reaction, user):
         except Exception as e:
             log.write(e)
 
+@DiscordClient.event        
+async def on_reaction_remove(reaction, user):
+    if user.bot: return
+    if not reaction.message.guild: return
+    local_env = data.GetGuildEnvironment(reaction.message.guild)
+    for func in triggers.on_reaction_remove: 
+        try:
+            await func(local_env, reaction, user)
+        except Exception as e:
+            log.write(e)
+
 @DiscordClient.event
 async def on_raw_reaction_add(payload):
     if not payload.guild_id: return
@@ -132,19 +145,6 @@ async def on_raw_reaction_remove(payload):
         except Exception as e:
             log.write(e)
 
-@DiscordClient.event        
-async def on_reaction_remove(reaction, user):
-    if user.bot:
-        return
-    if not reaction.message.guild:
-        return
-    local_env = data.GetGuildEnvironment(reaction.message.guild)
-    for func in triggers.on_reaction_remove: 
-        try:
-            await func(local_env, reaction, user)
-        except Exception as e:
-            log.write(e)
-
 @DiscordClient.event
 async def on_member_join(member):
     local_env = data.GetGuildEnvironment(member.guild)
@@ -163,13 +163,29 @@ async def on_member_remove(member):
         except Exception as e:
             log.write(e)
 
+@DiscordClient.event
+async def on_guild_join(guild):
+    local_env = data.GetGuildEnvironment(guild)
+    channel = guild.system_channel
+    if channel:
+        output = f"Why hello there! I'm Zeke, version {VERSION}\nI'm open source bot: {REPO_LINK}\nMy only duty is to serve you, in a number of ways:\n"
+        for func in triggers.on_guild_join:
+            try:
+                result = await func(local_env, guild)
+                if result:
+                    output = output + result + "\n"
+            except Exception as e:
+                log.write(e)
+        output = output + f'Try using "{cmd.PREFIX} help".'
+        for out in tools.segment_text(output, 1980): await channel.send("```"+out+"```")
+
 ################################################################################
 
 ################################## COMMANDS ####################################
 
 async def cmd_status(ctx, args):
     await ctx.message.add_reaction('👍') 
-    output = "ZEKE BOT " + VERSION + " [https://github.com/AzethMeron/Zeke-2.0]" + "\n"
+    output = "ZEKE BOT " + VERSION + f" [{REPO_LINK}]" + "\n"
     for (name, check) in triggers.Status:
         try:
             output = output + name + ": " + tools.convert_status( (await check()) ) + "\n"
