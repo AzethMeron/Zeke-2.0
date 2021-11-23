@@ -33,13 +33,6 @@ data.NewGuildEnvAdd('alias', default_aliases)
 
 ########################################################################################################################
 
-# API for bundle
-def AddDefaultAlias(alias, cmd):
-    if alias in default_aliases: raise RuntimeError(f"Alias {alias} already exists")
-    default_aliases[alias] = cmd
-
-########################################################################################################################
-
 # MAIN PARSER OF ENGINE
 parser = Parser()
 
@@ -123,6 +116,11 @@ async def Parse(parser, ctx, args, prev_args = []):
         else:
             await ctx.message.reply("Command error: " + str(e))
     return True
+
+# API for bundle
+def AddDefaultAlias(alias, cmd):
+    if alias in default_aliases: raise RuntimeError(f"Alias {alias} already exists")
+    default_aliases[alias] = cmd
 
 ########################################################################################################################
 
