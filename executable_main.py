@@ -29,6 +29,7 @@ import levels
 import text_ai
 import reaction_roles
 import reactionary
+import lurker
 
 load_dotenv() # load environmental variables from file .env
 intents = discord.Intents.default()
