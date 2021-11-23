@@ -28,7 +28,15 @@ default_parser = dict()
 def Parser():
     return copy.deepcopy(default_parser)
 
-data.NewGuildEnvAdd('alias', dict())
+default_aliases = dict()
+data.NewGuildEnvAdd('alias', default_aliases)
+
+########################################################################################################################
+
+# API for bundle
+def AddDefaultAlias(alias, cmd):
+    if alias in default_aliases: raise RuntimeError(f"Alias {alias} already exists")
+    default_aliases[alias] = cmd
 
 ########################################################################################################################
 

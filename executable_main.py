@@ -31,6 +31,9 @@ import reaction_roles
 import reactionary
 import lurker
 
+# LOADING BUNDLE
+import bundle
+
 load_dotenv() # load environmental variables from file .env
 intents = discord.Intents.default()
 intents.members = True

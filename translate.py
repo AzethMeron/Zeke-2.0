@@ -31,27 +31,28 @@ def fun_translation(lang, text):
 ################################################################################
 
 default_emojis = dict()
-default_emojis['🇵🇱'] = 'pl'
-default_emojis['🇬🇧'] = 'en'
-default_emojis['🇪🇦'] = 'es'
-default_emojis['🇷🇺'] = 'ru'
-default_emojis['🇫🇷'] = 'fr'
-default_emojis['🇮🇹'] = 'it'
-
 data.NewGuildEnvAdd("reaction_translator", default_emojis) # dict[emoji] = tgt_lang
-custom_lang = dict()
-custom_lang['uwu'] = ('en', uwu_translator.convert, 'Twanswate text intwo cuwe UwU wanguage :3')
-custom_lang['shakespeare'] = ('en', lambda text: fun_translation('shakespeare.json',text), 'helpfile')
-custom_lang['orcish'] = ('en', lambda text: fun_translation('orcish.json',text), 'helpfile')
-custom_lang['oldenglish'] = ('en', lambda text: fun_translation('oldenglish.json',text), 'helpfile')
-custom_lang['pirate'] = ('en', lambda text: fun_translation('pirate.json',text), 'Arr, raise the anchor and translate text into Corsair jargon!')
-custom_lang['yoda'] = ('en', lambda text: fun_translation('yoda.json',text), 'Text into language of ancient jedi master,  translate.')
-#custom_lang['wow'] = ('en', lambda text: fun_translation('wow.json',text), 'doesnt work?')
-#custom_lang['draconic'] = ('en', lambda text: fun_translation('draconic.json',text), 'doesnt work?')
-#custom_lang['gungan'] = ('en', lambda text: fun_translation('gungan.json',text), 'doesnt work?')
-
 def GetReactionTranslator(local_env):
     return local_env["reaction_translator"]
+
+custom_lang = dict()
+
+################################################################################
+
+# API for bundle
+def AddDefaultTranslation(emoji, langcode):
+    default_emojis[emoji] = langcode
+
+# API for bundle
+def AddCustomTranslation(name, normalisation_code, func, help):
+    custom_lang[name] = (normalisation_code, func, help)
+
+AddCustomTranslation('uwu', 'en', uwu_translator.convert, 'Twanswate text intwo cuwe UwU wanguage :3')
+AddCustomTranslation('shakespeare','en', lambda text: fun_translation('shakespeare.json',text), 'helpfile')
+AddCustomTranslation('orcish', 'en', lambda text: fun_translation('orcish.json',text), 'helpfile')
+AddCustomTranslation('oldenglish', 'en', lambda text: fun_translation('oldenglish.json',text), 'helpfile')
+AddCustomTranslation('pirate', 'en', lambda text: fun_translation('pirate.json',text), 'Arr, raise the anchor and translate text into Corsair jargon!')
+AddCustomTranslation('yoda', 'en', lambda text: fun_translation('yoda.json',text), 'Text into language of ancient jedi master,  translate.')
 
 ################################################################################
 

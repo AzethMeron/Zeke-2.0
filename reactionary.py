@@ -21,10 +21,18 @@ import triggers
 
 ##################################################################################################
 
-data.NewGuildEnvAdd("reactionary", dict()) # [emoji] = [texts]
+default_reactions = dict()
+data.NewGuildEnvAdd("reactionary", default_reactions) # [emoji] = [texts]
 
 def GetReactionaryData(local_env):
     return local_env["reactionary"]
+
+##################################################################################################
+
+# API for bundle
+def AddDefaultReact(emoji, text):
+    if emoji not in default_reactions: default_reactions[emoji] = []
+    default_reactions[emoji].append(text)
 
 ##################################################################################################
 

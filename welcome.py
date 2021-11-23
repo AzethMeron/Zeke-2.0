@@ -12,10 +12,21 @@ import cmd
 
 ################################################################################
 
+default_welcome_list = []
+default_farewell_list = []
+
 data.NewGuildEnvAdd("welcome_channel_id", None)
-data.NewGuildEnvAdd("welcome_message", ["USER joined the server!"]) 
+data.NewGuildEnvAdd("welcome_message", default_welcome_list) 
 data.NewGuildEnvAdd("farewell_channel_id", None)
-data.NewGuildEnvAdd("farewell_message", ["NAME left the server :C"]) 
+data.NewGuildEnvAdd("farewell_message", default_farewell_list) 
+
+################################################################################
+
+# API for bundle
+def AddDefaultWelcome(text):
+    default_welcome_list.append(text)
+def AddDefaultFarewell(text):
+    default_farewell_list.append(text)
 
 ################################################################################
 
