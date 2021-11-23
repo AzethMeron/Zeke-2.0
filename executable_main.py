@@ -23,7 +23,7 @@ import aes
 import music
 import welcome
 import translate
-import dice
+import rand
 import mode
 import levels
 import text_ai

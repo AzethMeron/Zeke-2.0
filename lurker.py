@@ -13,7 +13,7 @@ import cmd
 lurker_data = dict()
 lurker_data['emoji'] = '👀'
 lurker_data['min_chance'] = 1
-lurker_data['max_chance'] = 25
+lurker_data['max_chance'] = 10
 data.NewGuildEnvAdd('lurker_data', lurker_data)
 
 def GetLurkerData(local_env):
