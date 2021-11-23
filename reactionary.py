@@ -111,6 +111,16 @@ async def cmd_random(ctx, args):
     await message.reply(output)
     return True
 
+async def cmd_change_emoji(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    if len(args) < 2: raise RuntimeError("Not enough arguments")
+    reactionary = GetReactionaryData(local_env)
+    emoji1 = args[0] # src
+    emoji2 = args[1] # tgt
+    if not emoji1 in reactionary: raise RuntimeError(f"Unused emoji {emoji1}")
+    reactionary[emoji2] = reactionary[emoji1]
+    del reactionary[emoji1]
+
 ##################################################################################################
 
 parser = cmd.Parser()
@@ -118,6 +128,7 @@ cmd.Add(parser, "add", cmd_add, "Add reactionary", "", discord.Permissions.all()
 cmd.Add(parser, "remove", cmd_remove, "Remove reactionary", "", discord.Permissions.all())
 cmd.Add(parser, "list", cmd_list, "Get list of reactionaries", "")
 cmd.Add(parser, "random", cmd_random, "Get random reaction", "")
+cmd.Add(parser, "change", cmd_change_emoji, "Change emoji", "")
 
 cmd.Add(cmd.parser, "react", parser, "Add reactionaries", "")
 
