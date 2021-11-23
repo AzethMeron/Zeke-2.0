@@ -5,6 +5,10 @@ Simple discord bot made to learn Discord API.
 Most scripts are library scripts. Callable scripts are called "executable_*"  
 executable_main.py - main script of Discord Bot  
 
+NOTE: This bot IS NOT plug&play.  
+Features are NOT hardcoded and most things can be changed with use of commands.  
+Actually, not only can, but must.   
+
 ---
 # REQUIREMENTS. Created using programs & libraries:  
 
@@ -14,10 +18,8 @@ Ffmpeg must be installed and present in PATH environmental variable.
 
 Tokens must be included in ".env" file in working directory, containing:  
 DISCORD_TOKEN="your token here"  
-DETECT_LANGUAGE_TOKEN="your token here"  
+(optional) DETECT_LANGUAGE_TOKEN="your token here"  
 (optional) DROPBOX_TOKEN="your token here"  
-(optional) DEEP_AI_KEY="your token here"  
-(optional) SERP_API_KEY="your token here"  
 Discord bot must have "members intent" enabled.  
 
 Dropbox token is optional. If you specify it, all guild data will be saved/loaded from dropbox if local copy isn't available. Useful when there's no persistent memory.   
@@ -130,6 +132,31 @@ You can also create alias for entire command with arguments. "zeke alias add Pla
 
 You can check exisitng aliases with "zeke alias list"  
 Alias can be only singular word, and must be first in command. So you CANNOT use "zeke alias add play music play" -> "zeke play ..."  
+Also, alias CANNOT refer to another alias.  
+
+---
+# Feature: Reactionaries
+
+I'm still think about how this feature should even be named.  
+Basically, reactionaries are messages sent automatically after anyone adds to any message specific emoji.  
+To get help, use "zeke help react".  
+
+Plain syntax:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke react add :emoji: any text you want  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke react remove :emoji: index  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke react list (optional: :emoji:)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke react random :emoji:  
+
+Most meaningful example: BonkBot. Setup reactionary in the way it sends "bonk go to hornyjail" after usage of :bonk: emoji.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke react add :bonk: https://cdn.discordapp.com/attachments/912456973348397076/912457896791527484/unknown.png  
+Then, after anyone uses :bonk: on message, Zeke will respond with this meme.  
+Technically he responds with plain text, but if you use direct link to picture without anythin else, it's converted to just that picture.  
+You can also use "zeke react add :bonk: text" multiple times, to add multiple pictures. Then random one will be chosen for every reaction.  
+
+You can combine this feature with alias. By using:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke react random :bonk:  
+you can get random reaction from Zeke for :bonk:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeke alias add bonk! zeke react random :bonk:  
 
 ---
 # Engine: The way data is stored, data.py:  
@@ -187,3 +214,27 @@ To remove any feature, you can just remove that import.
 Limitation: You cannot remove support to feature if both are true  
 - it was used previously, and its data is saved in "database".  
 - Data of this feature (script) uses class.  
+
+---
+# Engine: Environmental variables:
+
+There're more env vars used than I've put in initial requirements.  
+Some are mandatory, some are optional, for specific features.  
+All apis below have free, limited keys you can get.  
+
+ENGINE ENVIRONMENTAL VARS:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DISCORD_TOKEN="your discord token - https://discord.com/developers/applications"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional) DETECT_LANGUAGE_TOKEN="your token for detect language - https://detectlanguage.com"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional) DROPBOX_TOKEN="your token for dropbox app - https://www.dropbox.com/developers/documentation/python"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional) DEBUG_MODE="value doesn't matter, but if you set this var then debug tools will be activated and command errors will display full traceback instead of only exception"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional) DATA_SAVE_INTERVAL_MIN=60 # interval between saves of data in minutes, default 60  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional) PURGE_DIR_INTERVAL_MIN=360 # interval between purge of temporary directory in minutes, default 360 (6 hours)  
+Dropbox token is important cause for systems like Heroku (without permanent memory storage) every restart will result in removal of all data.  
+
+ENVIRONMENTAL VARS OF FEATURES:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional) DEEP_AI_KEY="your api key for deep ai - https://deepai.org"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional) SERP_API_KEY="your api key for serp api - https://serpapi.com"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional) MUSIC_PROC_COUNT=4 # number of processes used by music.py to download audio from yt, default 4  
+
+If optional environmental variable isn't set, it uses some default value (that has harsh limitations) or disables given feature.  
+

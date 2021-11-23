@@ -61,7 +61,7 @@ import os
 import triggers
 
 load_dotenv() # load environmental variables from file .env
-detectlanguage.configuration.api_key = os.getenv('DETECT_LANGUAGE_TOKEN')
+detectlanguage.configuration.api_key = os.getenv('DETECT_LANGUAGE_TOKEN') if os.getenv('DETECT_LANGUAGE_TOKEN') else None
 
 def RawTranslate(src_lang, tgt_lang, text):
     return GoogleTranslator(source=src_lang, target=tgt_lang).translate(text)

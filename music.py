@@ -42,7 +42,7 @@ temp.NewTempEnvAdd("music_loop", False)
 
 VidQueue = Queue()
 VidProcesses = []
-ProcNum = 4
+ProcNum = int(os.getenv('MUSIC_PROC_COUNT')) if os.getenv('MUSIC_PROC_COUNT') else 4
 
 def OnInit(bot):
     global VidQueue, VidProcesses, ProcNum

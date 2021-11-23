@@ -166,18 +166,30 @@ async def on_member_remove(member):
 @DiscordClient.event
 async def on_guild_join(guild):
     local_env = data.GetGuildEnvironment(guild)
-    channel = guild.system_channel
-    if channel:
-        output = f"Why hello there! I'm Zeke, version {VERSION}\nI'm open source bot: {REPO_LINK}\nMy only duty is to serve you, in a number of ways:\n"
-        for func in triggers.on_guild_join:
-            try:
-                result = await func(local_env, guild)
-                if result:
-                    output = output + result + "\n"
-            except Exception as e:
-                log.write(e)
-        output = output + f'Try using "{cmd.PREFIX} help".'
-        for out in tools.segment_text(output, 1980): await channel.send("```"+out+"```")
+    output = f"Why hello there! I'm Zeke, version {VERSION}\nI'm open source bot: {REPO_LINK}\nMy only duty is to serve you, in a number of ways:\n"
+    for func in triggers.on_guild_join:
+        try:
+            result = await func(local_env, guild)
+            if result:
+                output = output + result + "\n"
+        except Exception as e:
+            log.write(e)
+    output = output + f'Try using "{cmd.PREFIX} help".'
+    try:
+        channel = guild.system_channel
+        if channel:
+            for out in tools.segment_text(output, 1980): await channel.send("```"+out+"```")
+    except Exception as e:
+        pass # ignoring, most likely exception is "insufficent permissions to write in system channel" which is expected
+
+@DiscordClient.event
+async def on_guild_remove(guild):
+    local_env = data.GetGuildEnvironment(guild)
+    for func in triggers.on_guild_remove: 
+        try:
+            await func(local_env, guild)
+        except Exception as e:
+            log.write(e)
 
 ################################################################################
 
