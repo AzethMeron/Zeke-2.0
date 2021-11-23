@@ -16,7 +16,7 @@ def Success(chance):
     return (rand <= chance)
 
 async def OnMessage(local_env, message, normalised_text):
-    chance = random.randint(1,25)
+    chance = random.randint(8,25)
     if Success(chance):
         await message.add_reaction(EMOJI)
         await message.remove_reaction(EMOJI, message.guild.me)
