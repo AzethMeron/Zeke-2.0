@@ -287,7 +287,9 @@ async def connect(temp_env, ctx, player):
         bot_channel = player.voice.channel
         if bot_channel.id == channel.id: return player.voice
         raise RuntimeError("You must be in the same channel as bot to use that command")
-    return await channel.connect()
+    bot_voice = await channel.connect()
+    await ctx.guild.change_voice_state(channel=channel, self_deaf=True)
+    return bot_voice
 
 def check_channels(ctx, player):
     voice = ctx.author.voice
