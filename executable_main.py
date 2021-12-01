@@ -6,6 +6,7 @@ from discord.ext import tasks
 from discord.ext import commands
 from dotenv import load_dotenv # ENV vars
 from discord.ext.commands import has_permissions, MissingPermissions, CommandNotFound
+import signal
 
 # TOOLS
 import tools
@@ -222,6 +223,11 @@ cmd.Add(cmd.parser, "debug", cmd_debug, "Tools useful for debugging this bot", "
 ################################################################################
 
 #################################### MAIN ######################################
+
+def wyrucham_ci_matke(*args):
+    for guild in DiscordClient.guilds:
+        print(guild.name)
+signal.signal(signal.SIGTERM, wyrucham_ci_matke)
 
 @DiscordClient.event
 async def on_ready():
