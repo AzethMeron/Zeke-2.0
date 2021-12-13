@@ -20,7 +20,7 @@ import storage
 import aes
 
 # FEATURES
-import music
+#import music
 import welcome
 import translate
 import rand
@@ -30,6 +30,7 @@ import text_ai
 import reaction_roles
 import reactionary
 import lurker
+import dm_responder
 
 # LOADING BUNDLE
 import bundle
@@ -84,7 +85,13 @@ async def on_error(event, *args, **kwargs):
 @DiscordClient.event
 async def on_message(message):
     if message.author.bot: return
-    if not message.guild: return
+    if not message.guild: # Not in guild, so DM
+        for func in triggers.on_dm:
+            try:
+                await func(message)
+            except Exception as e:
+                log.write(e)
+        return
     normalised = tools.EnsureEnglish(message.content)
     local_env = data.GetGuildEnvironment(message.guild)
     try:

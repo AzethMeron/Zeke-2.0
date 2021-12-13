@@ -6,6 +6,7 @@ OnInitTrigger = [] # func(bot), called BEFORE connecting to discord
 Timers = []
 
 # Discord Events
+on_dm = [] # async func(message), version of on_message but outside guild (so DMs) This is still primarly server bot, so there won't be any more tools for DMs
 on_message = [] # async func(local_env, message, normalised_text)
 on_reaction_add = [] # async func(local_env, reaction, user)
 on_reaction_remove = [] # async func(local_env, reaction, user)
