@@ -20,7 +20,7 @@ import storage
 import aes
 
 # FEATURES
-#import music
+import music
 import welcome
 import translate
 import rand
