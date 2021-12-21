@@ -238,9 +238,10 @@ async def on_ready():
     print("Number of servers (guilds) bot is connected to: "+str(len(DiscordClient.guilds)))
 
 if __name__ == '__main__':
-    try:
-        for func in triggers.OnInitTrigger: func(DiscordClient)
-    except Exception as e:
-        log.write(e)
+    for func in triggers.OnInitTrigger: 
+        try:
+            func(DiscordClient)
+        except Exception as e:
+            log.write(e)
     print("Startup finished. Connecting...")
     DiscordClient.run(os.getenv('DISCORD_TOKEN'))
