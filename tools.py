@@ -43,12 +43,6 @@ def list_size_args(args, olist, default_min, default_max):
 def random_string(length):
     return ''.join(random.choices(string.ascii_letters + string.digits, k = length))  
 
-def convert_status(boolean):
-    if boolean:
-        return "OK"
-    else:
-        return "FAILED"
-
 #####################################################################################################
 
 # Language tools

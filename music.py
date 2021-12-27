@@ -63,9 +63,8 @@ async def EachMinute(bot, local_env, guild, minute):
         if len(temp_env["music_player"].voice.channel.voice_states.keys()) <= 1:
             await stop_player(temp_env)
             Clear(temp_env)
-        elif not temp_env["music_player"].is_playing():
-            if QueueLength(temp_env) == 0:
-                await stop_player(temp_env)
+        elif not temp_env["music_player"].is_playing:
+            await stop_player(temp_env)
     return None
 triggers.Timers.append( (1, EachMinute) )
 
@@ -231,19 +230,25 @@ class Player:
         self.skip_voting = 0
         self.voters = set()
         if self.stop_sign:
-            return False
+            self.is_playing = False
+            self.stop_sign = False
+            return None
         obj = Fetch(self.env)
         if obj:
+            self.is_playing = True
             filepath = GetAudio(obj, GetMusicDir())
             if filepath:
                 self.currently = obj
                 self.voice.play(AudioSource(filepath), after=self.internal_play)
+                return None
             else:
                 self.internal_play(None)
+                return None
+        else:
+            self.is_playing = False
+            return None
     def play(self, err):
         self.voice.play(AudioSource("ZQUIET.WAV"), after=self.internal_play)
-    def is_playing(self):
-        return self.voice.is_playing()
     def stop(self):
         self.stop_sign = True
         self.skip()

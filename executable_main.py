@@ -204,16 +204,40 @@ async def on_guild_remove(guild):
 
 ################################################################################
 
+################################### STATUS #####################################
+
+async def CheckStatus():
+    results = []
+    for (name, check) in triggers.Status:
+        try:
+            results.append( (name, await check()) )
+        except Exception as e:
+            log.write(e)
+    return results
+
+def StatusMessage(results):
+    output = "ZEKE BOT " + VERSION + f" [{REPO_LINK}]" + "\n"
+    operational = [ (name, val) for (name, val) in results if val == True ]
+    failed = [ (name, val) for (name, val) in results if val == False ]
+    output = output + f"\n{len(operational)}/{len(results)} INTEGRATIONS OK\n"
+    for (name, val) in operational: output = output + f"{name}: OK\n"
+    if len(failed) > 0:
+        output = output + f"\n{len(failed)}/{len(results)} INTEGRATIONS FAILED\n"
+        for (name, val) in failed: output = output + f"{name}: FAILED\n"
+    else:
+        output = output + f"\nALL SYSTEMS OPERATIONAL"
+    return output
+
+async def FetchStatus():
+    return StatusMessage(await CheckStatus())
+
+################################################################################
+
 ################################## COMMANDS ####################################
 
 async def cmd_status(ctx, args):
     await ctx.message.add_reaction('👍') 
-    output = "ZEKE BOT " + VERSION + f" [{REPO_LINK}]" + "\n"
-    for (name, check) in triggers.Status:
-        try:
-            output = output + name + ": " + tools.convert_status( (await check()) ) + "\n"
-        except Exception as e:
-            log.write(e)
+    output = (await FetchStatus()) 
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
     return True
 cmd.Add(cmd.parser, "status", cmd_status, "Check status of integration with third party", "", discord.Permissions.all())
