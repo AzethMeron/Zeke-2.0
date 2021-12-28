@@ -41,6 +41,22 @@ def GetReactionData(local_env):
 
 ##################################################################################################
 
+async def GetReactionMessage(guild, local_env):
+    reaction_data = GetReactionData(local_env)
+    if not reaction_data.channel_id or not reaction_data.message_id: return None
+    channel = guild.get_channel(reaction_data.channel_id)
+    if not channel: return None
+    message = await channel.fetch_message(reaction_data.message_id)
+    return message
+async def AddEmoji(guild, local_env, emoji):
+    rr_message = await GetReactionMessage(guild, local_env)
+    if rr_message: await rr_message.add_reaction(emoji)
+async def RemoveEmoji(guild, local_env, emoji):
+    rr_message = await GetReactionMessage(guild, local_env)
+    if rr_message: await rr_message.remove_reaction(emoji, guild.me)
+
+##################################################################################################
+
 async def AddReaction(payload, local_env, emoji, member, guild, message):
     reaction_data = GetReactionData(local_env)
     if reaction_data.CheckReactionMessage(message):
@@ -80,6 +96,7 @@ async def cmd_add_rr(ctx, args):
     emoji = args[0]
     role_id = ctx.message.raw_role_mentions[0]
     reaction_data.AddRR(emoji, role_id)
+    await AddEmoji(ctx.guild, local_env, emoji)
     
 async def cmd_remove_rr(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
@@ -87,6 +104,7 @@ async def cmd_remove_rr(ctx, args):
     reaction_data = GetReactionData(local_env)
     emoji = args[0]
     reaction_data.RemoveRR(emoji)
+    await RemoveEmoji(ctx.guild, local_env, emoji)
     
 async def cmd_list_rr(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
