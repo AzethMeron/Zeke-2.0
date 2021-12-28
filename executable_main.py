@@ -6,6 +6,7 @@ from discord.ext import tasks
 from discord.ext import commands
 from dotenv import load_dotenv # ENV vars
 from discord.ext.commands import has_permissions, MissingPermissions, CommandNotFound
+from datetime import datetime, timedelta
 
 # TOOLS
 import tools
@@ -219,17 +220,22 @@ def StatusMessage(results):
     output = "ZEKE BOT " + VERSION + f" [{REPO_LINK}]" + "\n"
     operational = [ (name, val) for (name, val) in results if val == True ]
     failed = [ (name, val) for (name, val) in results if val == False ]
-    output = output + f"\n{len(operational)}/{len(results)} INTEGRATIONS OK\n"
+    output = output + "\n"
     for (name, val) in operational: output = output + f"{name}: OK\n"
     if len(failed) > 0:
-        output = output + f"\n{len(failed)}/{len(results)} INTEGRATIONS FAILED\n"
+        output = output + "\n"
         for (name, val) in failed: output = output + f"{name}: FAILED\n"
     else:
         output = output + f"\nALL SYSTEMS OPERATIONAL"
     return output
 
+status_cache = None
+
 async def FetchStatus():
-    return StatusMessage(await CheckStatus())
+    global status_cache
+    if status_cache and (datetime.now() - status_cache[1]).seconds > 60*60: status_cache = None
+    if not status_cache: status_cache = (StatusMessage(await CheckStatus()), datetime.now())
+    return status_cache[0]
 
 ################################################################################
 
@@ -240,7 +246,7 @@ async def cmd_status(ctx, args):
     output = (await FetchStatus()) 
     for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
     return True
-cmd.Add(cmd.parser, "status", cmd_status, "Check status of integration with third party", "", discord.Permissions.all())
+cmd.Add(cmd.parser, "status", cmd_status, "Check status of integration with third party", "")
 
 async def cmd_debug(ctx, args):
     if os.getenv('DEBUG_MODE'):
