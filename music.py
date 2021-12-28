@@ -273,6 +273,7 @@ class Player:
         self.skip_voting = 0
         self.voters = set()
         self.stop_sign = False
+        self.is_playing = True
         self.play(None)
 
 ################################################################################

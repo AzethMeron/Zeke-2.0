@@ -39,8 +39,6 @@ data.NewGuildEnvAdd("reaction_roles", ReactionData()) # [emoji] = role_id
 def GetReactionData(local_env):
     return local_env["reaction_roles"]
 
-##################################################################################################
-
 async def GetReactionMessage(guild, local_env):
     reaction_data = GetReactionData(local_env)
     if not reaction_data.channel_id or not reaction_data.message_id: return None
@@ -48,12 +46,6 @@ async def GetReactionMessage(guild, local_env):
     if not channel: return None
     message = await channel.fetch_message(reaction_data.message_id)
     return message
-async def AddEmoji(guild, local_env, emoji):
-    rr_message = await GetReactionMessage(guild, local_env)
-    if rr_message: await rr_message.add_reaction(emoji)
-async def RemoveEmoji(guild, local_env, emoji):
-    rr_message = await GetReactionMessage(guild, local_env)
-    if rr_message: await rr_message.remove_reaction(emoji, guild.me)
 
 ##################################################################################################
 
@@ -96,7 +88,8 @@ async def cmd_add_rr(ctx, args):
     emoji = args[0]
     role_id = ctx.message.raw_role_mentions[0]
     reaction_data.AddRR(emoji, role_id)
-    await AddEmoji(ctx.guild, local_env, emoji)
+    rr_message = await GetReactionMessage(ctx.guild, local_env)
+    if rr_message: await rr_message.add_reaction(emoji)
     
 async def cmd_remove_rr(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
@@ -104,7 +97,8 @@ async def cmd_remove_rr(ctx, args):
     reaction_data = GetReactionData(local_env)
     emoji = args[0]
     reaction_data.RemoveRR(emoji)
-    await RemoveEmoji(ctx.guild, local_env, emoji)
+    rr_message = await GetReactionMessage(ctx.guild, local_env)
+    if rr_message: await rr_message.remove_reaction(emoji, ctx.guild.me)
     
 async def cmd_list_rr(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
@@ -116,6 +110,21 @@ async def cmd_list_rr(ctx, args):
     await ctx.message.reply(output)
     return True
 
+async def cmd_synchronize(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    reaction_data = GetReactionData(local_env)
+    rr_message = await GetReactionMessage(ctx.guild, local_env)
+    if rr_message:
+        await rr_message.clear_reactions()
+        for (emoji, role_id) in reaction_data.GetList():
+            await rr_message.add_reaction(emoji)
+
+async def cmd_clear(ctx, args):
+    local_env = data.GetGuildEnvironment(ctx.guild)
+    reaction_data = GetReactionData(local_env)
+    for (emoji, role_id) in reaction_data.GetList():
+        reaction_data.RemoveRR(emoji)
+
 ##################################################################################################
 
 parser = cmd.Parser()
@@ -123,6 +132,8 @@ cmd.Add(parser, "setup", cmd_set_message, "Set message used for reaction roles."
 cmd.Add(parser, "add", cmd_add_rr, "Add reaction role", "Add reaction role\n\nSyntax: UPLINE <emoji> <role>")
 cmd.Add(parser, "remove", cmd_remove_rr, "Remove reaction role", "Remove reaction role\n\nSyntax: UPLINE <emoji>")
 cmd.Add(parser, "list", cmd_list_rr, "Show list of programmed reaction roles", "Show list of programmed reaction roles\n\nSyntax: UPLINE")
+cmd.Add(parser, "synchro", cmd_synchronize, "Clear & readd reactions to set message", "TODO")
+cmd.Add(parser, "clear", cmd_clear, "Remove all programmed reaction roles", "TODO")
 
 cmd.Add(cmd.parser, "rr", parser, "Reaction roles.", "", discord.Permissions.all())
 
