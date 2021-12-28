@@ -217,7 +217,7 @@ async def CheckStatus():
     return results
 
 def StatusMessage(results, tim):
-    output = f"ZEKE BOT {VERSION} [{REPO_LINK}]\nCreated on: {str(tim)}\n"
+    output = f"ZEKE BOT {VERSION} [{REPO_LINK}]\nReport created on: {str(tim)}\n"
     operational = [ (name, val) for (name, val) in results if val == True ]
     failed = [ (name, val) for (name, val) in results if val == False ]
     output = output + "\n"
