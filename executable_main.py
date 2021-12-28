@@ -234,7 +234,7 @@ status_cache = None
 async def FetchStatus():
     global status_cache
     if status_cache and (datetime.now() - status_cache[1]).seconds > 60*60: status_cache = None
-    if not status_cache: status_cache = (StatusMessage(await CheckStatus()), datetime.now())
+    if not status_cache: status_cache = (StatusMessage(await CheckStatus(), datetime.now()), datetime.now())
     return status_cache[0]
 
 ################################################################################
