@@ -312,7 +312,7 @@ def check_permissions(ctx):
 
 def run_player(voice, temp_env):
     if temp_env["music_player"]:
-        if not temp_env["music_player"].is_playing():
+        if not temp_env["music_player"].is_playing:
             temp_env["music_player"].play(None)
     else:
         temp_env["music_player"] = Player(voice, temp_env)
