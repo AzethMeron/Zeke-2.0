@@ -331,6 +331,9 @@ async def user_feedback(ctx, objs, failed):
         message = "Played: " + DescribeObj(objs[0])
         await ctx.message.reply("```" + message + "```")
         return True
+    elif len(failed) == 0 and len(objs) == 0:
+        await ctx.message.add_reaction('👎')
+        return True
     return False
 
 async def play(ctx, args, first):
