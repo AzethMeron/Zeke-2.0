@@ -191,24 +191,27 @@ def ValidateVideo(obj, successful, failed):
         successful.append(obj)
 
 def ProcessInput(args): 
-    # function to convert list of arguments into list of pytube.YouTube objects
-    objs = []
-    failed = []
-    if len(args) == 0:
-        return ([], [])
-    if tools.is_url(args[0]):
-        url = args.pop(0)
-        if "list" in url: # playlist
-            for obj in pytube.Playlist(url).videos:
+    try:
+        # function to convert list of arguments into list of pytube.YouTube objects
+        objs = []
+        failed = []
+        if len(args) == 0:
+            return ([], [])
+        if tools.is_url(args[0]):
+            url = args.pop(0)
+            if "list" in url: # playlist
+                for obj in pytube.Playlist(url).videos:
+                    ValidateVideo(obj, objs, failed)
+            else: # single video
+                obj = pytube.YouTube(url)
                 ValidateVideo(obj, objs, failed)
-        else: # single video
-            obj = pytube.YouTube(url)
+        else:
+            title = ' '.join(args)
+            obj = pytube.Search(title).results[0]
             ValidateVideo(obj, objs, failed)
-    else:
-        title = ' '.join(args)
-        obj = pytube.Search(title).results[0]
-        ValidateVideo(obj, objs, failed)
-    return (objs, failed)
+        return (objs, failed)
+    except Exception as e: # most likely error is: smb used link not from yt
+        return ([], [])
 
 def GetTitle(obj):
     return obj.title
