@@ -101,7 +101,7 @@ async def cmd_welcome_message_list(ctx, args):
     for i in range(num_min, num_max):
         output = output + f'{i+1}. {olist[i]}\n'
     for out in tools.segment_text(output, 1980):
-        await ctx.message.reply("```" + out + "```")
+        await ctx.message.reply("```" + out + "```", mention_author=False)
     return True
     
 async def cmd_welcome_message_remove(ctx, args):
@@ -139,7 +139,7 @@ async def cmd_farewell_message_list(ctx, args):
     for i in range(num_min, num_max):
         output = output + f'{i+1}. {olist[i]}\n'
     for out in tools.segment_text(output, 1980):
-        await ctx.message.reply("```" + out + "```")
+        await ctx.message.reply("```" + out + "```", mention_author=False)
     return True
     
 async def cmd_farewell_message_remove(ctx, args):

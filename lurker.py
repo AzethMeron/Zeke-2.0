@@ -65,7 +65,7 @@ async def cmd_settings(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.guild)
     lurker = GetLurkerData(local_env)
     output = "Lurker settings:\n" + f"Minimal chance: {lurker['min_chance']}\n" + f"Maximal chance: {lurker['max_chance']}\n" + f"Emoji: {lurker['emoji']}\n"
-    await ctx.message.reply(output)
+    await ctx.message.reply(output, mention_author=False)
     return True
 
 ################################################################################

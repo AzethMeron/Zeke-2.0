@@ -325,11 +325,11 @@ def run_player(voice, temp_env):
 async def user_feedback(ctx, objs, failed):
     if len(failed) == 1:
         message  = "Failed to play video: " + DescribeObj(failed[0][0]) + " REASON: " + failed[0][1]
-        await ctx.message.reply("```" + message + "```")
+        await ctx.message.reply("```" + message + "```", mention_author=False)
         return True
     elif len(objs) == 1:
         message = "Played: " + DescribeObj(objs[0])
-        await ctx.message.reply("```" + message + "```")
+        await ctx.message.reply("```" + message + "```", mention_author=False)
         return True
     elif len(failed) == 0 and len(objs) == 0:
         await ctx.message.add_reaction('👎')
@@ -410,7 +410,7 @@ async def cmd_queue(ctx, args):
         if len(queue) > num_max:
             output = output + f'...{len(queue)}\n'
     for out in tools.segment_text(output, 1980):
-        await ctx.message.reply("```" + out + "```")
+        await ctx.message.reply("```" + out + "```", mention_author=False)
     return True
 
 async def cmd_remove(ctx, args):
@@ -428,7 +428,7 @@ async def cmd_loop(ctx, args):
     if not check_permissions(ctx): raise RuntimeError("Insufficent permissions")
     if len(args) == 0:
         temp_env["music_loop"] = not temp_env["music_loop"]
-        await ctx.message.reply(f"Looping: {temp_env['music_loop']}") 
+        await ctx.message.reply(f"Looping: {temp_env['music_loop']}", mention_author=False) 
         return True
     else:
         if args[0] == "enabled":
@@ -436,7 +436,7 @@ async def cmd_loop(ctx, args):
         elif args[0] == "disabled":
             temp_env["music_loop"] = False
         else:
-            await ctx.message.reply(f"Incorrect argument {args[0]}, expected: enabled/disabled") 
+            await ctx.message.reply(f"Incorrect argument {args[0]}, expected: enabled/disabled", mention_author=False) 
             return True
 
 ################################################################################

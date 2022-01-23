@@ -244,7 +244,7 @@ async def FetchStatus():
 async def cmd_status(ctx, args):
     await ctx.message.add_reaction('👍') 
     output = (await FetchStatus()) 
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```", mention_author=False)
     return True
 cmd.Add(cmd.parser, "status", cmd_status, "Check status of integration with third party", "")
 
@@ -252,7 +252,7 @@ async def cmd_debug(ctx, args):
     if os.getenv('DEBUG_MODE'):
         await debug.command(ctx, list(args))
     else:
-        await ctx.message.reply("Debug tools are disabled server-side. There's nothing you can do about it")
+        await ctx.message.reply("Debug tools are disabled server-side. There's nothing you can do about it", mention_author=False)
     return True
 cmd.Add(cmd.parser, "debug", cmd_debug, "Tools useful for debugging this bot", "", discord.Permissions.all())
 

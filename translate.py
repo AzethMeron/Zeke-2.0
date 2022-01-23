@@ -61,7 +61,7 @@ async def Reply(message, user, translated_text, src_lang, tgt_lang):
     {translated_text}\n\
     {src_lang} -> {tgt_lang}\n\
     Requested by: {user.display_name}"
-    await message.reply(mess)
+    await message.reply(mess, mention_author=False)
 
 def GetReaction(PartialEmoji, message):
     for reaction in message.reactions:
@@ -110,14 +110,14 @@ async def cmd_list(ctx, args):
     for emoji in GetReactionTranslator(local_env):
         output = output + f'{emoji} -> {GetReactionTranslator(local_env)[emoji]}\n'
     for out in tools.segment_text(output, 1980):
-        await ctx.message.reply(out)
+        await ctx.message.reply(out, mention_author=False)
     return True
 
 async def cmd_custom(ctx, args):
     output = "Available custom languages:\n"
     for name in custom_lang:
         output = output + f"{name}: {custom_lang[name][2]}\n"
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```", mention_author=False)
 
 parser = cmd.Parser()
 cmd.Add(parser, "add", cmd_add, "Add emoji translation for language.", "Add emoji translation for language.\nSyntax: zeke translate add <emoji> <language>\n<language> is two-character long ISO language code.")

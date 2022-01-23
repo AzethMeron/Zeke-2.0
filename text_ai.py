@@ -57,7 +57,10 @@ async def serp_api_status():
     try:
         text = "Age of universe"
         a = serp_google_question(text)
-        return True
+        if a:
+            return True
+        else:
+            return False
     except:
         return False
 triggers.Status.append( ("Serp API integration", serp_api_status) )
@@ -104,7 +107,7 @@ def SearchGoogle(text):
 async def ProcessAndRespond(function, message, base_text):
     english_text = tools.EnsureEnglish(base_text)
     generated_text = function(english_text)
-    for out in tools.segment_text(generated_text, 1980): await message.reply("```" + out + "```")
+    for out in tools.segment_text(generated_text, 1980): await message.reply("```" + out + "```", mention_author=False)
     
 ##################################################################################################
 
@@ -122,7 +125,7 @@ async def cmd_deep_ai(function, ctx, args):
 async def cmd_ask(ctx,args):
     text = ' '.join(args)
     answer = SearchGoogle(text)
-    for out in tools.segment_text(answer,1980): await ctx.message.reply(out)
+    for out in tools.segment_text(answer,1980): await ctx.message.reply(out, mention_author=False)
     return True
 
 parser = cmd.Parser()

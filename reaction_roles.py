@@ -107,7 +107,7 @@ async def cmd_list_rr(ctx, args):
     for (emoji, role_id) in reaction_data.GetList(): 
         role = ctx.guild.get_role(role_id)
         output = output + f'{emoji} - {role.mention}\n'
-    await ctx.message.reply(output)
+    await ctx.message.reply(output, mention_author=False)
     return True
 
 async def cmd_synchronize(ctx, args):

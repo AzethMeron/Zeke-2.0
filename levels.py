@@ -36,7 +36,7 @@ def exp_to_level(level): # formula to be changed?
 
 async def level_up(local_env, message, leveldata):
     if local_env["levels verbose"]:
-        await message.reply(f"Congratulations {message.author.mention}! You've just advanced to {leveldata.level} level.")
+        await message.reply(f"Congratulations {message.author.mention}! You've just advanced to {leveldata.level} level.", mention_author=False)
 
 async def on_message(local_env, message, normalised_text):
     user_env = data.GetUserEnvironment(local_env, message.author)
@@ -75,13 +75,13 @@ async def cmd_list(ctx, args):
     for item in ulist:
         output = output + str(item[0].display_name) + " - level " + str(item[1]) + "\n"
     for out in tools.segment_text(output, 1980):
-        await ctx.message.reply("```" + out + "```")
+        await ctx.message.reply("```" + out + "```", mention_author=False)
     return True
 
 async def cmd_verbose(ctx, args):
     local_env = data.GetGuildEnvironment(ctx.message.guild)
     local_env["levels verbose"] = not local_env["levels verbose"]
-    await ctx.message.reply(f'Levels verbose: {local_env["levels verbose"]}')
+    await ctx.message.reply(f'Levels verbose: {local_env["levels verbose"]}', mention_author=False)
     return True
 
 parser = cmd.Parser()

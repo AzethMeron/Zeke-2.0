@@ -98,7 +98,7 @@ async def Parse(parser, ctx, args, prev_args = []):
         if cmd == "help":
             help = Help(parser, args, ctx.message.author, prev_args)
             for out in tools.segment_text(help,1980):
-                await ctx.message.reply("```"+out+"```")
+                await ctx.message.reply("```"+out+"```", mention_author=False)
             return True
         if cmd not in parser:
             commands = GetSimilarCommands(parser, cmd, ctx.message.author)
@@ -112,9 +112,9 @@ async def Parse(parser, ctx, args, prev_args = []):
         if not feedback: await ctx.message.add_reaction('👍')
     except Exception as e:
         if os.getenv('DEBUG_MODE'):
-            await ctx.message.reply("Command error: " + str(traceback.format_exc()))
+            await ctx.message.reply("Command error: " + str(traceback.format_exc()), mention_author=False)
         else:
-            await ctx.message.reply("Command error: " + str(e))
+            await ctx.message.reply("Command error: " + str(e), mention_author=False)
     return True
 
 # API for bundle
@@ -156,7 +156,7 @@ async def cmd_alias_list(ctx, args):
     output = "Created aliases:\n"
     for (alias, command) in AliasList(local_env):
         output = output + f'{alias} -> {command}\n'
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```", mention_author=False)
     return True
 
 alias_parser = Parser()

@@ -50,7 +50,7 @@ async def AddReaction(payload, local_env, PartialEmoji, member, guild, message):
     ######################################
     if emoji in reactionary:
         output = random.choice(reactionary[emoji])
-        await message.reply(output)
+        await message.reply(output, mention_author=False)
         await message.add_reaction(PartialEmoji)
 triggers.raw_reaction_add.append(AddReaction)
 
@@ -91,12 +91,12 @@ async def cmd_list(ctx, args):
         for i in range(0, len(reactionary[emoji])):
             text = reactionary[emoji][i]
             output = output + f"{i+1}. {text}\n"
-        for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```")
+        for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```", mention_author=False)
     else:
         output = "List of emojis used for reactionary memes:"
         for emoji in reactionary:
             output = output + ' ' + emoji
-        await ctx.message.reply(output)
+        await ctx.message.reply(output, mention_author=False)
     return True
     
 async def cmd_random(ctx, args):
@@ -108,7 +108,7 @@ async def cmd_random(ctx, args):
     output = random.choice(reactionary[emoji])
     message = ctx.message
     if message.reference: message = message.reference.resolved
-    await message.reply(output)
+    await message.reply(output, mention_author=False)
     return True
 
 async def cmd_change_emoji(ctx, args):

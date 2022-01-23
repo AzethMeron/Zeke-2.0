@@ -13,7 +13,7 @@ async def cmd_save(ctx, arg):
 async def cmd_info(ctx, arg):
     output = str(data.GetGuildEnvironment(ctx.message.guild))
     for out in tools.segment_text(output, 1980):
-        await ctx.message.reply("```" + out + "```")
+        await ctx.message.reply("```" + out + "```", mention_author=False)
 
 ################################################################################
 

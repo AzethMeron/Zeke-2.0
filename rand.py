@@ -27,7 +27,7 @@ async def cmd_dice(ctx, args):
         output = output + f'{roll} '
         total = total + roll
     if times > 1: output = output + "\n" + f'Sum: {total}' + "\n" + f"Average: {total/times}"
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```", mention_author=False)
     return True
 
 async def cmd_sequence(ctx, args):
@@ -47,7 +47,7 @@ async def cmd_sequence(ctx, args):
     random.shuffle(sequence)
     output = "Sequence:"
     for i in sequence: output = output + f' {i}'
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```", mention_author=False)
     return True
 
 async def cmd_word(ctx, args):
@@ -56,7 +56,7 @@ async def cmd_word(ctx, args):
         num = int(args[0])
     words = R.get_random_words(limit=num)
     output = "Random words for you: " + ', '.join(words)
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```")
+    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```", mention_author=False)
     return True
 
 async def cmd_roll(ctx, args):
@@ -64,7 +64,7 @@ async def cmd_roll(ctx, args):
     command = ''.join(args)
     result = dice.roll(command)
     int(result)
-    await ctx.message.reply(f"{command} = {result}\n")
+    await ctx.message.reply(f"{command} = {result}\n", mention_author=False)
     return True
 
 parser = cmd.Parser()
