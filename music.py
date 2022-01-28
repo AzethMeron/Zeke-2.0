@@ -42,6 +42,7 @@ temp.NewTempEnvAdd("music_loop", False)
 
 ZQUIET_FILE = "ZQUIET.WAV"
 def SetQuietFile(filename):
+    global ZQUIET_FILE
     ZQUIET_FILE = filename
 
 ################################################################################
