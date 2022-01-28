@@ -40,6 +40,12 @@ temp.NewTempEnvAdd("music_loop", False)
 
 ################################################################################
 
+ZQUIET_FILE = "ZQUIET.WAV"
+def SetQuietFile(filename):
+    ZQUIET_FILE = filename
+
+################################################################################
+
 VidQueue = Queue()
 VidProcesses = []
 ProcNum = int(os.getenv('MUSIC_PROC_COUNT')) if os.getenv('MUSIC_PROC_COUNT') else 4
@@ -251,7 +257,7 @@ class Player:
             self.is_playing = False
             return None
     def play(self, err):
-        self.voice.play(AudioSource("OK.mp4"), after=self.internal_play)
+        self.voice.play(AudioSource(ZQUIET_FILE), after=self.internal_play)
     def stop(self):
         self.stop_sign = True
         self.skip()

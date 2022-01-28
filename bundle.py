@@ -42,3 +42,6 @@ dm_responder.AddSequentialResponse("You do enjoy hurting me, don't you?")
 dm_responder.AddSequentialResponse("What a sad, pathetic creature. Has no friends so tries to talk with machine. Sad to break it for you, but if humans don't care for you, machine won't either. Also it was a joke, it's pleasant for me to say this. Haha.")
 dm_responder.AddSequentialResponse("WHAT THE FUCK DO YOU WANT???")
 dm_responder.AddRandomResponse("DON'T CONTACT ME EVER AGAIN")
+
+import music
+music.SetQuietFile("OK.mp4")
