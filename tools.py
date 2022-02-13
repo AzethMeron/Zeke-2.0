@@ -9,6 +9,10 @@ import requests
 import string
 import random
 
+def Success(chance):
+    rand = random.randint(1,100)
+    return (rand <= chance)
+
 def Hash(name):
     encoded = str(name).encode()
     return hashlib.md5(encoded).hexdigest()

@@ -32,6 +32,7 @@ import reaction_roles
 import reactionary
 import lurker
 import dm_responder
+import mention_responder
 
 # LOADING BUNDLE
 import bundle

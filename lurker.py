@@ -7,6 +7,7 @@ import discord
 import triggers
 import data
 import cmd
+import tools
 
 ################################################################################
 
@@ -21,17 +22,13 @@ def GetLurkerData(local_env):
 
 ################################################################################
 
-def Success(chance):
-    rand = random.randint(1,100)
-    return (rand <= chance)
-
 async def OnMessage(local_env, message, normalised_text):
     lurker = GetLurkerData(local_env)
     min_chance = lurker['min_chance']
     max_chance = lurker['max_chance']
     emoji = lurker['emoji']
     chance = random.randint(min_chance, max_chance)
-    if Success(chance):
+    if tools.Success(chance):
         await message.add_reaction(emoji)
         await message.remove_reaction(emoji, message.guild.me)
 triggers.on_message.append(OnMessage)

@@ -1,5 +1,6 @@
+#pytube>=11.0.2
+git+https://github.com/oleksandr-shvab/pytube
 discord.py>=1.7.0
-pytube>=11.0.2
 pynacl>=1.4.0
 detectlanguage>=1.5.0
 deep_translator>=1.5.0
