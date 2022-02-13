@@ -19,12 +19,18 @@ def GetResponseData(user_env):
 
 async def OnMessage(local_env, message, normalised_text):
     for member in message.mentions:
+        if message.reference:
+            mes = message.reference.resolved
+            if mes and mes.author.id == member.id: continue
         user_env = data.GetUserEnvironment(local_env, member)
         [chance, responses] = GetResponseData(user_env)
         if len(responses) > 0:
             response = random.choice(responses)
             if tools.Success(chance):
-                await message.reply(response, mention_author=False)
+                try:
+                    await message.reply(response, mention_author=False)
+                except:
+                    pass
 triggers.on_message.append(OnMessage)
 
 ##################################################################################################
