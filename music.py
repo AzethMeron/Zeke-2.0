@@ -170,7 +170,8 @@ def GetAudio(obj, dir): # obj - YouTube object
         stream.download(output_path=dir, filename=filename, max_retries=10)
         PreprocessAudio(dir, filename)
         return os.path.join(dir, filename)
-    except:
+    except Exception as e:
+        log.write(e)
         return None
 
 async def youtubeStatus():
