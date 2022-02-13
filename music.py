@@ -171,7 +171,7 @@ def GetAudio(obj, dir): # obj - YouTube object
         PreprocessAudio(dir, filename)
         return os.path.join(dir, filename)
     except Exception as e:
-        log.write(e)
+        #log.write(e)
         return None
 
 async def youtubeStatus():
