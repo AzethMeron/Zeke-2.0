@@ -267,6 +267,7 @@ async def on_ready():
     print("Initialisation finished")
     print(f'{DiscordClient.user} has connected to Discord!')
     print("Number of servers (guilds) bot is connected to: "+str(len(DiscordClient.guilds)))
+    await DiscordClient.change_presence(activity=discord.Game(name=cmd.GetZekeHelpCmd()))
 
 if __name__ == '__main__':
     for func in triggers.OnInitTrigger: 
