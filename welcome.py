@@ -156,6 +156,6 @@ parser_farewell = cmd.Parser()
 cmd.Add(parser_farewell, "channel", cmd_farewell_channel, "Set channel into which farewell messages will be sent", "Set channel into which farewell messages will be sent\nSyntax: zeke farewell channel")
 cmd.Add(parser_farewell, "message", msg_parser_farewell, "Commands related to farewell messages itself.", "Commands related to farewell messages itself.\nThis bot allows you to create multiple farewell messages, of which one will be randomly chosen.\nSyntax: zeke farewell messages <cmd>")
 
-cmd.Add(cmd.parser, "farewell", parser_farewell, "Setup farewell messages", "")
+cmd.Add(cmd.parser, "farewell", parser_farewell, "Setup farewell messages", "", discord.Permissions.all())
 
 ################################################################################

@@ -128,7 +128,7 @@ cmd.Add(parser, "add", cmd_add, "Add reactionary", "", discord.Permissions.all()
 cmd.Add(parser, "remove", cmd_remove, "Remove reactionary", "", discord.Permissions.all())
 cmd.Add(parser, "list", cmd_list, "Get list of reactionaries", "")
 cmd.Add(parser, "random", cmd_random, "Get random reaction", "")
-cmd.Add(parser, "change", cmd_change_emoji, "Change emoji", "")
+cmd.Add(parser, "change", cmd_change_emoji, "Change emoji", "", discord.Permissions.all())
 
 cmd.Add(cmd.parser, "react", parser, "Add reactionaries", "")
 
