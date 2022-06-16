@@ -71,10 +71,10 @@ async def cmd_chance(ctx, args):
 
 parser = cmd.Parser()
 
-cmd.Add(parser, "add", cmd_add, "nie umiem po angielsku", "")
-cmd.Add(parser, "list", cmd_list, "fada", "")
-cmd.Add(parser, "chance", cmd_chance, "Set chance for response upon being mentioned", "")
-cmd.Add(parser, "remove", cmd_remove, "fskajdofa", "")
+cmd.Add(parser, "add", cmd_add, "Add message to be used when you're mentioned.", "Add message to be used when you're mentioned.\nUPLINE message")
+cmd.Add(parser, "list", cmd_list, "See list of random messages that can be used upon being mentioned.", "See list of random messages that can be used upon being mentioned.\nNo arguments required.")
+cmd.Add(parser, "chance", cmd_chance, "Set chance for response upon being mentioned", "Set chance for response upon being mentioned (in %), 100 by default.")
+cmd.Add(parser, "remove", cmd_remove, "Remove message (by index)", "Remove message by index.\nUPLINE index\nYou can get index by checking your list of messages.")
 
 cmd.Add(cmd.parser, "menres", parser, "Automatic responses to you being mentioned", "")
 
