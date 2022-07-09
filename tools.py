@@ -27,6 +27,20 @@ def is_url(string):
 def segment_text(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
     
+def uppercase_segments(text):
+    output = []
+    trail = []
+    words = text.replace('.',' ').replace(',',' ').split()
+    for word in words:
+        if word.isupper() and (len(word) > 1 or len(trail) > 0):
+            trail.append(word)
+        elif len(trail) > 0:
+            output.append(" ".join(trail))
+            trail.clear()
+    if len(trail) > 0:
+        output.append(" ".join(trail))
+    return output
+    
 def flatten(_lists):
     return [item for sublist in _lists for item in sublist]
 
@@ -58,6 +72,15 @@ def wrap_bold(string):
 
 def wrap_itallic(string):
     return f"*{string}*"
+
+def link_to_message(guild_id, channel_id, message_id):
+    return f"https://discordapp.com/channels/{guild_id}/{channel_id}/{message_id}"
+
+def load_file_as_lines(filename):
+    with open(filename, "r") as file:
+        lines = file.readlines()
+        return [line.rstrip() for line in lines if len(line.rstrip()) > 0 and line.rstrip()[0] != '#' ]
+        
 
 #####################################################################################################
 
@@ -103,6 +126,10 @@ def EnsureEnglish(text):
     except:
         pass
     return output
+
+ENGLISH_STOPWORDS = set(load_file_as_lines("english_stopwords.txt"))
+def simple_normalisation(text, stopwords):
+    return " ".join([ word for word in text.lower().split() if word not in stopwords ])
 
 #####################################################################################################
 
