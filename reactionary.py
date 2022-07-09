@@ -91,7 +91,7 @@ async def cmd_list(ctx, args):
         for i in range(0, len(reactionary[emoji])):
             text = reactionary[emoji][i]
             output = output + f"{i+1}. {text}\n"
-        for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```", mention_author=False)
+        for out in tools.segment_text(output, 1980): await ctx.message.reply(tools.wrap_code(out), mention_author=False)
     else:
         output = "List of emojis used for reactionary memes:"
         for emoji in reactionary:

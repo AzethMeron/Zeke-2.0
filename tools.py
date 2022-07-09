@@ -30,7 +30,7 @@ def segment_text(string, length):
 def flatten(_lists):
     return [item for sublist in _lists for item in sublist]
 
-def list_size_args(args, olist, default_min, default_max):
+def size_args(args, default_min, default_max, hard_min, hard_max):
     num_min = default_min
     num_max = default_max
     if len(args) == 1:
@@ -40,12 +40,24 @@ def list_size_args(args, olist, default_min, default_max):
         max_arg = max(int(float(args[0])), int(float(args[1])))
         num_min = max(1, min_arg) - 1
         num_max = max(1, max_arg)
-    num_min = max(num_min, 0)
-    num_max = min(num_max, len(olist))
+    num_min = max(num_min, hard_min)
+    num_max = min(num_max, hard_max)
     return (num_min, num_max)
+
+def list_size_args(args, olist, default_min, default_max):
+    return size_args(args, default_min, default_max, 0, len(olist))
 
 def random_string(length):
     return ''.join(random.choices(string.ascii_letters + string.digits, k = length))  
+
+def wrap_code(string):
+    return f"```{string}```"
+
+def wrap_bold(string):
+    return f"**{string}**"
+
+def wrap_itallic(string):
+    return f"*{string}*"
 
 #####################################################################################################
 
@@ -53,7 +65,7 @@ def random_string(length):
 
 from dotenv import load_dotenv # ENV vars
 from deep_translator import GoogleTranslator
-import detectlanguage # better but restricted by API
+import detectlanguage # better but restricted by API key
 import langdetect # worse but no restrictions
 import os
 import triggers

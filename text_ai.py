@@ -107,7 +107,7 @@ def SearchGoogle(text):
 async def ProcessAndRespond(function, message, base_text):
     english_text = tools.EnsureEnglish(base_text)
     generated_text = function(english_text)
-    for out in tools.segment_text(generated_text, 1980): await message.reply("```" + out + "```", mention_author=False)
+    for out in tools.segment_text(generated_text, 1980): await message.reply(tools.wrap_code(out), mention_author=False)
     
 ##################################################################################################
 

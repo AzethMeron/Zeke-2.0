@@ -49,7 +49,7 @@ async def cmd_list(ctx, args):
     output = f"User {ctx.author.name}\nChance per mention: {chance}\n"
     for id, response in enumerate(responses):
         output = output + f"{id+1} {response}\n"
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```", mention_author=False)
+    for out in tools.segment_text(output, 1980): await ctx.message.reply(tools.wrap_code(out), mention_author=False)
     return True
 
 async def cmd_remove(ctx, args):

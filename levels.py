@@ -75,7 +75,7 @@ async def cmd_list(ctx, args):
     for item in ulist:
         output = output + str(item[0].display_name) + " - level " + str(item[1]) + "\n"
     for out in tools.segment_text(output, 1980):
-        await ctx.message.reply("```" + out + "```", mention_author=False)
+        await ctx.message.reply(tools.wrap_code(out), mention_author=False)
     return True
 
 async def cmd_verbose(ctx, args):

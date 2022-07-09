@@ -117,7 +117,7 @@ async def cmd_custom(ctx, args):
     output = "Available custom languages:\n"
     for name in custom_lang:
         output = output + f"{name}: {custom_lang[name][2]}\n"
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```", mention_author=False)
+    for out in tools.segment_text(output, 1980): await ctx.message.reply(tools.wrap_code(out), mention_author=False)
 
 parser = cmd.Parser()
 cmd.Add(parser, "add", cmd_add, "Add emoji translation for language.", "Add emoji translation for language.\nSyntax: zeke translate add <emoji> <language>\n<language> is two-character long ISO language code.")

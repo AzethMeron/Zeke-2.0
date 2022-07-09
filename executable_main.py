@@ -24,7 +24,7 @@ import aes
 import music
 import welcome
 import translate
-import rand
+#import rand # temporarily removed
 import mode
 import levels
 import text_ai
@@ -191,7 +191,7 @@ async def on_guild_join(guild):
     try:
         channel = guild.system_channel
         if channel:
-            for out in tools.segment_text(output, 1980): await channel.send("```"+out+"```")
+            for out in tools.segment_text(output, 1980): await channel.send(tools.wrap_code(out))
     except Exception as e:
         pass # ignoring, most likely exception is "insufficent permissions to write in system channel" which is expected
 
@@ -245,7 +245,7 @@ async def FetchStatus():
 async def cmd_status(ctx, args):
     await ctx.message.add_reaction('👍') 
     output = (await FetchStatus()) 
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```"+out+"```", mention_author=False)
+    for out in tools.segment_text(output, 1980): await ctx.message.reply(tools.wrap_code(out), mention_author=False)
     return True
 cmd.Add(cmd.parser, "status", cmd_status, "Check status of integration with third party", "")
 

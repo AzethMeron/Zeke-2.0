@@ -333,11 +333,11 @@ def run_player(voice, temp_env):
 async def user_feedback(ctx, objs, failed):
     if len(failed) == 1:
         message  = "Failed to play video: " + DescribeObj(failed[0][0]) + " REASON: " + failed[0][1]
-        await ctx.message.reply("```" + message + "```", mention_author=False)
+        await ctx.message.reply(tools.wrap_code(message), mention_author=False)
         return True
     elif len(objs) == 1:
         message = "Played: " + DescribeObj(objs[0])
-        await ctx.message.reply("```" + message + "```", mention_author=False)
+        await ctx.message.reply(tools.wrap_code(message), mention_author=False)
         return True
     elif len(failed) == 0 and len(objs) == 0:
         await ctx.message.add_reaction('👎')
@@ -418,7 +418,7 @@ async def cmd_queue(ctx, args):
         if len(queue) > num_max:
             output = output + f'...{len(queue)}\n'
     for out in tools.segment_text(output, 1980):
-        await ctx.message.reply("```" + out + "```", mention_author=False)
+        await ctx.message.reply(tools.wrap_code(out), mention_author=False)
     return True
 
 async def cmd_remove(ctx, args):

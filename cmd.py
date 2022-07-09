@@ -103,7 +103,7 @@ async def Parse(parser, ctx, args, prev_args = []):
         if cmd == "help":
             help = Help(parser, args, ctx.message.author, prev_args)
             for out in tools.segment_text(help,1980):
-                await ctx.message.reply("```"+out+"```", mention_author=False)
+                await ctx.message.reply(tools.wrap_code(out), mention_author=False)
             return True
         if cmd not in parser:
             commands = GetSimilarCommands(parser, cmd, ctx.message.author)
@@ -161,7 +161,7 @@ async def cmd_alias_list(ctx, args):
     output = "Created aliases:\n"
     for (alias, command) in AliasList(local_env):
         output = output + f'{alias} -> {command}\n'
-    for out in tools.segment_text(output, 1980): await ctx.message.reply("```" + out + "```", mention_author=False)
+    for out in tools.segment_text(output, 1980): await ctx.message.reply(tools.wrap_code(out), mention_author=False)
     return True
 
 alias_parser = Parser()
