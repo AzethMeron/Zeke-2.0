@@ -70,9 +70,34 @@ def load_file_as_lines(filename):
         lines = file.readlines()
         return [line.rstrip() for line in lines if len(line.rstrip()) > 0 and line.rstrip()[0] != '#' ]
 
+def simple_normalisation(text, stopwords): # stopwords - set of strings, if you use list, it has negative impact on performance
+    no_punctuation = remove_punctuation(text)
+    return " ".join([ word for word in no_punctuation.lower().split() if word not in stopwords ])
 ENGLISH_STOPWORDS = set(load_file_as_lines("english_stopwords.txt"))
-def simple_normalisation(text, stopwords):
-    return " ".join([ word for word in text.lower().split() if word not in stopwords ])
+def english_normalisation(text):
+    return simple_normalisation(text, ENGLISH_STOPWORDS)
+
+# [ (char_to_be_replaced, char_used_to_replace) ]
+PUNCTUATION_LIST = [ 
+('.',' '),
+('?',' '),
+('!',' '),
+(',',' '),
+(':',' '),
+(';',' '),
+('-',''),
+('(',' '),
+(')',' '),
+('[',' '),
+(']',' '),
+("'",''),
+('"',''),
+('  ',' ') 
+]
+def remove_punctuation(text):
+    for (mark,replacement) in PUNCTUATION_LIST:
+        text = text.replace(mark, replacement)
+    return text
 
 def segment_text(string, length):
     return (string[0+i:length+i] for i in range(0, len(string), length))
@@ -80,7 +105,7 @@ def segment_text(string, length):
 def uppercase_segments(text):
     output = []
     trail = []
-    words = text.replace('.',' ').replace(',',' ').split()
+    words = remove_punctuation(text).split()
     for word in words:
         if word.isupper() and (len(word) > 1 or len(trail) > 0):
             trail.append(word)
