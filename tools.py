@@ -91,8 +91,7 @@ PUNCTUATION_LIST = [
 ('[',' '),
 (']',' '),
 ("'",''),
-('"',''),
-('  ',' ') 
+('"','')
 ]
 def remove_punctuation(text):
     for (mark,replacement) in PUNCTUATION_LIST:
