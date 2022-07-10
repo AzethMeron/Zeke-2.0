@@ -33,6 +33,7 @@ import reactionary
 import lurker
 import dm_responder
 import mention_responder
+import vademecum
 
 # LOADING BUNDLE
 import bundle

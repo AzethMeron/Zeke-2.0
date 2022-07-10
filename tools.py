@@ -63,7 +63,10 @@ def link_to_message(guild_id, channel_id, message_id):
 
 # Text processing tools
 
-import string
+import nltk
+nltk.download('wordnet') 
+#nltk.download('averaged_perceptron_tagger')
+from nltk.stem import WordNetLemmatizer
 
 def load_file_as_lines(filename):
     with open(filename, "r") as file:
@@ -74,8 +77,10 @@ def simple_normalisation(text, stopwords): # stopwords - set of strings, if you 
     no_punctuation = remove_punctuation(text)
     return " ".join([ word for word in no_punctuation.lower().split() if word not in stopwords ])
 ENGLISH_STOPWORDS = set(load_file_as_lines("english_stopwords.txt"))
+ENGLISH_LEMMATIZER = WordNetLemmatizer()
 def english_normalisation(text):
-    return simple_normalisation(text, ENGLISH_STOPWORDS)
+    words = simple_normalisation(text, ENGLISH_STOPWORDS).split()
+    return " ".join([ENGLISH_LEMMATIZER.lemmatize(word) for word in words])
 
 # [ (char_to_be_replaced, char_used_to_replace) ]
 PUNCTUATION_LIST = [ 
