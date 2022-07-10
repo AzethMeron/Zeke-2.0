@@ -61,6 +61,16 @@ class Message:
         header = tools.wrap_bold(f"Written by: {self.Author()}")
         link = f"Link: {self.Link()}"
         return f"{header}\n{link}\n{self.Text()}"
+    
+    def CompareKeywords(self, bag_of_words): # bag_of_words - must be after tools.english_normalisation, also splitted into words ( .split() )
+        all = True
+        count = 0
+        for word in bag_of_words:
+            if word in self.FreqDist():
+                count = count + self.FreqDist()[word]
+            else:
+                all = False
+        return (all, count) # ( whether all words from bag in message, number of occuranes of any word )
         
 ######################################################################################################################
 
